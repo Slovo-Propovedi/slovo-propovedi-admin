@@ -1,18 +1,5 @@
 version: "3.9"
 services:
-  nginx:
-    image: nginx:alpine
-    hostname: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-    depends_on:
-      - postgres
-      - backend
-      - minio-server
-
   postgres:
     image: postgres:15
     environment:
@@ -20,7 +7,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5433"
+      - "${POSTGRES_PORT}:5432"
     env_file:
       - .env
     volumes:
@@ -35,14 +22,6 @@ services:
       - postgres
     environment:
       ADMINER_DEFAULT_SERVER: ${POSTGRES_HOST}
-
-  # react-app:
-  #   build: ./frontend/web-app
-  #   container_name: react-app
-  #   ports:
-  #     - "3000:3000"
-  #   stdin_open: true
-  #   tty: true
 
   backend:
     build: ./backend
