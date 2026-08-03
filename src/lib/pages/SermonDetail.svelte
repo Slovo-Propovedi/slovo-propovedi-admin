@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    deleteSermonMutation,
-    getSermonByIdOptions,
+    sermonControllerRemoveMutation,
+    sermonControllerFindOneOptions,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { invalidateSermon } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
@@ -18,7 +18,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const sermonQuery = createQuery(() => getSermonByIdOptions({ path: { id } }));
+  const sermonQuery = createQuery(() => sermonControllerFindOneOptions({ path: { id } }));
   const queryClient = useQueryClient();
 
   let sermon = $derived(sermonQuery.data);
@@ -27,7 +27,7 @@
   let deleteError = $state('');
 
   const deleteMutation = createMutation(() => ({
-    ...deleteSermonMutation(),
+    ...sermonControllerRemoveMutation(),
     onSuccess: () => {
       invalidateSermon(queryClient, id);
       navigate('/sermons');

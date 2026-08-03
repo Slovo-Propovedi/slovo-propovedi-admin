@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createMutation as makeMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    createSermonMutation,
-    getAllPlaylistsOptions,
-    updateSermonMutation,
+    sermonControllerCreateMutation,
+    playlistControllerFindAllOptions,
+    sermonControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { SermonEntity } from '$lib/api/generated';
   import { invalidateSermon } from '$lib/api/invalidate';
@@ -70,7 +70,7 @@
 
   let submitError = $state('');
 
-  const playlistsQuery = createQuery(() => getAllPlaylistsOptions());
+  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
   let playlistOptions = $derived(
@@ -90,7 +90,7 @@
   const queryClient = useQueryClient();
 
   const createMutation = makeMutation(() => ({
-    ...createSermonMutation(),
+    ...sermonControllerCreateMutation(),
     onSuccess: () => {
       invalidateSermon(queryClient);
       navigate('/sermons');
@@ -101,7 +101,7 @@
   }));
 
   const updateMutation = makeMutation(() => ({
-    ...updateSermonMutation(),
+    ...sermonControllerUpdateMutation(),
     onSuccess: () => {
       invalidateSermon(queryClient, id);
       navigate(`/sermons/${id}`);
@@ -124,12 +124,12 @@
       description: description.trim(),
       artist: artist.trim(),
       artwork: artwork.trim(),
-      book: book.trim() || null,
-      chapter: chapter.trim() === '' || Number.isNaN(chapterNumber) ? null : chapterNumber,
-      verse: verse ?? null,
-      youtubeUrl: youtubeUrl.trim() || null,
-      audioUrl: audioUrl.trim() || null,
-      textFileUrl: textFileUrl.trim() || null,
+      book: book.trim() || undefined,
+      chapter: chapter.trim() === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
+      verse: verse ?? undefined,
+      youtubeUrl: youtubeUrl.trim() || undefined,
+      audioUrl: audioUrl.trim() || undefined,
+      textFileUrl: textFileUrl.trim() || undefined,
       // Always send the array: an empty array clears the relations on the
       // backend, while null would be interpreted as "no change".
       playlistsIds: selectedPlaylistIds,

@@ -2,7 +2,7 @@
 //
 // The module keeps the profile in reactive state; components read it through
 // `getAuthState()` so every subscriber re-renders when the session changes.
-import { authGetProfile, authLogin } from '$lib/api/generated';
+import { authControllerGetProfile, authControllerSignIn } from '$lib/api/generated';
 import {
   clearTokens,
   getAccessToken,
@@ -38,7 +38,7 @@ export function getAuthState() {
 export async function restoreSession(): Promise<void> {
   try {
     if (!getAccessToken()) return;
-    const { data: profile } = await authGetProfile({ throwOnError: true });
+    const { data: profile } = await authControllerGetProfile({ throwOnError: true });
     user = profile;
   } catch {
     // The API client already retries the profile request once with a refresh
@@ -54,7 +54,7 @@ export async function restoreSession(): Promise<void> {
 export async function login(email: string, password: string): Promise<void> {
   isLoggingIn = true;
   try {
-    const { data } = await authLogin({ body: { email, password }, throwOnError: true });
+    const { data } = await authControllerSignIn({ body: { email, password }, throwOnError: true });
     if (!data.accessToken) throw new Error('Сервер не вернул токен доступа');
     setTokens(data.accessToken, data.refreshToken);
     user = data.user ?? { email };

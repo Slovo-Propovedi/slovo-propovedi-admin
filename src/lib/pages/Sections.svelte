@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getAllSectionsOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { sectionControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
   import { ITEMS_SIZE_LABELS, TRANSFORM_LABELS } from '$lib/utils/labels';
   import Button from '$lib/components/Button.svelte';
@@ -8,7 +8,7 @@
   import Icon from '$lib/components/Icon.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  const sectionsQuery = createQuery(() => getAllSectionsOptions());
+  const sectionsQuery = createQuery(() => sectionControllerFindAllOptions());
 
   let sections = $derived(sectionsQuery.data?.sections ?? []);
 

@@ -10,7 +10,7 @@
 // Set VITE_API_BASE to override it for custom deployments.
 import { client } from './generated/client.gen';
 import type { Client, RequestOptions } from './generated/client/types.gen';
-import { authRefresh } from './generated/sdk.gen';
+import { authControllerRefresh } from './generated/sdk.gen';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? '/api';
 
@@ -60,7 +60,7 @@ export function refreshTokens(): Promise<boolean> {
     if (!refreshToken) return false;
 
     try {
-      const { data } = await authRefresh({ body: { refreshToken }, throwOnError: true });
+      const { data } = await authControllerRefresh({ body: { refreshToken }, throwOnError: true });
       if (!data.accessToken) return false;
       setTokens(data.accessToken, data.refreshToken ?? refreshToken);
       return true;

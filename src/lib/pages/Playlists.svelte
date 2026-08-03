@@ -1,13 +1,13 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getAllPlaylistsOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { playlistControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  const playlistsQuery = createQuery(() => getAllPlaylistsOptions());
+  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
 
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
