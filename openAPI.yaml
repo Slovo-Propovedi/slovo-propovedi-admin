@@ -3,6 +3,20 @@ info:
   title: API
   version: '1.0'
   description: Slovo Propovedi Admin API
+servers:
+  - url: https://api.slovo-propovedi.ru
+    description: Production API
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Files
+    description: File upload and streaming
+  - name: Sermons
+    description: Sermon CRUD operations
+  - name: Sections
+    description: Section CRUD operations
+  - name: Playlists
+    description: Playlist CRUD operations
 paths:
   /files:
     post:
@@ -123,6 +137,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -141,6 +156,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -165,6 +181,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -217,6 +234,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -235,6 +253,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -259,6 +278,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -346,6 +366,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -364,6 +385,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -388,6 +410,7 @@ paths:
           in: path
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: ''
@@ -517,13 +540,8 @@ components:
           type: boolean
       required:
         - title
-        - description
         - itemsSize
-        - itemsRows
         - transform
-        - isDescriptionTitleOnSlideLarge
-        - whereIsSlideTitleLocated
-        - borderRadius
     SectionEntity:
       type: object
       additionalProperties: false
@@ -534,6 +552,7 @@ components:
           type: string
         description:
           type: string
+          nullable: true
         itemsSize:
           type: string
           enum:
@@ -543,6 +562,7 @@ components:
             - xLarge
         itemsRows:
           type: number
+          nullable: true
         transform:
           type: string
           enum:
@@ -568,13 +588,8 @@ components:
       required:
         - id
         - title
-        - description
         - itemsSize
-        - itemsRows
         - transform
-        - isDescriptionTitleOnSlideLarge
-        - whereIsSlideTitleLocated
-        - borderRadius
         - playlists
     SermonEntity:
       type: object
@@ -588,18 +603,23 @@ components:
           type: string
         textFileUrl:
           type: string
+          nullable: true
         audioUrl:
           type: string
+          nullable: true
         youtubeUrl:
           type: string
+          nullable: true
         artist:
           type: string
         artwork:
           type: string
         book:
           type: string
+          nullable: true
         chapter:
           type: number
+          nullable: true
         verse:
           oneOf:
             - type: integer
@@ -608,6 +628,7 @@ components:
                 type: integer
               minItems: 2
               maxItems: 2
+          nullable: true
         playlists:
           type: array
           items:
@@ -668,6 +689,10 @@ components:
     UpdateSectionDto:
       type: object
       properties:
+        title:
+          type: string
+        description:
+          type: string
         playlistsIds:
           type: array
           items:
@@ -696,14 +721,6 @@ components:
             - bothOnAndUnder
         borderRadius:
           type: boolean
-      required:
-        - playlistsIds
-        - itemsSize
-        - itemsRows
-        - transform
-        - isDescriptionTitleOnSlideLarge
-        - whereIsSlideTitleLocated
-        - borderRadius
     StatusSectionsResponse:
       type: object
       additionalProperties: false
@@ -729,7 +746,6 @@ components:
         - title
         - description
         - artwork
-        - sermonsIds
     AllPlaylistsResponse:
       type: object
       additionalProperties: false
@@ -750,6 +766,8 @@ components:
           type: string
         description:
           type: string
+        artwork:
+          type: string
         sermonsIds:
           type: array
           items:
@@ -758,10 +776,6 @@ components:
           type: array
           items:
             type: string
-      required:
-        - title
-        - description
-        - sermonsIds
     StatusPlaylistResponse:
       type: object
       additionalProperties: false
@@ -808,14 +822,8 @@ components:
       required:
         - title
         - description
-        - textFileUrl
-        - audioUrl
-        - youtubeUrl
         - artist
         - artwork
-        - book
-        - chapter
-        - verse
     AllSermonsResponse:
       type: object
       additionalProperties: false
@@ -826,12 +834,49 @@ components:
             $ref: '#/components/schemas/SermonEntity'
         count:
           type: number
+          nullable: true
+        nextCursor:
+          type: string
+          nullable: true
       required:
         - sermons
         - count
+        - nextCursor
     UpdateSermonDto:
       type: object
-      properties: {}
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        textFileUrl:
+          type: string
+        audioUrl:
+          type: string
+        youtubeUrl:
+          type: string
+        artist:
+          type: string
+        artwork:
+          type: string
+        book:
+          type: string
+          example: Genesis
+          description: Bible book reference
+        chapter:
+          type: number
+        verse:
+          oneOf:
+            - type: integer
+            - type: array
+              items:
+                type: integer
+              minItems: 2
+              maxItems: 2
+        playlistsIds:
+          type: array
+          items:
+            type: string
     StatusSermonResponse:
       type: object
       additionalProperties: false

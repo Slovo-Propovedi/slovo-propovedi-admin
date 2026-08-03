@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getPlaylistByIdOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { playlistControllerFindOneOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import PlaylistForm from '$lib/components/forms/PlaylistForm.svelte';
@@ -8,7 +8,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const playlistQuery = createQuery(() => getPlaylistByIdOptions({ path: { id } }));
+  const playlistQuery = createQuery(() => playlistControllerFindOneOptions({ path: { id } }));
 </script>
 
 <div class="page-enter">

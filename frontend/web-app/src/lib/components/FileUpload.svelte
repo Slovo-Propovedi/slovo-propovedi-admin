@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { uploadFile } from '$lib/api/generated';
+  import { appControllerUploadFile } from '$lib/api/generated';
   import { getErrorMessage } from '$lib/utils/errors';
   import LoadingSpinner from './LoadingSpinner.svelte';
 
@@ -27,7 +27,7 @@
     error = '';
     isUploading = true;
     try {
-      const { data } = await uploadFile({ body: { file }, throwOnError: true });
+      const { data } = await appControllerUploadFile({ body: { file }, throwOnError: true });
       if (!data.fileUrl) throw new Error('Сервер не вернул URL файла');
       value = data.fileUrl;
       onChange?.(data.fileUrl);

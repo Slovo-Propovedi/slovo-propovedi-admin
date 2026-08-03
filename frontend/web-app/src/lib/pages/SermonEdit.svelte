@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getSermonByIdOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { sermonControllerFindOneOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import SermonForm from '$lib/components/forms/SermonForm.svelte';
@@ -8,7 +8,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const sermonQuery = createQuery(() => getSermonByIdOptions({ path: { id } }));
+  const sermonQuery = createQuery(() => sermonControllerFindOneOptions({ path: { id } }));
 </script>
 
 <div class="page-enter">

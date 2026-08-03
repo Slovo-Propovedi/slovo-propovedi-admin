@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    deleteSectionMutation,
-    getSectionByIdOptions,
+    sectionControllerRemoveMutation,
+    sectionControllerFindOneOptions,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { invalidateSection } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
@@ -22,7 +22,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const sectionQuery = createQuery(() => getSectionByIdOptions({ path: { id } }));
+  const sectionQuery = createQuery(() => sectionControllerFindOneOptions({ path: { id } }));
   const queryClient = useQueryClient();
 
   let section = $derived(sectionQuery.data);
@@ -31,7 +31,7 @@
   let deleteError = $state('');
 
   const deleteMutation = createMutation(() => ({
-    ...deleteSectionMutation(),
+    ...sectionControllerRemoveMutation(),
     onSuccess: () => {
       invalidateSection(queryClient, id);
       navigate('/sections');

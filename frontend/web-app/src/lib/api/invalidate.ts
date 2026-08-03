@@ -20,14 +20,14 @@ export function invalidateOperation(queryClient: QueryClient, operation: string)
 // After touching a sermon, refresh the sermon list/detail plus every playlist
 // and section query that may embed it.
 export function invalidateSermon(queryClient: QueryClient, sermonId?: string): void {
-  invalidateOperation(queryClient, 'getAllSermons');
-  invalidateOperation(queryClient, 'getAllPlaylists');
-  invalidateOperation(queryClient, 'getAllSections');
-  invalidateOperation(queryClient, 'getPlaylistById');
-  invalidateOperation(queryClient, 'getSectionById');
+  invalidateOperation(queryClient, 'sermonControllerFindAll');
+  invalidateOperation(queryClient, 'playlistControllerFindAll');
+  invalidateOperation(queryClient, 'sectionControllerFindAll');
+  invalidateOperation(queryClient, 'playlistControllerFindOne');
+  invalidateOperation(queryClient, 'sectionControllerFindOne');
   if (sermonId) {
     queryClient.invalidateQueries({
-      queryKey: byOperationWithPath('getSermonById', { id: sermonId }),
+      queryKey: byOperationWithPath('sermonControllerFindOne', { id: sermonId }),
     });
   }
 }
@@ -35,14 +35,14 @@ export function invalidateSermon(queryClient: QueryClient, sermonId?: string): v
 // After touching a playlist, refresh the playlist list/detail plus every
 // sermon and section query that may embed it.
 export function invalidatePlaylist(queryClient: QueryClient, playlistId?: string): void {
-  invalidateOperation(queryClient, 'getAllPlaylists');
-  invalidateOperation(queryClient, 'getAllSermons');
-  invalidateOperation(queryClient, 'getAllSections');
-  invalidateOperation(queryClient, 'getSermonById');
-  invalidateOperation(queryClient, 'getSectionById');
+  invalidateOperation(queryClient, 'playlistControllerFindAll');
+  invalidateOperation(queryClient, 'sermonControllerFindAll');
+  invalidateOperation(queryClient, 'sectionControllerFindAll');
+  invalidateOperation(queryClient, 'sermonControllerFindOne');
+  invalidateOperation(queryClient, 'sectionControllerFindOne');
   if (playlistId) {
     queryClient.invalidateQueries({
-      queryKey: byOperationWithPath('getPlaylistById', { id: playlistId }),
+      queryKey: byOperationWithPath('playlistControllerFindOne', { id: playlistId }),
     });
   }
 }
@@ -50,14 +50,14 @@ export function invalidatePlaylist(queryClient: QueryClient, playlistId?: string
 // After touching a section, refresh the section list/detail plus every
 // playlist and sermon query that may embed it.
 export function invalidateSection(queryClient: QueryClient, sectionId?: string): void {
-  invalidateOperation(queryClient, 'getAllSections');
-  invalidateOperation(queryClient, 'getAllPlaylists');
-  invalidateOperation(queryClient, 'getAllSermons');
-  invalidateOperation(queryClient, 'getPlaylistById');
-  invalidateOperation(queryClient, 'getSermonById');
+  invalidateOperation(queryClient, 'sectionControllerFindAll');
+  invalidateOperation(queryClient, 'playlistControllerFindAll');
+  invalidateOperation(queryClient, 'sermonControllerFindAll');
+  invalidateOperation(queryClient, 'playlistControllerFindOne');
+  invalidateOperation(queryClient, 'sermonControllerFindOne');
   if (sectionId) {
     queryClient.invalidateQueries({
-      queryKey: byOperationWithPath('getSectionById', { id: sectionId }),
+      queryKey: byOperationWithPath('sectionControllerFindOne', { id: sectionId }),
     });
   }
 }

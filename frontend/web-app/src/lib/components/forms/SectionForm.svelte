@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createMutation as makeMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    createSectionMutation,
-    getAllPlaylistsOptions,
-    updateSectionMutation,
+    sectionControllerCreateMutation,
+    playlistControllerFindAllOptions,
+    sectionControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { CreateSectionDto, SectionEntity } from '$lib/api/generated';
   import { invalidateSection } from '$lib/api/invalidate';
@@ -82,7 +82,7 @@
     { value: 'bothOnAndUnder', label: SLIDE_TITLE_LOCATION_LABELS.bothOnAndUnder },
   ];
 
-  const playlistsQuery = createQuery(() => getAllPlaylistsOptions());
+  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
   let playlistOptions = $derived(
@@ -102,7 +102,7 @@
   const queryClient = useQueryClient();
 
   const createMutation = makeMutation(() => ({
-    ...createSectionMutation(),
+    ...sectionControllerCreateMutation(),
     onSuccess: () => {
       invalidateSection(queryClient);
       navigate('/sections');
@@ -113,7 +113,7 @@
   }));
 
   const updateMutation = makeMutation(() => ({
-    ...updateSectionMutation(),
+    ...sectionControllerUpdateMutation(),
     onSuccess: () => {
       invalidateSection(queryClient, id);
       navigate(`/sections/${id}`);
@@ -131,9 +131,9 @@
     const rows = Number(itemsRows);
     const common: CreateSectionDto = {
       title: title.trim(),
-      description: description.trim() || null,
+      description: description.trim() || undefined,
       itemsSize: itemsSize as CreateSectionDto['itemsSize'],
-      itemsRows: itemsRows.trim() === '' || Number.isNaN(rows) ? null : rows,
+      itemsRows: itemsRows.trim() === '' || Number.isNaN(rows) ? undefined : rows,
       transform: transform as CreateSectionDto['transform'],
       isDescriptionTitleOnSlideLarge,
       whereIsSlideTitleLocated: whereIsSlideTitleLocated as CreateSectionDto['whereIsSlideTitleLocated'],

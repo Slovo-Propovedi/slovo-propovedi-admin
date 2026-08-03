@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    deletePlaylistMutation,
-    getPlaylistByIdOptions,
+    playlistControllerRemoveMutation,
+    playlistControllerFindOneOptions,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { invalidatePlaylist } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
@@ -18,7 +18,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const playlistQuery = createQuery(() => getPlaylistByIdOptions({ path: { id } }));
+  const playlistQuery = createQuery(() => playlistControllerFindOneOptions({ path: { id } }));
   const queryClient = useQueryClient();
 
   let playlist = $derived(playlistQuery.data);
@@ -27,7 +27,7 @@
   let deleteError = $state('');
 
   const deleteMutation = createMutation(() => ({
-    ...deletePlaylistMutation(),
+    ...playlistControllerRemoveMutation(),
     onSuccess: () => {
       invalidatePlaylist(queryClient, id);
       navigate('/playlists');

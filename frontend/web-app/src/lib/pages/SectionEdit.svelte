@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getSectionByIdOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { sectionControllerFindOneOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import SectionForm from '$lib/components/forms/SectionForm.svelte';
@@ -8,7 +8,7 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
-  const sectionQuery = createQuery(() => getSectionByIdOptions({ path: { id } }));
+  const sectionQuery = createQuery(() => sectionControllerFindOneOptions({ path: { id } }));
 </script>
 
 <div class="page-enter">

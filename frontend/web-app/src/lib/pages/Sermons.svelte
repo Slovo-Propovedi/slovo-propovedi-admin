@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
-  import { getAllSermonsOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { sermonControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
   import { formatReference } from '$lib/utils/labels';
   import Button from '$lib/components/Button.svelte';
@@ -8,7 +8,7 @@
   import Icon from '$lib/components/Icon.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  const sermonsQuery = createQuery(() => getAllSermonsOptions());
+  const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
 
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 

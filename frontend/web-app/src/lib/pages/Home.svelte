@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
   import {
-    getAllPlaylistsOptions,
-    getAllSectionsOptions,
-    getAllSermonsOptions,
+    playlistControllerFindAllOptions,
+    sectionControllerFindAllOptions,
+    sermonControllerFindAllOptions,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { getAuthState } from '$lib/auth/auth.svelte';
   import { navigate } from '$lib/router/router.svelte';
@@ -11,9 +11,9 @@
 
   const auth = getAuthState();
 
-  const sectionsQuery = createQuery(() => getAllSectionsOptions());
-  const playlistsQuery = createQuery(() => getAllPlaylistsOptions());
-  const sermonsQuery = createQuery(() => getAllSermonsOptions());
+  const sectionsQuery = createQuery(() => sectionControllerFindAllOptions());
+  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
+  const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
 
   let sectionCount = $derived(sectionsQuery.data?.sections?.length ?? null);
   let playlistCount = $derived(playlistsQuery.data?.playlists?.length ?? null);

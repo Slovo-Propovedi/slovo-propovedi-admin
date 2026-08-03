@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createMutation as makeMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    createPlaylistMutation,
-    getAllSermonsOptions,
-    updatePlaylistMutation,
+    playlistControllerCreateMutation,
+    sermonControllerFindAllOptions,
+    playlistControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { PlaylistEntity } from '$lib/api/generated';
   import { invalidatePlaylist } from '$lib/api/invalidate';
@@ -50,7 +50,7 @@
 
   let submitError = $state('');
 
-  const sermonsQuery = createQuery(() => getAllSermonsOptions());
+  const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 
   let sermonOptions = $derived(
@@ -70,7 +70,7 @@
   const queryClient = useQueryClient();
 
   const createMutation = makeMutation(() => ({
-    ...createPlaylistMutation(),
+    ...playlistControllerCreateMutation(),
     onSuccess: () => {
       invalidatePlaylist(queryClient);
       navigate('/playlists');
@@ -81,7 +81,7 @@
   }));
 
   const updateMutation = makeMutation(() => ({
-    ...updatePlaylistMutation(),
+    ...playlistControllerUpdateMutation(),
     onSuccess: () => {
       invalidatePlaylist(queryClient, id);
       navigate(`/playlists/${id}`);
