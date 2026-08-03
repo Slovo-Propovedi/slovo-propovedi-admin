@@ -4,6 +4,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+# Cap the Node.js heap so the build stays within the Docker build memory limit
+# (configured via `slovo_frontend_container_image_build_memory` in the playbook).
+ENV NODE_OPTIONS="--max-old-space-size=384"
 RUN npm run build
 
 # Serve stage
