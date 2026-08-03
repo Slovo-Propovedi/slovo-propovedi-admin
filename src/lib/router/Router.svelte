@@ -13,7 +13,7 @@
   import PlaylistDetail from '$lib/pages/PlaylistDetail.svelte';
   import PlaylistEdit from '$lib/pages/PlaylistEdit.svelte';
   import Sermons from '$lib/pages/Sermons.svelte';
-  import SermonCreate from '$lib/pages/UploadSermon.svelte';
+  import UploadSermon from '$lib/pages/UploadSermon.svelte';
   import SermonDetail from '$lib/pages/SermonDetail.svelte';
   import SermonEdit from '$lib/pages/SermonEdit.svelte';
   import type { Component } from 'svelte';
@@ -35,7 +35,7 @@
     { pattern: '/playlists/:id/edit', component: PlaylistEdit },
     { pattern: '/playlists/:id', component: PlaylistDetail },
     { pattern: '/playlists', component: Playlists },
-    { pattern: '/sermons/upload', component: SermonCreate },
+    { pattern: '/sermons/upload', component: UploadSermon },
     { pattern: '/sermons/:id/edit', component: SermonEdit },
     { pattern: '/sermons/:id', component: SermonDetail },
     { pattern: '/sermons', component: Sermons },

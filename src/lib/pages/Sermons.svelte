@@ -56,7 +56,10 @@
           tabindex="0"
           onclick={() => openSermon(sermon.id)}
           onkeydown={(event) => {
-            if (event.key === 'Enter') openSermon(sermon.id);
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openSermon(sermon.id);
+            }
           }}
         >
           {#if sermon.artwork}

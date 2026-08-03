@@ -130,7 +130,9 @@
       youtubeUrl: youtubeUrl.trim() || null,
       audioUrl: audioUrl.trim() || null,
       textFileUrl: textFileUrl.trim() || null,
-      playlistsIds: selectedPlaylistIds.length ? selectedPlaylistIds : null,
+      // Always send the array: an empty array clears the relations on the
+      // backend, while null would be interpreted as "no change".
+      playlistsIds: selectedPlaylistIds,
     };
 
     if (isEdit) {

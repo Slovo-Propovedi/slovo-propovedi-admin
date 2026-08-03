@@ -6,7 +6,6 @@ import { authGetProfile, authLogin } from '$lib/api/generated';
 import {
   clearTokens,
   getAccessToken,
-  refreshTokens,
   setTokens,
 } from '$lib/api/client';
 import { navigate } from '$lib/router/router.svelte';
@@ -42,14 +41,11 @@ export async function restoreSession(): Promise<void> {
     const { data: profile } = await authGetProfile({ throwOnError: true });
     user = profile;
   } catch {
-    const refreshed = await refreshTokens();
-    if (refreshed) {
-      const { data: profile } = await authGetProfile({ throwOnError: true });
-      user = profile;
-    } else {
-      clearTokens();
-      user = null;
-    }
+    // The API client already retries the profile request once with a refresh
+    // token when it fails with 401. If it still fails, the session cannot be
+    // restored, so clear the tokens and leave the user signed out.
+    clearTokens();
+    user = null;
   } finally {
     isReady = true;
   }
@@ -69,6 +65,9 @@ export async function login(email: string, password: string): Promise<void> {
 }
 
 export function logout(): void {
+  // Note: the backend has no revoke endpoint, so the refresh token remains
+  // valid until it expires. Tokens are cleared client-side only, which is the
+  // best we can do; the local session is gone immediately.
   clearTokens();
   user = null;
   navigate('/login');
