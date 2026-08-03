@@ -16,9 +16,19 @@
 
   let activePath = $derived(path);
 
+  // Only the most specific matching item may be active, so /sermons/upload
+  // highlights "Загрузить проповедь" without also highlighting "Проповеди".
+  let activeItem = $derived(
+    navItems
+      .filter((item) => {
+        if (item.path === '/') return activePath === '/';
+        return activePath === item.path || activePath.startsWith(item.path + '/');
+      })
+      .sort((a, b) => b.path.length - a.path.length)[0]?.path,
+  );
+
   function isActive(itemPath: string): boolean {
-    if (itemPath === '/') return activePath === '/';
-    return activePath.startsWith(itemPath);
+    return activeItem === itemPath;
   }
 
   let displayName = $derived(auth.user?.name || auth.user?.email || 'Администратор');

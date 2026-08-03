@@ -100,7 +100,9 @@
       title: title.trim(),
       description: description.trim() || '',
       artwork: artwork.trim(),
-      sermonsIds: selectedSermonIds.length ? selectedSermonIds : undefined,
+      // Always send the array: an empty array clears the relations on the
+      // backend, while undefined would be interpreted as "no change".
+      sermonsIds: selectedSermonIds,
     };
 
     if (isEdit) {

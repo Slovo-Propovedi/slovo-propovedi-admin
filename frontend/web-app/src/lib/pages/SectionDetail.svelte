@@ -116,7 +116,10 @@
               tabindex="0"
               onclick={() => openPlaylist(playlist.id)}
               onkeydown={(event) => {
-                if (event.key === 'Enter') openPlaylist(playlist.id);
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  openPlaylist(playlist.id);
+                }
               }}
             >
               {#if playlist.artwork}

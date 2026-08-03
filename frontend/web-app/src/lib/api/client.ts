@@ -4,18 +4,22 @@
 // configures that singleton once and guards every request against an expired
 // access token: on 401 it refreshes the pair once, retries the original
 // request, and only then gives up and announces the expired session.
+//
+// The base URL is relative (`/api`) so the same bundle works in development
+// (Vite proxy) and production (nginx reverse proxy) without baked-in hosts.
+// Set VITE_API_BASE to override it for custom deployments.
 import { client } from './generated/client.gen';
 import type { Client, RequestOptions } from './generated/client/types.gen';
 import { authRefresh } from './generated/sdk.gen';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'http://localhost:3000';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? '/api';
 
 const TOKENS_KEY = 'slovo_admin_tokens';
 
 const AUTH_RETRY_MARKER = Symbol('auth-retry-marker');
 const RETRIED = Symbol('retried');
 
-const AUTH_EXPIRED_ERROR = new Error('Сессия истекла. Пожалуйста, войдите заново.');
+const AUTH_EXPIRED_MESSAGE = 'Сессия истекла. Пожалуйста, войдите заново.';
 
 interface StoredTokens {
   accessToken?: string;
@@ -85,9 +89,11 @@ function notifyAuthExpired(): void {
 }
 
 // Login and refresh responses may legitimately carry 401s; they are handled
-// by their callers and must not trigger the refresh loop.
+// by their callers and must not trigger the refresh loop. Every other
+// endpoint — including /auth/profile — participates in the refresh-retry
+// flow, so an expired access token is recovered instead of ending the session.
 function isAuthEndpoint(url: string): boolean {
-  return url.startsWith('/auth/');
+  return url === '/auth/login' || url === '/auth/refresh';
 }
 
 client.setConfig({
@@ -96,31 +102,105 @@ client.setConfig({
   auth: () => getAccessToken(),
 });
 
-client.interceptors.response.use((response, _request, options) => {
+// A 401 does not always mean the session expired: the token may have been
+// revoked or the user's permissions changed. Capture the server's message so
+// the caller sees the real reason instead of a generic "session expired".
+interface AuthFailure {
+  status?: number;
+  message?: string;
+}
+
+interface AuthMarkerError extends Error {
+  [AUTH_RETRY_MARKER]?: true;
+  failure?: AuthFailure;
+}
+
+function isAuthMarker(error: unknown): error is AuthMarkerError {
+  return typeof error === 'object' && error !== null && AUTH_RETRY_MARKER in error;
+}
+
+async function readAuthFailure(response: Response): Promise<AuthFailure> {
+  try {
+    const text = await response.clone().text();
+    if (!text) return { status: response.status };
+
+    const body: unknown = JSON.parse(text);
+    if (typeof body === 'object' && body !== null) {
+      const { message } = body as { message?: unknown };
+      if (typeof message === 'string' && message.trim()) {
+        return { status: response.status, message: message.trim() };
+      }
+      if (Array.isArray(message)) {
+        const parts = message.filter((part): part is string => typeof part === 'string');
+        if (parts.length > 0) return { status: response.status, message: parts.join(', ') };
+      }
+    }
+    return { status: response.status };
+  } catch {
+    return { status: response.status };
+  }
+}
+
+function buildAuthExpiredError(failure?: AuthFailure): Error {
+  return new Error(failure?.message?.trim() || AUTH_EXPIRED_MESSAGE);
+}
+
+client.interceptors.response.use(async (response, _request, options) => {
   if (response.status === 401 && !isAuthEndpoint(options.url)) {
-    throw AUTH_RETRY_MARKER;
+    const failure = await readAuthFailure(response);
+    throw Object.assign(new Error(`Unauthorized (${response.status})`), {
+      [AUTH_RETRY_MARKER]: true,
+      failure,
+    });
   }
   return response;
 });
 
 type WrappedRequestOptions = RequestOptions & { [RETRIED]?: boolean };
 
-const originalRequest = client.request.bind(client) as Client['request'];
+type RetryableRequest = (options: WrappedRequestOptions) => Promise<unknown>;
 
-client.request = (async (options: Parameters<Client['request']>[0]) => {
-  const wrapped = options as WrappedRequestOptions;
+// Wraps one client request function with the refresh-and-retry loop. The
+// marker thrown by the response interceptor carries the failure details. On
+// the first 401 the request is retried once after a token refresh; a second
+// 401 means the token itself is invalid, so the session is announced as
+// expired instead of looping forever.
+function withAuthRetry(request: RetryableRequest): RetryableRequest {
+  const attempt = async (options: WrappedRequestOptions): Promise<unknown> => {
+    try {
+      return await request(options);
+    } catch (error: unknown) {
+      if (!isAuthMarker(error)) throw error;
 
-  try {
-    return await originalRequest(wrapped as never);
-  } catch (error: unknown) {
-    if (error !== AUTH_RETRY_MARKER) throw error;
-    if (wrapped[RETRIED]) throw AUTH_EXPIRED_ERROR;
+      // A second 401 after a successful refresh means the token is invalid —
+      // fail fast and loudly with the server's reason when one is available.
+      if (options[RETRIED]) {
+        notifyAuthExpired();
+        throw buildAuthExpiredError(error.failure);
+      }
 
-    const refreshed = await refreshTokens();
-    if (!refreshed) {
-      notifyAuthExpired();
-      throw AUTH_EXPIRED_ERROR;
+      const refreshed = await refreshTokens();
+      if (!refreshed) {
+        notifyAuthExpired();
+        throw buildAuthExpiredError(error.failure);
+      }
+
+      // The refresh succeeded, so retry the original request through the
+      // wrapper. The RETRIED guard above catches a second 401 from this
+      // attempt, keeping the loop to exactly one refresh.
+      return attempt({ ...options, [RETRIED]: true });
     }
-    return originalRequest({ ...wrapped, [RETRIED]: true } as never);
-  }
-}) as Client['request'];
+  };
+
+  return attempt;
+}
+
+// The generated SDK calls the HTTP methods (client.get/post/patch/delete)
+// directly, so every one of them needs the retry wrapper — not just
+// client.request — for the refresh-on-401 flow to actually run.
+client.request = withAuthRetry(client.request.bind(client) as RetryableRequest) as Client['request'];
+client.get = withAuthRetry(client.get.bind(client) as RetryableRequest) as Client['get'];
+client.post = withAuthRetry(client.post.bind(client) as RetryableRequest) as Client['post'];
+client.patch = withAuthRetry(client.patch.bind(client) as RetryableRequest) as Client['patch'];
+client.put = withAuthRetry(client.put.bind(client) as RetryableRequest) as Client['put'];
+client.delete = withAuthRetry(client.delete.bind(client) as RetryableRequest) as Client['delete'];

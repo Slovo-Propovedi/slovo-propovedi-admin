@@ -56,7 +56,10 @@
           tabindex="0"
           onclick={() => openSection(section.id)}
           onkeydown={(event) => {
-            if (event.key === 'Enter') openSection(section.id);
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openSection(section.id);
+            }
           }}
         >
           <div class="list-item-cover list-item-cover-placeholder">
