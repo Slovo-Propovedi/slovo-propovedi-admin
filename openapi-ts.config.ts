@@ -1,7 +1,8 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: '../../openAPI.yaml',
+  input:
+    'https://git.lightnode.ru/Slovo_Propovedi/slovo-propovedi-swagger/raw/branch/main/openAPI.yaml',
   output: 'src/lib/api/generated',
   plugins: [
     '@hey-api/sdk',
