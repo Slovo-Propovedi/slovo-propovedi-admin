@@ -2,13 +2,24 @@
   "name": "slovo-propovedi-frontend",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check",
+    "gen:api": "openapi-ts"
   },
   "dependencies": {
-    "astro": "^5.0.0"
+    "@hey-api/client-fetch": "^0.13.1",
+    "@tanstack/svelte-query": "^6.1.38",
+    "svelte": "^5.56.8",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "vite": "^7.2.2"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.99.0",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.6.0"
   }
 }
