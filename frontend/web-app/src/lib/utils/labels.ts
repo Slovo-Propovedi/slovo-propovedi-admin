@@ -1,5 +1,6 @@
 // Display helpers and Russian labels shared across the admin panel.
 import type { CreateSectionDto, SermonEntity } from '$lib/api/generated';
+import { fieldText } from '$lib/utils/strings';
 
 export type Verse = number | [number, number];
 
@@ -33,12 +34,16 @@ export function formatVerse(verse?: Verse | null): string {
 
 // Parses the two verse inputs of a form into the wire type.
 // A range collapses to a single number when the end is empty or equal.
-export function parseVerse(start: string, end: string): Verse | undefined {
-  if (start.trim() === '') return undefined;
-  const startNumber = Number(start);
+// The inputs are Svelte-bound `<input type="number">` fields, so they arrive
+// as numbers (or null when cleared); `fieldText` parses them at the boundary.
+export function parseVerse(start: unknown, end: unknown): Verse | undefined {
+  const startText = fieldText(start);
+  if (startText === '') return undefined;
+  const startNumber = Number(startText);
   if (Number.isNaN(startNumber)) return undefined;
-  if (end.trim() === '') return startNumber;
-  const endNumber = Number(end);
+  const endText = fieldText(end);
+  if (endText === '') return startNumber;
+  const endNumber = Number(endText);
   if (Number.isNaN(endNumber) || endNumber === startNumber) return startNumber;
   return [startNumber, endNumber];
 }
