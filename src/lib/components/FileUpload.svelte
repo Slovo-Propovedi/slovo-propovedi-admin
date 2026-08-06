@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { appControllerUploadFile } from '$lib/api/generated';
+  import { uploadFileWithProgress } from '$lib/api/upload';
   import { getErrorMessage } from '$lib/utils/errors';
-  import LoadingSpinner from './LoadingSpinner.svelte';
 
   interface Props {
     value?: string;
@@ -9,13 +8,23 @@
     hint?: string;
     accept?: string;
     kind?: 'image' | 'audio' | 'any';
+    isUploading?: boolean;
     onChange?: (url: string) => void;
   }
 
-  let { value = $bindable(''), label = 'Файл', hint, accept, kind = 'any', onChange }: Props = $props();
+  let {
+    value = $bindable(''),
+    label = 'Файл',
+    hint,
+    accept,
+    kind = 'any',
+    isUploading = $bindable(false),
+    onChange,
+  }: Props = $props();
 
-  let isUploading = $state(false);
+  let progress = $state(0);
   let error = $state('');
+  let controller: AbortController | null = null;
   let input: HTMLInputElement;
 
   async function handleFile(event: Event): Promise<void> {
@@ -29,15 +38,24 @@
 
     error = '';
     isUploading = true;
+    progress = 0;
+    controller = new AbortController();
     try {
-      const { data } = await appControllerUploadFile({ body: { file }, throwOnError: true });
-      if (!data.fileUrl) throw new Error('Сервер не вернул URL файла');
+      const data = await uploadFileWithProgress(
+        file,
+        (loaded, total) => {
+          progress = total ? Math.round((loaded / total) * 100) : 0;
+        },
+        controller.signal,
+      );
       value = data.fileUrl;
       onChange?.(data.fileUrl);
     } catch (err) {
       error = getErrorMessage(err);
     } finally {
       isUploading = false;
+      progress = 0;
+      controller = null;
     }
   }
 </script>
@@ -99,8 +117,17 @@
     }}
   >
     {#if isUploading}
-      <LoadingSpinner />
+      <div
+        class="upload-progress"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progress}
+      >
+        <div class="upload-progress-fill" style:width="{progress}%"></div>
+      </div>
       <div class="upload-zone-title">Загрузка…</div>
+      <div class="upload-zone-hint">{progress}%</div>
     {:else}
       <div class="upload-zone-title">{value ? 'Заменить файл' : 'Выбрать файл'}</div>
       <div class="upload-zone-hint">{hint ?? 'Нажмите, чтобы выбрать файл'}</div>

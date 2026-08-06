@@ -8,6 +8,7 @@
   import type { CreateSectionDto, SectionEntity } from '$lib/api/generated';
   import { invalidateSection } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
+  import { trimmed } from '$lib/utils/strings';
   import {
     ITEMS_SIZE_LABELS,
     SLIDE_TITLE_LOCATION_LABELS,
@@ -130,10 +131,10 @@
 
     const rows = Number(itemsRows);
     const common: CreateSectionDto = {
-      title: title.trim(),
-      description: description.trim() || undefined,
+      title: trimmed(title),
+      description: trimmed(description) || undefined,
       itemsSize: itemsSize as CreateSectionDto['itemsSize'],
-      itemsRows: itemsRows.trim() === '' || Number.isNaN(rows) ? undefined : rows,
+      itemsRows: trimmed(itemsRows) === '' || Number.isNaN(rows) ? undefined : rows,
       transform: transform as CreateSectionDto['transform'],
       isDescriptionTitleOnSlideLarge,
       whereIsSlideTitleLocated: whereIsSlideTitleLocated as CreateSectionDto['whereIsSlideTitleLocated'],
