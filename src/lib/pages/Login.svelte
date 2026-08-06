@@ -4,6 +4,7 @@
   import { getAuthState, login } from '$lib/auth/auth.svelte';
   import { navigate } from '$lib/router/router.svelte';
   import { getErrorMessage } from '$lib/utils/errors';
+  import { trimmed } from '$lib/utils/strings';
 
   const auth = getAuthState();
 
@@ -18,7 +19,7 @@
   async function handleSubmit(): Promise<void> {
     error = '';
     try {
-      await login(username.trim(), password);
+      await login(trimmed(username), password);
     } catch (err) {
       error = getErrorMessage(err);
     }
@@ -59,7 +60,7 @@
         autocomplete="current-password"
         required
       />
-      <Button type="submit" block loading={auth.isLoggingIn} disabled={!username.trim() || !password}>
+      <Button type="submit" block loading={auth.isLoggingIn} disabled={!trimmed(username) || !password}>
         Войти
       </Button>
     </form>

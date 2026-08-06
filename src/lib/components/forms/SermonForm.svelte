@@ -9,7 +9,7 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
   import { parseVerse } from '$lib/utils/labels';
-  import { trimmed } from '$lib/utils/strings';
+  import { fieldText, trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
@@ -131,7 +131,7 @@
       artist: trimmed(artist),
       artwork: trimmed(artwork),
       book: trimmed(book) || undefined,
-      chapter: trimmed(chapter) === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
+      chapter: fieldText(chapter) === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
       verse: verse ?? undefined,
       youtubeUrl: trimmed(youtubeUrl) || undefined,
       audioUrl: trimmed(audioUrl) || undefined,
