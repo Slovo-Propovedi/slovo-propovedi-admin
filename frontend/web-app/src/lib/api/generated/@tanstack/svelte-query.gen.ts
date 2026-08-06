@@ -7,7 +7,9 @@ import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFil
 import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse } from '../types.gen';
 
 /**
- * Upload file
+ * Загрузить файл (аудио, видео, изображение и др.)
+ *
+ * Файл сохраняется в MinIO
  */
 export const appControllerUploadFileMutation = (options?: Partial<Options<AppControllerUploadFileData>>): MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> => {
     const mutationOptions: MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> = {
@@ -59,7 +61,7 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
 export const appControllerGetStreamUrlQueryKey = (options: Options<AppControllerGetStreamUrlData>) => createQueryKey('appControllerGetStreamUrl', options);
 
 /**
- * Get stream URL for file
+ * Получить URL потока для файла
  */
 export const appControllerGetStreamUrlOptions = (options: Options<AppControllerGetStreamUrlData>) => queryOptions<AppControllerGetStreamUrlResponse, DefaultError, AppControllerGetStreamUrlResponse, ReturnType<typeof appControllerGetStreamUrlQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -77,7 +79,7 @@ export const appControllerGetStreamUrlOptions = (options: Options<AppControllerG
 export const appControllerGetFileQueryKey = (options: Options<AppControllerGetFileData>) => createQueryKey('appControllerGetFile', options);
 
 /**
- * Get file
+ * Получить публичный URL файла
  */
 export const appControllerGetFileOptions = (options: Options<AppControllerGetFileData>) => queryOptions<AppControllerGetFileResponse, DefaultError, AppControllerGetFileResponse, ReturnType<typeof appControllerGetFileQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -95,7 +97,7 @@ export const appControllerGetFileOptions = (options: Options<AppControllerGetFil
 export const healthControllerCheckQueryKey = (options?: Options<HealthControllerCheckData>) => createQueryKey('healthControllerCheck', options);
 
 /**
- * Check service health
+ * Проверить состояние сервиса
  */
 export const healthControllerCheckOptions = (options?: Options<HealthControllerCheckData>) => queryOptions<HealthControllerCheckResponse, DefaultError, HealthControllerCheckResponse, ReturnType<typeof healthControllerCheckQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -113,7 +115,7 @@ export const healthControllerCheckOptions = (options?: Options<HealthControllerC
 export const sectionControllerFindAllQueryKey = (options?: Options<SectionControllerFindAllData>) => createQueryKey('sectionControllerFindAll', options);
 
 /**
- * Get all sections
+ * Получить все разделы
  */
 export const sectionControllerFindAllOptions = (options?: Options<SectionControllerFindAllData>) => queryOptions<SectionControllerFindAllResponse, DefaultError, SectionControllerFindAllResponse, ReturnType<typeof sectionControllerFindAllQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -129,7 +131,7 @@ export const sectionControllerFindAllOptions = (options?: Options<SectionControl
 });
 
 /**
- * Create section
+ * Создать раздел
  */
 export const sectionControllerCreateMutation = (options?: Partial<Options<SectionControllerCreateData>>): MutationOptions<SectionControllerCreateResponse, DefaultError, Options<SectionControllerCreateData>> => {
     const mutationOptions: MutationOptions<SectionControllerCreateResponse, DefaultError, Options<SectionControllerCreateData>> = {
@@ -146,7 +148,7 @@ export const sectionControllerCreateMutation = (options?: Partial<Options<Sectio
 };
 
 /**
- * Delete one section by id
+ * Удалить раздел
  */
 export const sectionControllerRemoveMutation = (options?: Partial<Options<SectionControllerRemoveData>>): MutationOptions<SectionControllerRemoveResponse, DefaultError, Options<SectionControllerRemoveData>> => {
     const mutationOptions: MutationOptions<SectionControllerRemoveResponse, DefaultError, Options<SectionControllerRemoveData>> = {
@@ -165,7 +167,7 @@ export const sectionControllerRemoveMutation = (options?: Partial<Options<Sectio
 export const sectionControllerFindOneQueryKey = (options: Options<SectionControllerFindOneData>) => createQueryKey('sectionControllerFindOne', options);
 
 /**
- * Get one section by id
+ * Получить раздел по ID
  */
 export const sectionControllerFindOneOptions = (options: Options<SectionControllerFindOneData>) => queryOptions<SectionControllerFindOneResponse, DefaultError, SectionControllerFindOneResponse, ReturnType<typeof sectionControllerFindOneQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -181,7 +183,7 @@ export const sectionControllerFindOneOptions = (options: Options<SectionControll
 });
 
 /**
- * Update one section by id
+ * Обновить раздел (включая связанные плейлисты)
  */
 export const sectionControllerUpdateMutation = (options?: Partial<Options<SectionControllerUpdateData>>): MutationOptions<SectionControllerUpdateResponse, DefaultError, Options<SectionControllerUpdateData>> => {
     const mutationOptions: MutationOptions<SectionControllerUpdateResponse, DefaultError, Options<SectionControllerUpdateData>> = {
@@ -200,7 +202,7 @@ export const sectionControllerUpdateMutation = (options?: Partial<Options<Sectio
 export const playlistControllerFindAllQueryKey = (options?: Options<PlaylistControllerFindAllData>) => createQueryKey('playlistControllerFindAll', options);
 
 /**
- * Get all playlists
+ * Получить все плейлисты
  */
 export const playlistControllerFindAllOptions = (options?: Options<PlaylistControllerFindAllData>) => queryOptions<PlaylistControllerFindAllResponse, DefaultError, PlaylistControllerFindAllResponse, ReturnType<typeof playlistControllerFindAllQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -216,7 +218,7 @@ export const playlistControllerFindAllOptions = (options?: Options<PlaylistContr
 });
 
 /**
- * Create playlist
+ * Создать плейлист
  */
 export const playlistControllerCreateMutation = (options?: Partial<Options<PlaylistControllerCreateData>>): MutationOptions<PlaylistControllerCreateResponse, DefaultError, Options<PlaylistControllerCreateData>> => {
     const mutationOptions: MutationOptions<PlaylistControllerCreateResponse, DefaultError, Options<PlaylistControllerCreateData>> = {
@@ -233,7 +235,7 @@ export const playlistControllerCreateMutation = (options?: Partial<Options<Playl
 };
 
 /**
- * Delete one playlist by id
+ * Удалить плейлист
  */
 export const playlistControllerRemoveMutation = (options?: Partial<Options<PlaylistControllerRemoveData>>): MutationOptions<PlaylistControllerRemoveResponse, DefaultError, Options<PlaylistControllerRemoveData>> => {
     const mutationOptions: MutationOptions<PlaylistControllerRemoveResponse, DefaultError, Options<PlaylistControllerRemoveData>> = {
@@ -252,7 +254,7 @@ export const playlistControllerRemoveMutation = (options?: Partial<Options<Playl
 export const playlistControllerFindOneQueryKey = (options: Options<PlaylistControllerFindOneData>) => createQueryKey('playlistControllerFindOne', options);
 
 /**
- * Get one playlist by id
+ * Получить плейлист по ID (с проповедями)
  */
 export const playlistControllerFindOneOptions = (options: Options<PlaylistControllerFindOneData>) => queryOptions<PlaylistControllerFindOneResponse, DefaultError, PlaylistControllerFindOneResponse, ReturnType<typeof playlistControllerFindOneQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -268,7 +270,7 @@ export const playlistControllerFindOneOptions = (options: Options<PlaylistContro
 });
 
 /**
- * Update one playlist by id
+ * Обновить плейлист
  */
 export const playlistControllerUpdateMutation = (options?: Partial<Options<PlaylistControllerUpdateData>>): MutationOptions<PlaylistControllerUpdateResponse, DefaultError, Options<PlaylistControllerUpdateData>> => {
     const mutationOptions: MutationOptions<PlaylistControllerUpdateResponse, DefaultError, Options<PlaylistControllerUpdateData>> = {
@@ -287,7 +289,7 @@ export const playlistControllerUpdateMutation = (options?: Partial<Options<Playl
 export const sermonControllerFindAllQueryKey = (options?: Options<SermonControllerFindAllData>) => createQueryKey('sermonControllerFindAll', options);
 
 /**
- * Get all sermons
+ * Получить список всех проповедей
  */
 export const sermonControllerFindAllOptions = (options?: Options<SermonControllerFindAllData>) => queryOptions<SermonControllerFindAllResponse, DefaultError, SermonControllerFindAllResponse, ReturnType<typeof sermonControllerFindAllQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -334,7 +336,7 @@ const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'hea
 export const sermonControllerFindAllInfiniteQueryKey = (options?: Options<SermonControllerFindAllData>): QueryKey<Options<SermonControllerFindAllData>> => createQueryKey('sermonControllerFindAll', options, true);
 
 /**
- * Get all sermons
+ * Получить список всех проповедей
  */
 export const sermonControllerFindAllInfiniteOptions = (options?: Options<SermonControllerFindAllData>) => {
     const opts = infiniteQueryOptions<SermonControllerFindAllResponse, DefaultError, InfiniteData<SermonControllerFindAllResponse>, QueryKey<Options<SermonControllerFindAllData>>, string | Pick<QueryKey<Options<SermonControllerFindAllData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -362,7 +364,7 @@ export const sermonControllerFindAllInfiniteOptions = (options?: Options<SermonC
 };
 
 /**
- * Create sermon
+ * Создать новую проповедь
  */
 export const sermonControllerCreateMutation = (options?: Partial<Options<SermonControllerCreateData>>): MutationOptions<SermonControllerCreateResponse, DefaultError, Options<SermonControllerCreateData>> => {
     const mutationOptions: MutationOptions<SermonControllerCreateResponse, DefaultError, Options<SermonControllerCreateData>> = {
@@ -381,7 +383,7 @@ export const sermonControllerCreateMutation = (options?: Partial<Options<SermonC
 export const sermonControllerGetStreamUrlQueryKey = (options: Options<SermonControllerGetStreamUrlData>) => createQueryKey('sermonControllerGetStreamUrl', options);
 
 /**
- * Get stream URL for sermon audio
+ * Получить URL потока для аудио проповеди
  */
 export const sermonControllerGetStreamUrlOptions = (options: Options<SermonControllerGetStreamUrlData>) => queryOptions<SermonControllerGetStreamUrlResponse, DefaultError, SermonControllerGetStreamUrlResponse, ReturnType<typeof sermonControllerGetStreamUrlQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -397,7 +399,7 @@ export const sermonControllerGetStreamUrlOptions = (options: Options<SermonContr
 });
 
 /**
- * Delete one sermon by id
+ * Удалить проповедь
  */
 export const sermonControllerRemoveMutation = (options?: Partial<Options<SermonControllerRemoveData>>): MutationOptions<SermonControllerRemoveResponse, DefaultError, Options<SermonControllerRemoveData>> => {
     const mutationOptions: MutationOptions<SermonControllerRemoveResponse, DefaultError, Options<SermonControllerRemoveData>> = {
@@ -416,7 +418,7 @@ export const sermonControllerRemoveMutation = (options?: Partial<Options<SermonC
 export const sermonControllerFindOneQueryKey = (options: Options<SermonControllerFindOneData>) => createQueryKey('sermonControllerFindOne', options);
 
 /**
- * Get one sermon by id
+ * Получить одну проповедь по ID
  */
 export const sermonControllerFindOneOptions = (options: Options<SermonControllerFindOneData>) => queryOptions<SermonControllerFindOneResponse, DefaultError, SermonControllerFindOneResponse, ReturnType<typeof sermonControllerFindOneQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -432,7 +434,7 @@ export const sermonControllerFindOneOptions = (options: Options<SermonController
 });
 
 /**
- * Update one sermon by id
+ * Обновить проповедь
  */
 export const sermonControllerUpdateMutation = (options?: Partial<Options<SermonControllerUpdateData>>): MutationOptions<SermonControllerUpdateResponse, DefaultError, Options<SermonControllerUpdateData>> => {
     const mutationOptions: MutationOptions<SermonControllerUpdateResponse, DefaultError, Options<SermonControllerUpdateData>> = {
@@ -449,7 +451,9 @@ export const sermonControllerUpdateMutation = (options?: Partial<Options<SermonC
 };
 
 /**
- * Login with email and password
+ * Вход в админ-панель
+ *
+ * Возвращает JWT токен для дальнейших запросов
  */
 export const authControllerSignInMutation = (options?: Partial<Options<AuthControllerSignInData>>): MutationOptions<AuthControllerSignInResponse, DefaultError, Options<AuthControllerSignInData>> => {
     const mutationOptions: MutationOptions<AuthControllerSignInResponse, DefaultError, Options<AuthControllerSignInData>> = {
@@ -466,7 +470,9 @@ export const authControllerSignInMutation = (options?: Partial<Options<AuthContr
 };
 
 /**
- * Refresh access and refresh tokens
+ * Обновить access и refresh токены
+ *
+ * Принимает refresh токен и возвращает новую пару токенов
  */
 export const authControllerRefreshMutation = (options?: Partial<Options<AuthControllerRefreshData>>): MutationOptions<AuthControllerRefreshResponse, DefaultError, Options<AuthControllerRefreshData>> => {
     const mutationOptions: MutationOptions<AuthControllerRefreshResponse, DefaultError, Options<AuthControllerRefreshData>> = {
@@ -485,7 +491,7 @@ export const authControllerRefreshMutation = (options?: Partial<Options<AuthCont
 export const authControllerGetProfileQueryKey = (options?: Options<AuthControllerGetProfileData>) => createQueryKey('authControllerGetProfile', options);
 
 /**
- * Get current admin profile
+ * Получить профиль текущего пользователя
  */
 export const authControllerGetProfileOptions = (options?: Options<AuthControllerGetProfileData>) => queryOptions<AuthControllerGetProfileResponse, DefaultError, AuthControllerGetProfileResponse, ReturnType<typeof authControllerGetProfileQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

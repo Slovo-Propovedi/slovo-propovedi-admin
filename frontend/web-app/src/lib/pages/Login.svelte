@@ -7,7 +7,7 @@
 
   const auth = getAuthState();
 
-  let email = $state('');
+  let username = $state('');
   let password = $state('');
   let error = $state('');
 
@@ -18,7 +18,7 @@
   async function handleSubmit(): Promise<void> {
     error = '';
     try {
-      await login(email.trim(), password);
+      await login(username.trim(), password);
     } catch (err) {
       error = getErrorMessage(err);
     }
@@ -44,11 +44,11 @@
       }}
     >
       <Input
-        label="Электронная почта"
-        type="email"
-        bind:value={email}
-        placeholder="you@example.com"
-        autocomplete="email"
+        label="Имя пользователя"
+        type="text"
+        bind:value={username}
+        placeholder="admin"
+        autocomplete="username"
         required
       />
       <Input
@@ -59,7 +59,7 @@
         autocomplete="current-password"
         required
       />
-      <Button type="submit" block loading={auth.isLoggingIn} disabled={!email.trim() || !password}>
+      <Button type="submit" block loading={auth.isLoggingIn} disabled={!username.trim() || !password}>
         Войти
       </Button>
     </form>

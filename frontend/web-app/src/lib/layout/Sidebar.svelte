@@ -31,7 +31,7 @@
     return activeItem === itemPath;
   }
 
-  let displayName = $derived(auth.user?.name || auth.user?.email || 'Администратор');
+  let displayName = $derived(auth.user?.name || auth.user?.username || auth.user?.email || 'Администратор');
   let initials = $derived(displayName.slice(0, 2).toUpperCase());
 </script>
 
@@ -73,7 +73,7 @@
       <div class="sidebar-user-avatar">{initials}</div>
       <div class="sidebar-user-info">
         <div class="sidebar-user-name">{displayName}</div>
-        <div class="sidebar-user-email">{auth.user?.email ?? ''}</div>
+        <div class="sidebar-user-login">{auth.user?.username ?? ''}</div>
       </div>
     </div>
     <button class="btn btn-ghost btn-sm" onclick={logout}>Выйти</button>

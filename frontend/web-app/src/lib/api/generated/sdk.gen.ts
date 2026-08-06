@@ -22,7 +22,9 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Upload file
+ * Загрузить файл (аудио, видео, изображение и др.)
+ *
+ * Файл сохраняется в MinIO
  */
 export const appControllerUploadFile = <ThrowOnError extends boolean = false>(options: Options<AppControllerUploadFileData, ThrowOnError>): RequestResult<AppControllerUploadFileResponses, unknown, ThrowOnError> => (options.client ?? client).post<AppControllerUploadFileResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
@@ -42,7 +44,7 @@ export const appControllerUploadFile = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Get stream URL for file
+ * Получить URL потока для файла
  */
 export const appControllerGetStreamUrl = <ThrowOnError extends boolean = false>(options: Options<AppControllerGetStreamUrlData, ThrowOnError>): RequestResult<AppControllerGetStreamUrlResponses, unknown, ThrowOnError> => (options.client ?? client).get<AppControllerGetStreamUrlResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -56,7 +58,7 @@ export const appControllerGetStreamUrl = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Get file
+ * Получить публичный URL файла
  */
 export const appControllerGetFile = <ThrowOnError extends boolean = false>(options: Options<AppControllerGetFileData, ThrowOnError>): RequestResult<AppControllerGetFileResponses, unknown, ThrowOnError> => (options.client ?? client).get<AppControllerGetFileResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -70,7 +72,7 @@ export const appControllerGetFile = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
- * Check service health
+ * Проверить состояние сервиса
  */
 export const healthControllerCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthControllerCheckData, ThrowOnError>): RequestResult<HealthControllerCheckResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthControllerCheckResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -84,7 +86,7 @@ export const healthControllerCheck = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Get all sections
+ * Получить все разделы
  */
 export const sectionControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<SectionControllerFindAllData, ThrowOnError>): RequestResult<SectionControllerFindAllResponses, unknown, ThrowOnError> => (options?.client ?? client).get<SectionControllerFindAllResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -98,7 +100,7 @@ export const sectionControllerFindAll = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Create section
+ * Создать раздел
  */
 export const sectionControllerCreate = <ThrowOnError extends boolean = false>(options: Options<SectionControllerCreateData, ThrowOnError>): RequestResult<SectionControllerCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<SectionControllerCreateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -116,7 +118,7 @@ export const sectionControllerCreate = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Delete one section by id
+ * Удалить раздел
  */
 export const sectionControllerRemove = <ThrowOnError extends boolean = false>(options: Options<SectionControllerRemoveData, ThrowOnError>): RequestResult<SectionControllerRemoveResponses, unknown, ThrowOnError> => (options.client ?? client).delete<SectionControllerRemoveResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -130,7 +132,7 @@ export const sectionControllerRemove = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Get one section by id
+ * Получить раздел по ID
  */
 export const sectionControllerFindOne = <ThrowOnError extends boolean = false>(options: Options<SectionControllerFindOneData, ThrowOnError>): RequestResult<SectionControllerFindOneResponses, unknown, ThrowOnError> => (options.client ?? client).get<SectionControllerFindOneResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -144,7 +146,7 @@ export const sectionControllerFindOne = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Update one section by id
+ * Обновить раздел (включая связанные плейлисты)
  */
 export const sectionControllerUpdate = <ThrowOnError extends boolean = false>(options: Options<SectionControllerUpdateData, ThrowOnError>): RequestResult<SectionControllerUpdateResponses, unknown, ThrowOnError> => (options.client ?? client).patch<SectionControllerUpdateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -162,7 +164,7 @@ export const sectionControllerUpdate = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Get all playlists
+ * Получить все плейлисты
  */
 export const playlistControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<PlaylistControllerFindAllData, ThrowOnError>): RequestResult<PlaylistControllerFindAllResponses, unknown, ThrowOnError> => (options?.client ?? client).get<PlaylistControllerFindAllResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -176,7 +178,7 @@ export const playlistControllerFindAll = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Create playlist
+ * Создать плейлист
  */
 export const playlistControllerCreate = <ThrowOnError extends boolean = false>(options: Options<PlaylistControllerCreateData, ThrowOnError>): RequestResult<PlaylistControllerCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<PlaylistControllerCreateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -194,7 +196,7 @@ export const playlistControllerCreate = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Delete one playlist by id
+ * Удалить плейлист
  */
 export const playlistControllerRemove = <ThrowOnError extends boolean = false>(options: Options<PlaylistControllerRemoveData, ThrowOnError>): RequestResult<PlaylistControllerRemoveResponses, unknown, ThrowOnError> => (options.client ?? client).delete<PlaylistControllerRemoveResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -208,7 +210,7 @@ export const playlistControllerRemove = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Get one playlist by id
+ * Получить плейлист по ID (с проповедями)
  */
 export const playlistControllerFindOne = <ThrowOnError extends boolean = false>(options: Options<PlaylistControllerFindOneData, ThrowOnError>): RequestResult<PlaylistControllerFindOneResponses, unknown, ThrowOnError> => (options.client ?? client).get<PlaylistControllerFindOneResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -222,7 +224,7 @@ export const playlistControllerFindOne = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Update one playlist by id
+ * Обновить плейлист
  */
 export const playlistControllerUpdate = <ThrowOnError extends boolean = false>(options: Options<PlaylistControllerUpdateData, ThrowOnError>): RequestResult<PlaylistControllerUpdateResponses, unknown, ThrowOnError> => (options.client ?? client).patch<PlaylistControllerUpdateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -240,7 +242,7 @@ export const playlistControllerUpdate = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Get all sermons
+ * Получить список всех проповедей
  */
 export const sermonControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<SermonControllerFindAllData, ThrowOnError>): RequestResult<SermonControllerFindAllResponses, unknown, ThrowOnError> => (options?.client ?? client).get<SermonControllerFindAllResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -254,7 +256,7 @@ export const sermonControllerFindAll = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Create sermon
+ * Создать новую проповедь
  */
 export const sermonControllerCreate = <ThrowOnError extends boolean = false>(options: Options<SermonControllerCreateData, ThrowOnError>): RequestResult<SermonControllerCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<SermonControllerCreateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -272,7 +274,7 @@ export const sermonControllerCreate = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Get stream URL for sermon audio
+ * Получить URL потока для аудио проповеди
  */
 export const sermonControllerGetStreamUrl = <ThrowOnError extends boolean = false>(options: Options<SermonControllerGetStreamUrlData, ThrowOnError>): RequestResult<SermonControllerGetStreamUrlResponses, unknown, ThrowOnError> => (options.client ?? client).get<SermonControllerGetStreamUrlResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -287,7 +289,7 @@ export const sermonControllerGetStreamUrl = <ThrowOnError extends boolean = fals
 });
 
 /**
- * Delete one sermon by id
+ * Удалить проповедь
  */
 export const sermonControllerRemove = <ThrowOnError extends boolean = false>(options: Options<SermonControllerRemoveData, ThrowOnError>): RequestResult<SermonControllerRemoveResponses, unknown, ThrowOnError> => (options.client ?? client).delete<SermonControllerRemoveResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -301,7 +303,7 @@ export const sermonControllerRemove = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Get one sermon by id
+ * Получить одну проповедь по ID
  */
 export const sermonControllerFindOne = <ThrowOnError extends boolean = false>(options: Options<SermonControllerFindOneData, ThrowOnError>): RequestResult<SermonControllerFindOneResponses, unknown, ThrowOnError> => (options.client ?? client).get<SermonControllerFindOneResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -315,7 +317,7 @@ export const sermonControllerFindOne = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Update one sermon by id
+ * Обновить проповедь
  */
 export const sermonControllerUpdate = <ThrowOnError extends boolean = false>(options: Options<SermonControllerUpdateData, ThrowOnError>): RequestResult<SermonControllerUpdateResponses, unknown, ThrowOnError> => (options.client ?? client).patch<SermonControllerUpdateResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -333,7 +335,9 @@ export const sermonControllerUpdate = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Login with email and password
+ * Вход в админ-панель
+ *
+ * Возвращает JWT токен для дальнейших запросов
  */
 export const authControllerSignIn = <ThrowOnError extends boolean = false>(options: Options<AuthControllerSignInData, ThrowOnError>): RequestResult<AuthControllerSignInResponses, unknown, ThrowOnError> => (options.client ?? client).post<AuthControllerSignInResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -351,7 +355,9 @@ export const authControllerSignIn = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
- * Refresh access and refresh tokens
+ * Обновить access и refresh токены
+ *
+ * Принимает refresh токен и возвращает новую пару токенов
  */
 export const authControllerRefresh = <ThrowOnError extends boolean = false>(options: Options<AuthControllerRefreshData, ThrowOnError>): RequestResult<AuthControllerRefreshResponses, unknown, ThrowOnError> => (options.client ?? client).post<AuthControllerRefreshResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
@@ -369,7 +375,7 @@ export const authControllerRefresh = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Get current admin profile
+ * Получить профиль текущего пользователя
  */
 export const authControllerGetProfile = <ThrowOnError extends boolean = false>(options?: Options<AuthControllerGetProfileData, ThrowOnError>): RequestResult<AuthControllerGetProfileResponses, unknown, ThrowOnError> => (options?.client ?? client).get<AuthControllerGetProfileResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({

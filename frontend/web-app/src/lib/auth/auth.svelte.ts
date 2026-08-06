@@ -13,6 +13,7 @@ import { navigate } from '$lib/router/router.svelte';
 export interface AuthUser {
   id?: string;
   name?: string;
+  username?: string;
   email?: string;
 }
 
@@ -51,13 +52,13 @@ export async function restoreSession(): Promise<void> {
   }
 }
 
-export async function login(email: string, password: string): Promise<void> {
+export async function login(username: string, password: string): Promise<void> {
   isLoggingIn = true;
   try {
-    const { data } = await authControllerSignIn({ body: { email, password }, throwOnError: true });
+    const { data } = await authControllerSignIn({ body: { username, password }, throwOnError: true });
     if (!data.accessToken) throw new Error('Сервер не вернул токен доступа');
     setTokens(data.accessToken, data.refreshToken);
-    user = data.user ?? { email };
+    user = data.user ?? { username };
     navigate('/');
   } finally {
     isLoggingIn = false;
