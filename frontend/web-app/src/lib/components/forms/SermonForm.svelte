@@ -9,6 +9,7 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
   import { parseVerse } from '$lib/utils/labels';
+  import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
@@ -70,6 +71,10 @@
 
   let submitError = $state('');
 
+  let artworkUploading = $state(false);
+  let audioUploading = $state(false);
+  let textFileUploading = $state(false);
+
   const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
@@ -112,6 +117,7 @@
   }));
 
   const isSubmitting = $derived(createMutation.isPending || updateMutation.isPending);
+  const someUploadInProgress = $derived(artworkUploading || audioUploading || textFileUploading);
 
   function handleSubmit(): void {
     submitError = '';
@@ -120,16 +126,16 @@
     const verse = parseVerse(verseStart, verseEnd);
 
     const body = {
-      title: title.trim(),
-      description: description.trim(),
-      artist: artist.trim(),
-      artwork: artwork.trim(),
-      book: book.trim() || undefined,
-      chapter: chapter.trim() === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
+      title: trimmed(title),
+      description: trimmed(description),
+      artist: trimmed(artist),
+      artwork: trimmed(artwork),
+      book: trimmed(book) || undefined,
+      chapter: trimmed(chapter) === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
       verse: verse ?? undefined,
-      youtubeUrl: youtubeUrl.trim() || undefined,
-      audioUrl: audioUrl.trim() || undefined,
-      textFileUrl: textFileUrl.trim() || undefined,
+      youtubeUrl: trimmed(youtubeUrl) || undefined,
+      audioUrl: trimmed(audioUrl) || undefined,
+      textFileUrl: trimmed(textFileUrl) || undefined,
       // Always send the array: an empty array clears the relations on the
       // backend, while null would be interpreted as "no change".
       playlistsIds: selectedPlaylistIds,
@@ -175,10 +181,10 @@
       <h2>Медиа</h2>
     </div>
     <div class="card-body">
-      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} />
-      <FileUpload label="Аудио" kind="audio" accept="audio/*" bind:value={audioUrl} hint="MP3 или другой аудиофайл." />
+      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} bind:isUploading={artworkUploading} />
+      <FileUpload label="Аудио" kind="audio" accept="audio/*" bind:value={audioUrl} hint="MP3 или другой аудиофайл." bind:isUploading={audioUploading} />
       <Input label="Ссылка на YouTube" bind:value={youtubeUrl} placeholder="https://www.youtube.com/watch?v=…" />
-      <FileUpload label="Текст проповеди" kind="any" bind:value={textFileUrl} hint="PDF или текстовый файл." />
+      <FileUpload label="Текст проповеди" kind="any" bind:value={textFileUrl} hint="PDF или текстовый файл." bind:isUploading={textFileUploading} />
     </div>
   </div>
 
@@ -197,7 +203,7 @@
     <Button type="button" variant="ghost" onclick={() => navigate(isEdit ? `/sermons/${id}` : '/sermons')}>
       Отмена
     </Button>
-    <Button type="submit" loading={isSubmitting}>
+    <Button type="submit" loading={isSubmitting} disabled={someUploadInProgress}>
       {isEdit ? 'Сохранить проповедь' : 'Загрузить проповедь'}
     </Button>
   </div>

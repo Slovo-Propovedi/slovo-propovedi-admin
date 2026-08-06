@@ -9,6 +9,7 @@
   import { invalidatePlaylist } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
   import { formatReference } from '$lib/utils/labels';
+  import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
@@ -49,6 +50,8 @@
   let selectedSermonIds = $state<string[]>(formSnapshot.selectedSermonIds);
 
   let submitError = $state('');
+
+  let artworkUploading = $state(false);
 
   const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
@@ -92,14 +95,15 @@
   }));
 
   const isSubmitting = $derived(createMutation.isPending || updateMutation.isPending);
+  const someUploadInProgress = $derived(artworkUploading);
 
   function handleSubmit(): void {
     submitError = '';
 
     const common = {
-      title: title.trim(),
-      description: description.trim() || '',
-      artwork: artwork.trim(),
+      title: trimmed(title),
+      description: trimmed(description) || '',
+      artwork: trimmed(artwork),
       // Always send the array: an empty array clears the relations on the
       // backend, while undefined would be interpreted as "no change".
       sermonsIds: selectedSermonIds,
@@ -129,7 +133,7 @@
     <div class="card-body">
       <Input label="Название" bind:value={title} placeholder="Например: Поклонение" required />
       <Textarea label="Описание" bind:value={description} hint="Необязательно." />
-      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} />
+      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} bind:isUploading={artworkUploading} />
     </div>
   </div>
 
@@ -146,7 +150,7 @@
     <Button type="button" variant="ghost" onclick={() => navigate(isEdit ? `/playlists/${id}` : '/playlists')}>
       Отмена
     </Button>
-    <Button type="submit" loading={isSubmitting}>
+    <Button type="submit" loading={isSubmitting} disabled={someUploadInProgress}>
       {isEdit ? 'Сохранить плейлист' : 'Создать плейлист'}
     </Button>
   </div>
