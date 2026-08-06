@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [
     {
       name: '@hey-api/sdk',
-      // Disable only the client-side request validator: it ran the multipart
-      // body schema (file: z.string()) against a runtime File and rejected every
-      // upload before fetch. Server-side Zod remains the authority, and the UI
-      // gates submission. Response validation stays on.
-      validator: { request: false, response: true },
+      // Full request + response validation. The zod plugin cannot emit
+      // z.instanceof(File) for multipart binary fields (no binary case in its
+      // format switch — it emits z.string()), so scripts/patch-zod-binary.mjs
+      // rewrites the generated multipart file schema after codegen.
+      validator: true,
     },
     { enums: 'javascript', name: '@hey-api/typescript' },
     '@tanstack/svelte-query',

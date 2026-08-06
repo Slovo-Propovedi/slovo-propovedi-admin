@@ -210,7 +210,7 @@ export const zAllSermonsResponse = z.object({
 });
 
 export const zAppControllerUploadFileBody = z.object({
-    file: z.string().optional()
+    file: z.instanceof(File).optional()
 });
 
 /**
