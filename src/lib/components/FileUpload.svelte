@@ -19,6 +19,9 @@
   let input: HTMLInputElement;
 
   async function handleFile(event: Event): Promise<void> {
+    // Never fire the request while another upload is in flight.
+    if (isUploading) return;
+
     const target = event.currentTarget as HTMLInputElement;
     const file = target.files?.[0];
     target.value = '';
@@ -81,9 +84,14 @@
     class="upload-zone"
     class:is-uploading={isUploading}
     role="button"
-    tabindex="0"
-    onclick={() => input?.click()}
+    tabindex={isUploading ? -1 : 0}
+    aria-disabled={isUploading}
+    onclick={() => {
+      if (isUploading) return;
+      input?.click();
+    }}
     onkeydown={(event) => {
+      if (isUploading) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         input?.click();
@@ -99,7 +107,14 @@
     {/if}
   </div>
 
-  <input type="file" bind:this={input} hidden {accept} onchange={handleFile} />
+  <input
+    type="file"
+    bind:this={input}
+    hidden
+    {accept}
+    disabled={isUploading}
+    onchange={handleFile}
+  />
 
   {#if error}
     <p class="field-error">{error}</p>
