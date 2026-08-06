@@ -32,10 +32,17 @@ export function formatVerse(verse?: Verse | null): string {
   return String(verse);
 }
 
-// Parses the two verse inputs of a form into the wire type.
-// A range collapses to a single number when the end is empty or equal.
-// The inputs are Svelte-bound `<input type="number">` fields, so they arrive
-// as numbers (or null when cleared); `fieldText` parses them at the boundary.
+// Parses the two verse inputs of a form into the wire type. Both fields are
+// optional; the output follows this table:
+// - only "from"    → single verse number (16)
+// - "from" + "to"  → range tuple [16, 18]
+// - neither        → undefined (no verse)
+// - only "to"      → undefined: a lone end without a start is a user mistake,
+//                    so it is ignored rather than inventing a start.
+// A range collapses to a single number when the end is empty or equals the
+// start. The inputs are Svelte-bound `<input type="number">` fields, so they
+// arrive as numbers (or null when cleared); `fieldText` parses them at the
+// boundary without crashing on non-string values.
 export function parseVerse(start: unknown, end: unknown): Verse | undefined {
   const startText = fieldText(start);
   if (startText === '') return undefined;
