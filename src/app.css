@@ -351,7 +351,7 @@ img {
   text-overflow: ellipsis;
 }
 
-.sidebar-user-email {
+.sidebar-user-login {
   font-size: 0.75rem;
   color: var(--text-faint);
   white-space: nowrap;

@@ -87,7 +87,7 @@ export const zCreateSermonDto = z.object({
     youtubeUrl: z.string().optional(),
     artist: z.string(),
     artwork: z.string(),
-    book: z.string().optional(),
+    book: z.string().nullish(),
     chapter: z.number().optional(),
     verse: z.union([
         z.int(),
@@ -104,7 +104,7 @@ export const zUpdateSermonDto = z.object({
     youtubeUrl: z.string().optional(),
     artist: z.string().optional(),
     artwork: z.string().optional(),
-    book: z.string().optional(),
+    book: z.string().nullish(),
     chapter: z.number().optional(),
     verse: z.union([
         z.int(),
@@ -118,13 +118,14 @@ export const zStatusSermonResponse = z.object({
 });
 
 export const zSignInRequestDto = z.object({
-    email: z.string(),
+    username: z.string(),
     password: z.string()
 });
 
 export const zUserResponse = z.object({
     id: z.string(),
     name: z.string(),
+    username: z.string(),
     email: z.string()
 });
 
@@ -212,6 +213,9 @@ export const zAppControllerUploadFileBody = z.object({
     file: z.string().optional()
 });
 
+/**
+ * Файл успешно загружен
+ */
 export const zAppControllerUploadFileResponse = zIFileResponseDto;
 
 export const zAppControllerGetStreamUrlPath = z.object({
@@ -219,7 +223,7 @@ export const zAppControllerGetStreamUrlPath = z.object({
 });
 
 /**
- * Presigned stream URL
+ * Предварительно подписанный URL потока
  */
 export const zAppControllerGetStreamUrlResponse = zStreamUrlResponse;
 
@@ -227,10 +231,13 @@ export const zAppControllerGetFilePath = z.object({
     fileName: z.string()
 });
 
+/**
+ * Информация о файле
+ */
 export const zAppControllerGetFileResponse = zIFileResponseDto;
 
 /**
- * Service health status
+ * Состояние сервиса
  */
 export const zHealthControllerCheckResponse = zHealthResponse;
 
@@ -238,12 +245,18 @@ export const zSectionControllerRemovePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Раздел удалён
+ */
 export const zSectionControllerRemoveResponse = zStatusSectionsResponse;
 
 export const zPlaylistControllerRemovePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Плейлист удалён
+ */
 export const zPlaylistControllerRemoveResponse = zStatusPlaylistResponse;
 
 export const zSermonControllerGetStreamUrlPath = z.object({
@@ -251,7 +264,7 @@ export const zSermonControllerGetStreamUrlPath = z.object({
 });
 
 /**
- * Presigned stream URL
+ * Предварительно подписанный URL потока
  */
 export const zSermonControllerGetStreamUrlResponse = zStreamUrlResponse;
 
@@ -259,6 +272,9 @@ export const zSermonControllerRemovePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Проповедь удалена
+ */
 export const zSermonControllerRemoveResponse = zStatusSermonResponse;
 
 export const zSermonControllerUpdateBody = zUpdateSermonDto;
@@ -267,28 +283,49 @@ export const zSermonControllerUpdatePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Проповедь обновлена
+ */
 export const zSermonControllerUpdateResponse = zStatusSermonResponse;
 
 export const zAuthControllerSignInBody = zSignInRequestDto;
 
+/**
+ * Успешный вход
+ */
 export const zAuthControllerSignInResponse = zAuthResponse;
 
 export const zAuthControllerRefreshBody = zRefreshTokenDto;
 
+/**
+ * Новая пара токенов
+ */
 export const zAuthControllerRefreshResponse = zRefreshResponse;
 
+/**
+ * Профиль пользователя
+ */
 export const zAuthControllerGetProfileResponse = zUserResponse;
 
+/**
+ * Список разделов
+ */
 export const zSectionControllerFindAllResponse = zAllSectionsResponse;
 
 export const zSectionControllerCreateBody = zCreateSectionDto;
 
+/**
+ * Раздел создан
+ */
 export const zSectionControllerCreateResponse = zSectionEntity;
 
 export const zSectionControllerFindOnePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Раздел
+ */
 export const zSectionControllerFindOneResponse = zSectionEntity;
 
 export const zSectionControllerUpdateBody = zUpdateSectionDto;
@@ -297,18 +334,30 @@ export const zSectionControllerUpdatePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Раздел обновлён
+ */
 export const zSectionControllerUpdateResponse = zSectionEntity;
 
+/**
+ * Список плейлистов
+ */
 export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
 
 export const zPlaylistControllerCreateBody = zCreatePlaylistDto;
 
+/**
+ * Плейлист создан
+ */
 export const zPlaylistControllerCreateResponse = zPlaylistEntity;
 
 export const zPlaylistControllerFindOnePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Плейлист
+ */
 export const zPlaylistControllerFindOneResponse = zPlaylistEntity;
 
 export const zPlaylistControllerUpdateBody = zUpdatePlaylistDto;
@@ -317,6 +366,9 @@ export const zPlaylistControllerUpdatePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Плейлист обновлён
+ */
 export const zPlaylistControllerUpdateResponse = zPlaylistEntity;
 
 export const zSermonControllerFindAllQuery = z.object({
@@ -324,14 +376,23 @@ export const zSermonControllerFindAllQuery = z.object({
     cursor: z.uuid().optional()
 });
 
+/**
+ * Список проповедей с количеством
+ */
 export const zSermonControllerFindAllResponse = zAllSermonsResponse;
 
 export const zSermonControllerCreateBody = zCreateSermonDto;
 
+/**
+ * Проповедь создана
+ */
 export const zSermonControllerCreateResponse = zSermonEntity;
 
 export const zSermonControllerFindOnePath = z.object({
     id: z.uuid()
 });
 
+/**
+ * Проповедь
+ */
 export const zSermonControllerFindOneResponse = zSermonEntity;
