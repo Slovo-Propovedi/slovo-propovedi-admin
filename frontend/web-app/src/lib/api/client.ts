@@ -102,6 +102,19 @@ client.setConfig({
   auth: () => getAccessToken(),
 });
 
+// The generated SDK only sends the bearer token when the OpenAPI spec marks
+// the operation with `security`. The spec deployed on docs.slovo-propovedi.ru
+// is out of date and omits `security` on most protected operations, so
+// regenerating the client silently drops the header. Attach the token here
+// whenever one is stored: the backend guards still decide what is actually
+// protected, and sending it to public endpoints is harmless.
+client.interceptors.request.use((request) => {
+  const token = getAccessToken();
+  if (!token) return request;
+  request.headers.set('Authorization', `Bearer ${token}`);
+  return request;
+});
+
 // A 401 does not always mean the session expired: the token may have been
 // revoked or the user's permissions changed. Capture the server's message so
 // the caller sees the real reason instead of a generic "session expired".
