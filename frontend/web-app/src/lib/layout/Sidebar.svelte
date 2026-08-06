@@ -3,7 +3,7 @@
   import { getAuthState, logout } from '$lib/auth/auth.svelte';
   import { navigate, useRoute } from '$lib/router/router.svelte';
 
-  const { path } = useRoute();
+  const route = useRoute();
   const auth = getAuthState();
 
   const navItems = [
@@ -14,7 +14,7 @@
     { label: 'Загрузить проповедь', path: '/sermons/upload', icon: 'upload' },
   ] as const;
 
-  let activePath = $derived(path);
+  let activePath = $derived(route.path);
 
   // Only the most specific matching item may be active, so /sermons/upload
   // highlights "Загрузить проповедь" without also highlighting "Проповеди".

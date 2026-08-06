@@ -41,10 +41,10 @@
     { pattern: '/sermons', component: Sermons },
   ];
 
-  const { path } = useRoute();
+  const route = useRoute();
 
   let match = $derived.by(() => {
-    const currentPath = path;
+    const currentPath = route.path;
     for (const route of routes) {
       const params = matchRoute(route.pattern, currentPath);
       if (params) return { ...route, params };
@@ -52,7 +52,7 @@
     return null;
   });
 
-  let isLogin = $derived(path === '/login');
+  let isLogin = $derived(route.path === '/login');
 
   $effect(() => {
     if (match === null) navigate('/');
