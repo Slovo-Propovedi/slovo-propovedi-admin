@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [
     {
       name: '@hey-api/sdk',
-      validator: true,
+      // Disable only the client-side request validator: it ran the multipart
+      // body schema (file: z.string()) against a runtime File and rejected every
+      // upload before fetch. Server-side Zod remains the authority, and the UI
+      // gates submission. Response validation stays on.
+      validator: { request: false, response: true },
     },
     { enums: 'javascript', name: '@hey-api/typescript' },
     '@tanstack/svelte-query',
