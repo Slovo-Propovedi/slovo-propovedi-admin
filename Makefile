@@ -22,5 +22,15 @@ decrypt:   ## Расшифровать .vault -> .env (интерактивны�
 	@chmod 600 .env
 	@echo "Decrypted .vault -> .env"
 
+gen-backend: ## Регенерировать Zod-схемы backend из OpenAPI spec
+	cd backend && npm run gen:schemas
+
+gen-frontend: ## Регенерировать API-клиент frontend из OpenAPI spec
+	cd frontend/web-app && npm run gen:api
+
+gen-api: ## Регенерировать backend и frontend из OpenAPI spec
+	$(MAKE) gen-backend
+	$(MAKE) gen-frontend
+
 help:      ## Показать список целей
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
