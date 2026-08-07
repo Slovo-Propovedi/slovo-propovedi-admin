@@ -1,16 +1,81 @@
 <script lang="ts">
-  import { createQuery } from '@tanstack/svelte-query';
-  import { sectionControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
+  import {
+    reorderSectionsMutation,
+    sectionControllerFindAllOptions,
+  } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import type { SectionEntity } from '$lib/api/generated/types.gen';
+  import { invalidateSection } from '$lib/api/invalidate';
+  import { hasOrderChanged } from '$lib/utils/arrayOrder';
+  import { getErrorMessage } from '$lib/utils/errors';
   import { navigate } from '$lib/router/router.svelte';
   import { ITEMS_SIZE_LABELS, TRANSFORM_LABELS } from '$lib/utils/labels';
   import Button from '$lib/components/Button.svelte';
+  import DndList from '$lib/components/DndList.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import Toast from '$lib/components/Toast.svelte';
 
   const sectionsQuery = createQuery(() => sectionControllerFindAllOptions());
+  const queryClient = useQueryClient();
 
-  let sections = $derived(sectionsQuery.data?.sections ?? []);
+  // Local state shadows the sections so reordering can be optimistic.
+  let localSections = $state<SectionEntity[]>([]);
+  // The order captured before the current drag — the fallback on failure.
+  let sectionsSnapshot = $state<SectionEntity[]>([]);
+  // While dragging, the query result must not overwrite the in-flight order.
+  let isDragging = $state(false);
+  let reorderError = $state('');
+  // The last query result adopted into local state. Adopting only on a new
+  // reference prevents a stale refetch from flashing the list back to the
+  // pre-drag order right after a successful reorder.
+  let syncedSections: SectionEntity[] | undefined;
+
+  $effect(() => {
+    const fresh = sectionsQuery.data?.sections;
+    if (isDragging || fresh === syncedSections) return;
+    syncedSections = fresh;
+    localSections = fresh ?? [];
+  });
+
+  const reorderSections = createMutation(() => ({
+    ...reorderSectionsMutation(),
+    onSuccess: () => {
+      isDragging = false;
+      invalidateSection(queryClient);
+    },
+    onError: (error) => {
+      isDragging = false;
+      localSections = sectionsSnapshot;
+      reorderError = getErrorMessage(error);
+    },
+  }));
+
+  // Fires on every consider (live feedback) and once on finalize (persist).
+  function handleReorder(newOrder: SectionEntity[], isFinalize: boolean): void {
+    if (!isDragging) {
+      isDragging = true;
+      sectionsSnapshot = [...localSections];
+    }
+    if (isFinalize && newOrder.length !== sectionsSnapshot.length) {
+      // The drag never confirmed a drop position (e.g. an instant flick), so
+      // the finalize array is missing the dragged item. Restore the pre-drag
+      // order instead of sending a truncated list to the server.
+      localSections = sectionsSnapshot;
+      isDragging = false;
+      return;
+    }
+    localSections = newOrder;
+    if (!isFinalize) return;
+    if (hasOrderChanged(sectionsSnapshot, newOrder)) {
+      reorderSections.mutate({
+        body: { ids: newOrder.map((section) => section.id) },
+      });
+    } else {
+      isDragging = false;
+    }
+  }
 
   function openSection(id: string): void {
     navigate(`/sections/${id}`);
@@ -35,7 +100,7 @@
     <div class="loading-inline">
       <LoadingSpinner large />
     </div>
-  {:else if sections.length === 0}
+  {:else if localSections.length === 0}
     <div class="card">
       <EmptyState
         icon="✦"
@@ -48,8 +113,8 @@
       </EmptyState>
     </div>
   {:else}
-    <div class="list-grid stagger">
-      {#each sections as section}
+    <DndList class="list-grid stagger" items={localSections} onReorder={handleReorder}>
+      {#snippet children(section)}
         <div
           class="card card-hover list-item"
           role="button"
@@ -58,6 +123,7 @@
           onkeydown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
+              event.stopPropagation();
               openSection(section.id);
             }
           }}
@@ -76,7 +142,11 @@
             <span class="badge badge-neutral">{TRANSFORM_LABELS[section.transform]}</span>
           </div>
         </div>
-      {/each}
-    </div>
+      {/snippet}
+    </DndList>
+  {/if}
+
+  {#if reorderError}
+    <Toast message={reorderError} onDismiss={() => (reorderError = '')} />
   {/if}
 </div>

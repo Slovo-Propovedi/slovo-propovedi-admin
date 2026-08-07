@@ -3,27 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen';
-import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerRefresh, authControllerSignIn, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate } from '../sdk.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse } from '../types.gen';
-
-/**
- * Загрузить файл (аудио, видео, изображение и др.)
- *
- * Файл сохраняется в MinIO
- */
-export const appControllerUploadFileMutation = (options?: Partial<Options<AppControllerUploadFileData>>): MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> => {
-    const mutationOptions: MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await appControllerUploadFile({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate } from '../sdk.gen';
+import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -56,6 +37,45 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
         params.query = options.query;
     }
     return [params];
+};
+
+export const getFilesQueryKey = (options?: Options<GetFilesData>) => createQueryKey('getFiles', options);
+
+/**
+ * List image files
+ *
+ * Returns a list of all image files in storage (for cover reuse feature)
+ */
+export const getFilesOptions = (options?: Options<GetFilesData>) => queryOptions<GetFilesResponse, DefaultError, GetFilesResponse, ReturnType<typeof getFilesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getFiles({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getFilesQueryKey(options)
+});
+
+/**
+ * Загрузить файл (аудио, видео, изображение и др.)
+ *
+ * Файл сохраняется в MinIO
+ */
+export const appControllerUploadFileMutation = (options?: Partial<Options<AppControllerUploadFileData>>): MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> => {
+    const mutationOptions: MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await appControllerUploadFile({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const appControllerGetStreamUrlQueryKey = (options: Options<AppControllerGetStreamUrlData>) => createQueryKey('appControllerGetStreamUrl', options);
@@ -148,6 +168,25 @@ export const sectionControllerCreateMutation = (options?: Partial<Options<Sectio
 };
 
 /**
+ * Изменить порядок разделов
+ *
+ * Принимает список id разделов в новом порядке и обновляет позиции
+ */
+export const reorderSectionsMutation = (options?: Partial<Options<ReorderSectionsData>>): MutationOptions<ReorderSectionsResponse, DefaultError, Options<ReorderSectionsData>> => {
+    const mutationOptions: MutationOptions<ReorderSectionsResponse, DefaultError, Options<ReorderSectionsData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reorderSections({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
  * Удалить раздел
  */
 export const sectionControllerRemoveMutation = (options?: Partial<Options<SectionControllerRemoveData>>): MutationOptions<SectionControllerRemoveResponse, DefaultError, Options<SectionControllerRemoveData>> => {
@@ -189,6 +228,25 @@ export const sectionControllerUpdateMutation = (options?: Partial<Options<Sectio
     const mutationOptions: MutationOptions<SectionControllerUpdateResponse, DefaultError, Options<SectionControllerUpdateData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await sectionControllerUpdate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Изменить порядок плейлистов в разделе
+ *
+ * Принимает список id плейлистов в новом порядке и обновляет их позиции внутри раздела
+ */
+export const reorderPlaylistsInSectionMutation = (options?: Partial<Options<ReorderPlaylistsInSectionData>>): MutationOptions<ReorderPlaylistsInSectionResponse, DefaultError, Options<ReorderPlaylistsInSectionData>> => {
+    const mutationOptions: MutationOptions<ReorderPlaylistsInSectionResponse, DefaultError, Options<ReorderPlaylistsInSectionData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reorderPlaylistsInSection({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -276,6 +334,25 @@ export const playlistControllerUpdateMutation = (options?: Partial<Options<Playl
     const mutationOptions: MutationOptions<PlaylistControllerUpdateResponse, DefaultError, Options<PlaylistControllerUpdateData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await playlistControllerUpdate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Изменить порядок проповедей в плейлисте
+ *
+ * Принимает список id проповедей в новом порядке и обновляет их позиции внутри плейлиста
+ */
+export const reorderSermonsInPlaylistMutation = (options?: Partial<Options<ReorderSermonsInPlaylistData>>): MutationOptions<ReorderSermonsInPlaylistResponse, DefaultError, Options<ReorderSermonsInPlaylistData>> => {
+    const mutationOptions: MutationOptions<ReorderSermonsInPlaylistResponse, DefaultError, Options<ReorderSermonsInPlaylistData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reorderSermonsInPlaylist({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

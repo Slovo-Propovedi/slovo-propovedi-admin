@@ -15,6 +15,18 @@ export const zIFileResponseDto = z.strictObject({
     fileUrl: z.string()
 });
 
+export const zFileMetadataDto = z.strictObject({
+    fileName: z.string(),
+    fileUrl: z.string(),
+    size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    lastModified: z.iso.datetime().nullish()
+});
+
+export const zAllFilesResponse = z.strictObject({
+    files: z.array(zFileMetadataDto),
+    count: z.int()
+});
+
 export const zCreateSectionDto = z.strictObject({
     title: z.string(),
     description: z.string().optional(),
@@ -38,6 +50,24 @@ export const zCreateSectionDto = z.strictObject({
 export const zSectionRef = z.strictObject({
     id: z.string(),
     title: z.string()
+});
+
+export const zPlaylistSermon = z.strictObject({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    textFileUrl: z.string().nullish(),
+    audioUrl: z.string().nullish(),
+    youtubeUrl: z.string().nullish(),
+    artist: z.string(),
+    artwork: z.string(),
+    book: z.string().nullish(),
+    chapter: z.int().nullish(),
+    verse: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullish(),
+    position: z.int()
 });
 
 export const zUpdateSectionDto = z.strictObject({
@@ -82,6 +112,18 @@ export const zUpdatePlaylistDto = z.strictObject({
 
 export const zStatusPlaylistResponse = z.strictObject({
     status: z.string()
+});
+
+export const zReorderSectionsDto = z.strictObject({
+    ids: z.array(z.uuid())
+});
+
+export const zReorderSermonsDto = z.strictObject({
+    sermonIds: z.array(z.uuid())
+});
+
+export const zReorderPlaylistsDto = z.strictObject({
+    playlistIds: z.array(z.uuid())
 });
 
 export const zCreateSermonDto = z.strictObject({
@@ -153,6 +195,7 @@ export const zSectionEntity = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string().nullish(),
+    position: z.int(),
     itemsSize: z.enum([
         'small',
         'middle',
@@ -176,6 +219,7 @@ export const zSectionPlaylist = z.strictObject({
     title: z.string(),
     description: z.string(),
     artwork: z.string(),
+    position: z.int(),
     sections: z.array(zSectionRef),
     sermons: z.array(z.lazy((): any => zSermonEntity))
 });
@@ -204,7 +248,7 @@ export const zPlaylistEntity = z.strictObject({
     description: z.string(),
     artwork: z.string(),
     sections: z.array(zSectionEntity),
-    sermons: z.array(zSermonEntity)
+    sermons: z.array(zPlaylistSermon)
 });
 
 export const zAllSectionsResponse = z.strictObject({
@@ -222,6 +266,11 @@ export const zAllSermonsResponse = z.strictObject({
     count: z.number().nullable(),
     nextCursor: z.string().nullable()
 });
+
+/**
+ * List of image files
+ */
+export const zGetFilesResponse = zAllFilesResponse;
 
 export const zAppControllerUploadFileBody = z.strictObject({
     file: z.instanceof(File).optional()
@@ -255,6 +304,13 @@ export const zAppControllerGetFileResponse = zIFileResponseDto;
  */
 export const zHealthControllerCheckResponse = zHealthResponse;
 
+export const zReorderSectionsBody = zReorderSectionsDto;
+
+/**
+ * Порядок разделов обновлён
+ */
+export const zReorderSectionsResponse = zStatusSectionsResponse;
+
 export const zSectionControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
@@ -264,6 +320,17 @@ export const zSectionControllerRemovePath = z.strictObject({
  */
 export const zSectionControllerRemoveResponse = zStatusSectionsResponse;
 
+export const zReorderPlaylistsInSectionBody = zReorderPlaylistsDto;
+
+export const zReorderPlaylistsInSectionPath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Порядок плейлистов в разделе обновлён
+ */
+export const zReorderPlaylistsInSectionResponse = zStatusSectionsResponse;
+
 export const zPlaylistControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
@@ -272,6 +339,17 @@ export const zPlaylistControllerRemovePath = z.strictObject({
  * Плейлист удалён
  */
 export const zPlaylistControllerRemoveResponse = zStatusPlaylistResponse;
+
+export const zReorderSermonsInPlaylistBody = zReorderSermonsDto;
+
+export const zReorderSermonsInPlaylistPath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Порядок проповедей в плейлисте обновлён
+ */
+export const zReorderSermonsInPlaylistResponse = zStatusPlaylistResponse;
 
 export const zSermonControllerGetStreamUrlPath = z.strictObject({
     id: z.uuid()

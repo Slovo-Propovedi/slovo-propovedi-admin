@@ -13,6 +13,7 @@
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
+  import CoverPicker from '$lib/components/CoverPicker.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import Input from '$lib/components/Input.svelte';
   import Textarea from '$lib/components/Textarea.svelte';
@@ -181,7 +182,7 @@
       <h2>Медиа</h2>
     </div>
     <div class="card-body">
-      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} bind:isUploading={artworkUploading} />
+      <CoverPicker label="Обложка" bind:value={artwork} bind:isUploading={artworkUploading} />
       <FileUpload label="Аудио" kind="audio" accept="audio/*" bind:value={audioUrl} hint="MP3 или другой аудиофайл." bind:isUploading={audioUploading} />
       <Input label="Ссылка на YouTube" bind:value={youtubeUrl} placeholder="https://www.youtube.com/watch?v=…" />
       <FileUpload label="Текст проповеди" kind="any" bind:value={textFileUrl} hint="PDF или текстовый файл." bind:isUploading={textFileUploading} />
