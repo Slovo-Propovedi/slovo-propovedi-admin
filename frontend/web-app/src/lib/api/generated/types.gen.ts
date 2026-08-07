@@ -38,7 +38,21 @@ export type SectionEntity = {
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
     borderRadius?: boolean;
-    playlists: Array<PlaylistEntity>;
+    playlists: Array<SectionPlaylist>;
+};
+
+export type SectionRef = {
+    id: string;
+    title: string;
+};
+
+export type SectionPlaylist = {
+    id: string;
+    title: string;
+    description: string;
+    artwork: string;
+    sections: Array<SectionRef>;
+    sermons: Array<SermonEntity>;
 };
 
 export type SermonEntity = {
