@@ -109,6 +109,7 @@ export const sectionControllerCreate = <ThrowOnError extends boolean = false>(op
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSectionControllerCreateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/section',
     ...options,
     headers: {
@@ -127,6 +128,7 @@ export const sectionControllerRemove = <ThrowOnError extends boolean = false>(op
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSectionControllerRemoveResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/section/{id}',
     ...options
 });
@@ -155,6 +157,7 @@ export const sectionControllerUpdate = <ThrowOnError extends boolean = false>(op
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSectionControllerUpdateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/section/{id}',
     ...options,
     headers: {
@@ -187,6 +190,7 @@ export const playlistControllerCreate = <ThrowOnError extends boolean = false>(o
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zPlaylistControllerCreateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/playlists',
     ...options,
     headers: {
@@ -205,6 +209,7 @@ export const playlistControllerRemove = <ThrowOnError extends boolean = false>(o
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zPlaylistControllerRemoveResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/playlists/{id}',
     ...options
 });
@@ -233,6 +238,7 @@ export const playlistControllerUpdate = <ThrowOnError extends boolean = false>(o
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zPlaylistControllerUpdateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/playlists/{id}',
     ...options,
     headers: {
@@ -265,6 +271,7 @@ export const sermonControllerCreate = <ThrowOnError extends boolean = false>(opt
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSermonControllerCreateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/sermons',
     ...options,
     headers: {
@@ -283,7 +290,6 @@ export const sermonControllerGetStreamUrl = <ThrowOnError extends boolean = fals
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSermonControllerGetStreamUrlResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/sermons/{id}/stream-url',
     ...options
 });
@@ -298,6 +304,7 @@ export const sermonControllerRemove = <ThrowOnError extends boolean = false>(opt
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSermonControllerRemoveResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/sermons/{id}',
     ...options
 });
@@ -326,6 +333,7 @@ export const sermonControllerUpdate = <ThrowOnError extends boolean = false>(opt
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zSermonControllerUpdateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/sermons/{id}',
     ...options,
     headers: {
@@ -384,6 +392,7 @@ export const authControllerGetProfile = <ThrowOnError extends boolean = false>(o
         query: z.never().optional()
     }).parseAsync(data),
     responseValidator: async (data) => await zAuthControllerGetProfileResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/profile',
     ...options
 });

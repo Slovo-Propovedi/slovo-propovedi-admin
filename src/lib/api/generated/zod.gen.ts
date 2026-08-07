@@ -35,6 +35,11 @@ export const zCreateSectionDto = z.object({
     borderRadius: z.boolean().optional()
 });
 
+export const zSectionRef = z.object({
+    id: z.string(),
+    title: z.string()
+});
+
 export const zUpdateSectionDto = z.object({
     title: z.string().optional(),
     description: z.string().optional(),
@@ -163,7 +168,16 @@ export const zSectionEntity = z.object({
         'bothOnAndUnder'
     ]).optional().default('under'),
     borderRadius: z.boolean().optional().default(false),
-    playlists: z.array(z.lazy((): any => zPlaylistEntity))
+    playlists: z.array(z.lazy((): any => zSectionPlaylist))
+});
+
+export const zSectionPlaylist = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    artwork: z.string(),
+    sections: z.array(zSectionRef),
+    sermons: z.array(z.lazy((): any => zSermonEntity))
 });
 
 export const zSermonEntity = z.object({
