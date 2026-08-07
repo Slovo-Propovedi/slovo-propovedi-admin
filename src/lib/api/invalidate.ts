@@ -4,6 +4,7 @@
 // sections carry their playlists. Touching any of them therefore refreshes
 // the related lists AND details, otherwise list/detail pages show stale data.
 import type { QueryClient } from '@tanstack/svelte-query';
+import { getFilesQueryKey } from '$lib/api/generated/@tanstack/svelte-query.gen';
 
 function byOperation(operation: string): [{ _id: string }] {
   return [{ _id: operation }];
@@ -15,6 +16,12 @@ function byOperationWithPath(operation: string, path: Record<string, unknown>): 
 
 export function invalidateOperation(queryClient: QueryClient, operation: string): void {
   queryClient.invalidateQueries({ queryKey: byOperation(operation) });
+}
+
+// After uploading an image, refresh the file library so the cover-reuse
+// modal shows the new file the next time it opens.
+export function invalidateFiles(queryClient: QueryClient): void {
+  queryClient.invalidateQueries({ queryKey: getFilesQueryKey() });
 }
 
 // After touching a sermon, refresh the sermon list/detail plus every playlist

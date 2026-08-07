@@ -17,6 +17,18 @@ export type IFileResponseDto = {
     fileUrl: string;
 };
 
+export type FileMetadataDto = {
+    fileName: string;
+    fileUrl: string;
+    size?: number | null;
+    lastModified?: string | null;
+};
+
+export type AllFilesResponse = {
+    files: Array<FileMetadataDto>;
+    count: number;
+};
+
 export type CreateSectionDto = {
     title: string;
     description?: string;
@@ -32,6 +44,7 @@ export type SectionEntity = {
     id: string;
     title: string;
     description?: string | null;
+    position: number;
     itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
     itemsRows?: number | null;
     transform: 'high' | 'short';
@@ -51,6 +64,7 @@ export type SectionPlaylist = {
     title: string;
     description: string;
     artwork: string;
+    position: number;
     sections: Array<SectionRef>;
     sermons: Array<SermonEntity>;
 };
@@ -73,13 +87,31 @@ export type SermonEntity = {
     playlists: Array<PlaylistEntity>;
 };
 
+export type PlaylistSermon = {
+    id: string;
+    title: string;
+    description: string;
+    textFileUrl?: string | null;
+    audioUrl?: string | null;
+    youtubeUrl?: string | null;
+    artist: string;
+    artwork: string;
+    book?: string | null;
+    chapter?: number | null;
+    verse?: number | [
+        number,
+        number
+    ] | null;
+    position: number;
+};
+
 export type PlaylistEntity = {
     id: string;
     title: string;
     description: string;
     artwork: string;
     sections: Array<SectionEntity>;
-    sermons: Array<SermonEntity>;
+    sermons: Array<PlaylistSermon>;
 };
 
 export type AllSectionsResponse = {
@@ -125,6 +157,18 @@ export type UpdatePlaylistDto = {
 
 export type StatusPlaylistResponse = {
     status: string;
+};
+
+export type ReorderSectionsDto = {
+    ids: Array<string>;
+};
+
+export type ReorderSermonsDto = {
+    sermonIds: Array<string>;
+};
+
+export type ReorderPlaylistsDto = {
+    playlistIds: Array<string>;
 };
 
 export type CreateSermonDto = {
@@ -203,6 +247,22 @@ export type RefreshResponse = {
     accessToken: string;
     refreshToken: string;
 };
+
+export type GetFilesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/files';
+};
+
+export type GetFilesResponses = {
+    /**
+     * List of image files
+     */
+    200: AllFilesResponse;
+};
+
+export type GetFilesResponse = GetFilesResponses[keyof GetFilesResponses];
 
 export type AppControllerUploadFileData = {
     body: {
@@ -306,6 +366,22 @@ export type SectionControllerCreateResponses = {
 
 export type SectionControllerCreateResponse = SectionControllerCreateResponses[keyof SectionControllerCreateResponses];
 
+export type ReorderSectionsData = {
+    body: ReorderSectionsDto;
+    path?: never;
+    query?: never;
+    url: '/section/reorder';
+};
+
+export type ReorderSectionsResponses = {
+    /**
+     * Порядок разделов обновлён
+     */
+    200: StatusSectionsResponse;
+};
+
+export type ReorderSectionsResponse = ReorderSectionsResponses[keyof ReorderSectionsResponses];
+
 export type SectionControllerRemoveData = {
     body?: never;
     path: {
@@ -359,6 +435,24 @@ export type SectionControllerUpdateResponses = {
 };
 
 export type SectionControllerUpdateResponse = SectionControllerUpdateResponses[keyof SectionControllerUpdateResponses];
+
+export type ReorderPlaylistsInSectionData = {
+    body: ReorderPlaylistsDto;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/section/{id}/playlists/reorder';
+};
+
+export type ReorderPlaylistsInSectionResponses = {
+    /**
+     * Порядок плейлистов в разделе обновлён
+     */
+    200: StatusSectionsResponse;
+};
+
+export type ReorderPlaylistsInSectionResponse = ReorderPlaylistsInSectionResponses[keyof ReorderPlaylistsInSectionResponses];
 
 export type PlaylistControllerFindAllData = {
     body?: never;
@@ -445,6 +539,24 @@ export type PlaylistControllerUpdateResponses = {
 };
 
 export type PlaylistControllerUpdateResponse = PlaylistControllerUpdateResponses[keyof PlaylistControllerUpdateResponses];
+
+export type ReorderSermonsInPlaylistData = {
+    body: ReorderSermonsDto;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/playlists/{id}/sermons/reorder';
+};
+
+export type ReorderSermonsInPlaylistResponses = {
+    /**
+     * Порядок проповедей в плейлисте обновлён
+     */
+    200: StatusPlaylistResponse;
+};
+
+export type ReorderSermonsInPlaylistResponse = ReorderSermonsInPlaylistResponses[keyof ReorderSermonsInPlaylistResponses];
 
 export type SermonControllerFindAllData = {
     body?: never;

@@ -13,7 +13,7 @@
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
-  import FileUpload from '$lib/components/FileUpload.svelte';
+  import CoverPicker from '$lib/components/CoverPicker.svelte';
   import Input from '$lib/components/Input.svelte';
   import Textarea from '$lib/components/Textarea.svelte';
 
@@ -133,7 +133,7 @@
     <div class="card-body">
       <Input label="Название" bind:value={title} placeholder="Например: Поклонение" required />
       <Textarea label="Описание" bind:value={description} hint="Необязательно." />
-      <FileUpload label="Обложка" kind="image" accept="image/*" bind:value={artwork} bind:isUploading={artworkUploading} />
+      <CoverPicker label="Обложка" bind:value={artwork} bind:isUploading={artworkUploading} />
     </div>
   </div>
 

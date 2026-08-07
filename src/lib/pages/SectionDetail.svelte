@@ -1,10 +1,13 @@
 <script lang="ts">
   import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
-    sectionControllerRemoveMutation,
+    reorderPlaylistsInSectionMutation,
     sectionControllerFindOneOptions,
+    sectionControllerRemoveMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import type { SectionPlaylist } from '$lib/api/generated/types.gen';
   import { invalidateSection } from '$lib/api/invalidate';
+  import { hasOrderChanged } from '$lib/utils/arrayOrder';
   import { getErrorMessage } from '$lib/utils/errors';
   import {
     ITEMS_SIZE_LABELS,
@@ -14,10 +17,12 @@
   import { navigate } from '$lib/router/router.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import Button from '$lib/components/Button.svelte';
+  import DndList from '$lib/components/DndList.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Modal from '$lib/components/Modal.svelte';
+  import Toast from '$lib/components/Toast.svelte';
 
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
@@ -30,6 +35,25 @@
   let isDeleteOpen = $state(false);
   let deleteError = $state('');
 
+  // Local state shadows the section's playlists so reordering can be optimistic.
+  let localPlaylists = $state<SectionPlaylist[]>([]);
+  // The order captured before the current drag — the fallback on failure.
+  let playlistsSnapshot = $state<SectionPlaylist[]>([]);
+  // While dragging, the query result must not overwrite the in-flight order.
+  let isDragging = $state(false);
+  let reorderError = $state('');
+  // The last query result adopted into local state. Adopting only on a new
+  // reference prevents a stale refetch from flashing the list back to the
+  // pre-drag order right after a successful reorder.
+  let syncedPlaylists: SectionPlaylist[] | undefined;
+
+  $effect(() => {
+    const fresh = sectionQuery.data?.playlists;
+    if (isDragging || fresh === syncedPlaylists) return;
+    syncedPlaylists = fresh;
+    localPlaylists = fresh ?? [];
+  });
+
   const deleteMutation = createMutation(() => ({
     ...sectionControllerRemoveMutation(),
     onSuccess: () => {
@@ -40,6 +64,45 @@
       deleteError = getErrorMessage(error);
     },
   }));
+
+  const reorderPlaylists = createMutation(() => ({
+    ...reorderPlaylistsInSectionMutation(),
+    onSuccess: () => {
+      isDragging = false;
+      invalidateSection(queryClient, id);
+    },
+    onError: (error) => {
+      isDragging = false;
+      localPlaylists = playlistsSnapshot;
+      reorderError = getErrorMessage(error);
+    },
+  }));
+
+  // Fires on every consider (live feedback) and once on finalize (persist).
+  function handleReorder(newOrder: SectionPlaylist[], isFinalize: boolean): void {
+    if (!isDragging) {
+      isDragging = true;
+      playlistsSnapshot = [...localPlaylists];
+    }
+    if (isFinalize && newOrder.length !== playlistsSnapshot.length) {
+      // The drag never confirmed a drop position (e.g. an instant flick), so
+      // the finalize array is missing the dragged item. Restore the pre-drag
+      // order instead of sending a truncated list to the server.
+      localPlaylists = playlistsSnapshot;
+      isDragging = false;
+      return;
+    }
+    localPlaylists = newOrder;
+    if (!isFinalize) return;
+    if (hasOrderChanged(playlistsSnapshot, newOrder)) {
+      reorderPlaylists.mutate({
+        body: { playlistIds: newOrder.map((playlist) => playlist.id) },
+        path: { id },
+      });
+    } else {
+      isDragging = false;
+    }
+  }
 
   function openPlaylist(playlistId: string): void {
     navigate(`/playlists/${playlistId}`);
@@ -106,10 +169,10 @@
     </div>
 
     <div class="detail-section">
-      <h3>Плейлисты раздела ({section.playlists?.length ?? 0})</h3>
-      {#if section.playlists && section.playlists.length > 0}
-        <div class="list-grid">
-          {#each section.playlists as playlist}
+      <h3>Плейлисты раздела ({localPlaylists.length})</h3>
+      {#if localPlaylists.length > 0}
+        <DndList class="list-grid" items={localPlaylists} onReorder={handleReorder}>
+          {#snippet children(playlist)}
             <div
               class="card card-hover list-item"
               role="button"
@@ -118,6 +181,7 @@
               onkeydown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault();
+                  event.stopPropagation();
                   openPlaylist(playlist.id);
                 }
               }}
@@ -136,8 +200,8 @@
                 </div>
               </div>
             </div>
-          {/each}
-        </div>
+          {/snippet}
+        </DndList>
       {:else}
         <div class="card">
           <EmptyState icon="♫" title="Плейлистов пока нет" hint="Добавьте плейлисты в этот раздел через редактирование." />
@@ -148,6 +212,10 @@
     <div class="card">
       <EmptyState icon="⚠" title="Раздел не найден" hint="Возможно, он был удалён." />
     </div>
+  {/if}
+
+  {#if reorderError}
+    <Toast message={reorderError} onDismiss={() => (reorderError = '')} />
   {/if}
 </div>
 

@@ -5,11 +5,12 @@
     title?: string;
     open?: boolean;
     onClose?: () => void;
+    class?: string;
     children?: Snippet;
     footer?: Snippet;
   }
 
-  let { title, open = false, onClose, children, footer }: Props = $props();
+  let { title, open = false, onClose, class: className = '', children, footer }: Props = $props();
 
   let dialog: HTMLDivElement | undefined = $state();
   let lastFocused: HTMLElement | null = null;
@@ -83,7 +84,7 @@
       if (event.target === event.currentTarget) onClose?.();
     }}
   >
-    <div class="modal" role="dialog" aria-modal="true" aria-label={title} tabindex="-1" bind:this={dialog}>
+    <div class="modal {className}" role="dialog" aria-modal="true" aria-label={title} tabindex="-1" bind:this={dialog}>
       {#if title}
         <div class="modal-header">
           <h3>{title}</h3>
