@@ -66,7 +66,7 @@ export type SectionPlaylist = {
     artwork: string;
     position: number;
     sections: Array<SectionRef>;
-    sermons: Array<SermonEntity>;
+    sermons: Array<PlaylistSermon>;
 };
 
 export type SermonEntity = {
