@@ -70,6 +70,71 @@ export const zPlaylistSermon = z.strictObject({
     position: z.int()
 });
 
+export const zSectionPlaylist = z.strictObject({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    artwork: z.string(),
+    position: z.int(),
+    sections: z.array(zSectionRef),
+    sermons: z.array(zPlaylistSermon)
+});
+
+export const zSectionEntity = z.strictObject({
+    id: z.string(),
+    title: z.string(),
+    description: z.string().nullish(),
+    position: z.int(),
+    itemsSize: z.enum([
+        'small',
+        'middle',
+        'large',
+        'xLarge'
+    ]),
+    itemsRows: z.number().nullish(),
+    transform: z.enum(['high', 'short']),
+    isDescriptionTitleOnSlideLarge: z.boolean().optional().default(false),
+    whereIsSlideTitleLocated: z.enum([
+        'on',
+        'under',
+        'bothOnAndUnder'
+    ]).optional().default('under'),
+    borderRadius: z.boolean().optional().default(false),
+    playlists: z.array(zSectionPlaylist)
+});
+
+export const zPlaylistEntity = z.strictObject({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    artwork: z.string(),
+    sections: z.array(zSectionEntity),
+    sermons: z.array(zPlaylistSermon)
+});
+
+export const zSermonEntity = z.strictObject({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    textFileUrl: z.string().nullable(),
+    audioUrl: z.string().nullable(),
+    youtubeUrl: z.string().nullable(),
+    artist: z.string(),
+    artwork: z.string(),
+    book: z.string().nullable(),
+    chapter: z.number().nullable(),
+    verse: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullable(),
+    playlists: z.array(zPlaylistEntity)
+});
+
+export const zAllSectionsResponse = z.strictObject({
+    sections: z.array(zSectionEntity),
+    count: z.number()
+});
+
 export const zUpdateSectionDto = z.strictObject({
     title: z.string().optional(),
     description: z.string().optional(),
@@ -100,6 +165,11 @@ export const zCreatePlaylistDto = z.strictObject({
     description: z.string(),
     artwork: z.string(),
     sermonsIds: z.array(z.string()).optional()
+});
+
+export const zAllPlaylistsResponse = z.strictObject({
+    playlists: z.array(zPlaylistEntity),
+    count: z.number()
 });
 
 export const zUpdatePlaylistDto = z.strictObject({
@@ -141,6 +211,12 @@ export const zCreateSermonDto = z.strictObject({
         z.tuple([z.int(), z.int()])
     ]).optional(),
     playlistsIds: z.array(z.string()).optional()
+});
+
+export const zAllSermonsResponse = z.strictObject({
+    sermons: z.array(zSermonEntity),
+    count: z.number().nullable(),
+    nextCursor: z.string().nullable()
 });
 
 export const zUpdateSermonDto = z.strictObject({
@@ -191,82 +267,6 @@ export const zRefreshResponse = z.strictObject({
     refreshToken: z.string()
 });
 
-export const zSectionEntity = z.strictObject({
-    id: z.string(),
-    title: z.string(),
-    description: z.string().nullish(),
-    position: z.int(),
-    itemsSize: z.enum([
-        'small',
-        'middle',
-        'large',
-        'xLarge'
-    ]),
-    itemsRows: z.number().nullish(),
-    transform: z.enum(['high', 'short']),
-    isDescriptionTitleOnSlideLarge: z.boolean().optional().default(false),
-    whereIsSlideTitleLocated: z.enum([
-        'on',
-        'under',
-        'bothOnAndUnder'
-    ]).optional().default('under'),
-    borderRadius: z.boolean().optional().default(false),
-    playlists: z.array(z.lazy((): any => zSectionPlaylist))
-});
-
-export const zSectionPlaylist = z.strictObject({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    artwork: z.string(),
-    position: z.int(),
-    sections: z.array(zSectionRef),
-    sermons: z.array(z.lazy((): any => zSermonEntity))
-});
-
-export const zSermonEntity = z.strictObject({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    textFileUrl: z.string().nullable(),
-    audioUrl: z.string().nullable(),
-    youtubeUrl: z.string().nullable(),
-    artist: z.string(),
-    artwork: z.string(),
-    book: z.string().nullable(),
-    chapter: z.number().nullable(),
-    verse: z.union([
-        z.int(),
-        z.tuple([z.int(), z.int()])
-    ]).nullable(),
-    playlists: z.array(z.lazy((): any => zPlaylistEntity))
-});
-
-export const zPlaylistEntity = z.strictObject({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    artwork: z.string(),
-    sections: z.array(zSectionEntity),
-    sermons: z.array(zPlaylistSermon)
-});
-
-export const zAllSectionsResponse = z.strictObject({
-    sections: z.array(zSectionEntity),
-    count: z.number()
-});
-
-export const zAllPlaylistsResponse = z.strictObject({
-    playlists: z.array(zPlaylistEntity),
-    count: z.number()
-});
-
-export const zAllSermonsResponse = z.strictObject({
-    sermons: z.array(zSermonEntity),
-    count: z.number().nullable(),
-    nextCursor: z.string().nullable()
-});
-
 /**
  * List of image files
  */
@@ -304,6 +304,18 @@ export const zAppControllerGetFileResponse = zIFileResponseDto;
  */
 export const zHealthControllerCheckResponse = zHealthResponse;
 
+/**
+ * Список разделов
+ */
+export const zSectionControllerFindAllResponse = zAllSectionsResponse;
+
+export const zSectionControllerCreateBody = zCreateSectionDto;
+
+/**
+ * Раздел создан
+ */
+export const zSectionControllerCreateResponse = zSectionEntity;
+
 export const zReorderSectionsBody = zReorderSectionsDto;
 
 /**
@@ -320,6 +332,26 @@ export const zSectionControllerRemovePath = z.strictObject({
  */
 export const zSectionControllerRemoveResponse = zStatusSectionsResponse;
 
+export const zSectionControllerFindOnePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Раздел
+ */
+export const zSectionControllerFindOneResponse = zSectionEntity;
+
+export const zSectionControllerUpdateBody = zUpdateSectionDto;
+
+export const zSectionControllerUpdatePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Раздел обновлён
+ */
+export const zSectionControllerUpdateResponse = zSectionEntity;
+
 export const zReorderPlaylistsInSectionBody = zReorderPlaylistsDto;
 
 export const zReorderPlaylistsInSectionPath = z.strictObject({
@@ -331,6 +363,18 @@ export const zReorderPlaylistsInSectionPath = z.strictObject({
  */
 export const zReorderPlaylistsInSectionResponse = zStatusSectionsResponse;
 
+/**
+ * Список плейлистов
+ */
+export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
+
+export const zPlaylistControllerCreateBody = zCreatePlaylistDto;
+
+/**
+ * Плейлист создан
+ */
+export const zPlaylistControllerCreateResponse = zPlaylistEntity;
+
 export const zPlaylistControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
@@ -339,6 +383,26 @@ export const zPlaylistControllerRemovePath = z.strictObject({
  * Плейлист удалён
  */
 export const zPlaylistControllerRemoveResponse = zStatusPlaylistResponse;
+
+export const zPlaylistControllerFindOnePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Плейлист
+ */
+export const zPlaylistControllerFindOneResponse = zPlaylistEntity;
+
+export const zPlaylistControllerUpdateBody = zUpdatePlaylistDto;
+
+export const zPlaylistControllerUpdatePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Плейлист обновлён
+ */
+export const zPlaylistControllerUpdateResponse = zPlaylistEntity;
 
 export const zReorderSermonsInPlaylistBody = zReorderSermonsDto;
 
@@ -350,6 +414,23 @@ export const zReorderSermonsInPlaylistPath = z.strictObject({
  * Порядок проповедей в плейлисте обновлён
  */
 export const zReorderSermonsInPlaylistResponse = zStatusPlaylistResponse;
+
+export const zSermonControllerFindAllQuery = z.strictObject({
+    take: z.int().gte(1).lte(100).optional(),
+    cursor: z.uuid().optional()
+});
+
+/**
+ * Список проповедей с количеством
+ */
+export const zSermonControllerFindAllResponse = zAllSermonsResponse;
+
+export const zSermonControllerCreateBody = zCreateSermonDto;
+
+/**
+ * Проповедь создана
+ */
+export const zSermonControllerCreateResponse = zSermonEntity;
 
 export const zSermonControllerGetStreamUrlPath = z.strictObject({
     id: z.uuid()
@@ -368,6 +449,15 @@ export const zSermonControllerRemovePath = z.strictObject({
  * Проповедь удалена
  */
 export const zSermonControllerRemoveResponse = zStatusSermonResponse;
+
+export const zSermonControllerFindOnePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Проповедь
+ */
+export const zSermonControllerFindOneResponse = zSermonEntity;
 
 export const zSermonControllerUpdateBody = zUpdateSermonDto;
 
@@ -398,93 +488,3 @@ export const zAuthControllerRefreshResponse = zRefreshResponse;
  * Профиль пользователя
  */
 export const zAuthControllerGetProfileResponse = zUserResponse;
-
-/**
- * Список разделов
- */
-export const zSectionControllerFindAllResponse = zAllSectionsResponse;
-
-export const zSectionControllerCreateBody = zCreateSectionDto;
-
-/**
- * Раздел создан
- */
-export const zSectionControllerCreateResponse = zSectionEntity;
-
-export const zSectionControllerFindOnePath = z.strictObject({
-    id: z.uuid()
-});
-
-/**
- * Раздел
- */
-export const zSectionControllerFindOneResponse = zSectionEntity;
-
-export const zSectionControllerUpdateBody = zUpdateSectionDto;
-
-export const zSectionControllerUpdatePath = z.strictObject({
-    id: z.uuid()
-});
-
-/**
- * Раздел обновлён
- */
-export const zSectionControllerUpdateResponse = zSectionEntity;
-
-/**
- * Список плейлистов
- */
-export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
-
-export const zPlaylistControllerCreateBody = zCreatePlaylistDto;
-
-/**
- * Плейлист создан
- */
-export const zPlaylistControllerCreateResponse = zPlaylistEntity;
-
-export const zPlaylistControllerFindOnePath = z.strictObject({
-    id: z.uuid()
-});
-
-/**
- * Плейлист
- */
-export const zPlaylistControllerFindOneResponse = zPlaylistEntity;
-
-export const zPlaylistControllerUpdateBody = zUpdatePlaylistDto;
-
-export const zPlaylistControllerUpdatePath = z.strictObject({
-    id: z.uuid()
-});
-
-/**
- * Плейлист обновлён
- */
-export const zPlaylistControllerUpdateResponse = zPlaylistEntity;
-
-export const zSermonControllerFindAllQuery = z.strictObject({
-    take: z.int().gte(1).lte(100).optional(),
-    cursor: z.uuid().optional()
-});
-
-/**
- * Список проповедей с количеством
- */
-export const zSermonControllerFindAllResponse = zAllSermonsResponse;
-
-export const zSermonControllerCreateBody = zCreateSermonDto;
-
-/**
- * Проповедь создана
- */
-export const zSermonControllerCreateResponse = zSermonEntity;
-
-export const zSermonControllerFindOnePath = z.strictObject({
-    id: z.uuid()
-});
-
-/**
- * Проповедь
- */
-export const zSermonControllerFindOneResponse = zSermonEntity;

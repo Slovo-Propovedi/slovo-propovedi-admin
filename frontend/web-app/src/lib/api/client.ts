@@ -5,14 +5,15 @@
 // access token: on 401 it refreshes the pair once, retries the original
 // request, and only then gives up and announces the expired session.
 //
-// The base URL is relative (`/api`) so the same bundle works in development
-// (Vite proxy) and production (nginx reverse proxy) without baked-in hosts.
-// Set VITE_API_BASE to override it for custom deployments.
+// Production talks directly to the API domain (`https://api.slovo-propovedi.ru`).
+// Local development uses the Vite proxy via `VITE_API_BASE=/api` (see
+// .env.development and vite.config.ts). Set VITE_API_BASE to override the
+// default for custom deployments.
 import { client } from './generated/client.gen';
 import type { Client, RequestOptions } from './generated/client/types.gen';
 import { authControllerRefresh } from './generated/sdk.gen';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? '/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'https://api.slovo-propovedi.ru';
 
 const TOKENS_KEY = 'slovo_admin_tokens';
 
