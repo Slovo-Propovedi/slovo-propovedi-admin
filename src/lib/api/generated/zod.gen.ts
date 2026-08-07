@@ -2,20 +2,20 @@
 
 import * as z from 'zod';
 
-export const zHealthResponse = z.object({
+export const zHealthResponse = z.strictObject({
     status: z.string()
 });
 
-export const zStreamUrlResponse = z.object({
+export const zStreamUrlResponse = z.strictObject({
     url: z.string()
 });
 
-export const zIFileResponseDto = z.object({
+export const zIFileResponseDto = z.strictObject({
     fileName: z.string(),
     fileUrl: z.string()
 });
 
-export const zCreateSectionDto = z.object({
+export const zCreateSectionDto = z.strictObject({
     title: z.string(),
     description: z.string().optional(),
     itemsSize: z.enum([
@@ -35,12 +35,12 @@ export const zCreateSectionDto = z.object({
     borderRadius: z.boolean().optional()
 });
 
-export const zSectionRef = z.object({
+export const zSectionRef = z.strictObject({
     id: z.string(),
     title: z.string()
 });
 
-export const zUpdateSectionDto = z.object({
+export const zUpdateSectionDto = z.strictObject({
     title: z.string().optional(),
     description: z.string().optional(),
     playlistsIds: z.array(z.string()).optional(),
@@ -61,18 +61,18 @@ export const zUpdateSectionDto = z.object({
     borderRadius: z.boolean().optional()
 });
 
-export const zStatusSectionsResponse = z.object({
+export const zStatusSectionsResponse = z.strictObject({
     status: z.string()
 });
 
-export const zCreatePlaylistDto = z.object({
+export const zCreatePlaylistDto = z.strictObject({
     title: z.string(),
     description: z.string(),
     artwork: z.string(),
     sermonsIds: z.array(z.string()).optional()
 });
 
-export const zUpdatePlaylistDto = z.object({
+export const zUpdatePlaylistDto = z.strictObject({
     title: z.string().optional(),
     description: z.string().optional(),
     artwork: z.string().optional(),
@@ -80,11 +80,11 @@ export const zUpdatePlaylistDto = z.object({
     sectionsIds: z.array(z.string()).optional()
 });
 
-export const zStatusPlaylistResponse = z.object({
+export const zStatusPlaylistResponse = z.strictObject({
     status: z.string()
 });
 
-export const zCreateSermonDto = z.object({
+export const zCreateSermonDto = z.strictObject({
     title: z.string(),
     description: z.string(),
     textFileUrl: z.string().optional(),
@@ -101,7 +101,7 @@ export const zCreateSermonDto = z.object({
     playlistsIds: z.array(z.string()).optional()
 });
 
-export const zUpdateSermonDto = z.object({
+export const zUpdateSermonDto = z.strictObject({
     title: z.string().optional(),
     description: z.string().optional(),
     textFileUrl: z.string().optional(),
@@ -118,38 +118,38 @@ export const zUpdateSermonDto = z.object({
     playlistsIds: z.array(z.string()).optional()
 });
 
-export const zStatusSermonResponse = z.object({
+export const zStatusSermonResponse = z.strictObject({
     status: z.string()
 });
 
-export const zSignInRequestDto = z.object({
+export const zSignInRequestDto = z.strictObject({
     username: z.string(),
     password: z.string()
 });
 
-export const zUserResponse = z.object({
+export const zUserResponse = z.strictObject({
     id: z.string(),
     name: z.string(),
     username: z.string(),
     email: z.string()
 });
 
-export const zAuthResponse = z.object({
+export const zAuthResponse = z.strictObject({
     accessToken: z.string(),
     refreshToken: z.string(),
     user: zUserResponse
 });
 
-export const zRefreshTokenDto = z.object({
+export const zRefreshTokenDto = z.strictObject({
     refreshToken: z.string()
 });
 
-export const zRefreshResponse = z.object({
+export const zRefreshResponse = z.strictObject({
     accessToken: z.string(),
     refreshToken: z.string()
 });
 
-export const zSectionEntity = z.object({
+export const zSectionEntity = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string().nullish(),
@@ -171,7 +171,7 @@ export const zSectionEntity = z.object({
     playlists: z.array(z.lazy((): any => zSectionPlaylist))
 });
 
-export const zSectionPlaylist = z.object({
+export const zSectionPlaylist = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string(),
@@ -180,7 +180,7 @@ export const zSectionPlaylist = z.object({
     sermons: z.array(z.lazy((): any => zSermonEntity))
 });
 
-export const zSermonEntity = z.object({
+export const zSermonEntity = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string(),
@@ -198,7 +198,7 @@ export const zSermonEntity = z.object({
     playlists: z.array(z.lazy((): any => zPlaylistEntity))
 });
 
-export const zPlaylistEntity = z.object({
+export const zPlaylistEntity = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string(),
@@ -207,23 +207,23 @@ export const zPlaylistEntity = z.object({
     sermons: z.array(zSermonEntity)
 });
 
-export const zAllSectionsResponse = z.object({
+export const zAllSectionsResponse = z.strictObject({
     sections: z.array(zSectionEntity),
     count: z.number()
 });
 
-export const zAllPlaylistsResponse = z.object({
+export const zAllPlaylistsResponse = z.strictObject({
     playlists: z.array(zPlaylistEntity),
     count: z.number()
 });
 
-export const zAllSermonsResponse = z.object({
+export const zAllSermonsResponse = z.strictObject({
     sermons: z.array(zSermonEntity),
     count: z.number().nullable(),
     nextCursor: z.string().nullable()
 });
 
-export const zAppControllerUploadFileBody = z.object({
+export const zAppControllerUploadFileBody = z.strictObject({
     file: z.instanceof(File).optional()
 });
 
@@ -232,7 +232,7 @@ export const zAppControllerUploadFileBody = z.object({
  */
 export const zAppControllerUploadFileResponse = zIFileResponseDto;
 
-export const zAppControllerGetStreamUrlPath = z.object({
+export const zAppControllerGetStreamUrlPath = z.strictObject({
     fileName: z.string()
 });
 
@@ -241,7 +241,7 @@ export const zAppControllerGetStreamUrlPath = z.object({
  */
 export const zAppControllerGetStreamUrlResponse = zStreamUrlResponse;
 
-export const zAppControllerGetFilePath = z.object({
+export const zAppControllerGetFilePath = z.strictObject({
     fileName: z.string()
 });
 
@@ -255,7 +255,7 @@ export const zAppControllerGetFileResponse = zIFileResponseDto;
  */
 export const zHealthControllerCheckResponse = zHealthResponse;
 
-export const zSectionControllerRemovePath = z.object({
+export const zSectionControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -264,7 +264,7 @@ export const zSectionControllerRemovePath = z.object({
  */
 export const zSectionControllerRemoveResponse = zStatusSectionsResponse;
 
-export const zPlaylistControllerRemovePath = z.object({
+export const zPlaylistControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -273,7 +273,7 @@ export const zPlaylistControllerRemovePath = z.object({
  */
 export const zPlaylistControllerRemoveResponse = zStatusPlaylistResponse;
 
-export const zSermonControllerGetStreamUrlPath = z.object({
+export const zSermonControllerGetStreamUrlPath = z.strictObject({
     id: z.uuid()
 });
 
@@ -282,7 +282,7 @@ export const zSermonControllerGetStreamUrlPath = z.object({
  */
 export const zSermonControllerGetStreamUrlResponse = zStreamUrlResponse;
 
-export const zSermonControllerRemovePath = z.object({
+export const zSermonControllerRemovePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -293,7 +293,7 @@ export const zSermonControllerRemoveResponse = zStatusSermonResponse;
 
 export const zSermonControllerUpdateBody = zUpdateSermonDto;
 
-export const zSermonControllerUpdatePath = z.object({
+export const zSermonControllerUpdatePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -333,7 +333,7 @@ export const zSectionControllerCreateBody = zCreateSectionDto;
  */
 export const zSectionControllerCreateResponse = zSectionEntity;
 
-export const zSectionControllerFindOnePath = z.object({
+export const zSectionControllerFindOnePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -344,7 +344,7 @@ export const zSectionControllerFindOneResponse = zSectionEntity;
 
 export const zSectionControllerUpdateBody = zUpdateSectionDto;
 
-export const zSectionControllerUpdatePath = z.object({
+export const zSectionControllerUpdatePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -365,7 +365,7 @@ export const zPlaylistControllerCreateBody = zCreatePlaylistDto;
  */
 export const zPlaylistControllerCreateResponse = zPlaylistEntity;
 
-export const zPlaylistControllerFindOnePath = z.object({
+export const zPlaylistControllerFindOnePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -376,7 +376,7 @@ export const zPlaylistControllerFindOneResponse = zPlaylistEntity;
 
 export const zPlaylistControllerUpdateBody = zUpdatePlaylistDto;
 
-export const zPlaylistControllerUpdatePath = z.object({
+export const zPlaylistControllerUpdatePath = z.strictObject({
     id: z.uuid()
 });
 
@@ -385,7 +385,7 @@ export const zPlaylistControllerUpdatePath = z.object({
  */
 export const zPlaylistControllerUpdateResponse = zPlaylistEntity;
 
-export const zSermonControllerFindAllQuery = z.object({
+export const zSermonControllerFindAllQuery = z.strictObject({
     take: z.int().gte(1).lte(100).optional(),
     cursor: z.uuid().optional()
 });
@@ -402,7 +402,7 @@ export const zSermonControllerCreateBody = zCreateSermonDto;
  */
 export const zSermonControllerCreateResponse = zSermonEntity;
 
-export const zSermonControllerFindOnePath = z.object({
+export const zSermonControllerFindOnePath = z.strictObject({
     id: z.uuid()
 });
 
