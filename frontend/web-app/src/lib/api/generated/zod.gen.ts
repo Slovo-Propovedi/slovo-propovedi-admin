@@ -71,7 +71,11 @@ export const zPlaylistSermon = z.strictObject({
         z.int(),
         z.tuple([z.int(), z.int()])
     ]).nullish(),
-    position: z.int()
+    position: z.int(),
+    playlists: z.array(z.strictObject({
+        id: z.string(),
+        title: z.string()
+    }))
 });
 
 export const zSectionPlaylist = z.strictObject({

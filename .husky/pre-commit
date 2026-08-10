@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+# Block commits when TypeScript type checking fails.
+# Runs both the frontend (svelte-check) and backend (tsc --noEmit) checks;
+# a non-zero exit from either aborts the commit.
+
+set -e
+
+echo "Type-checking frontend (svelte-check)..."
+(
+  cd frontend/web-app
+  npm run check
+)
+
+echo "Type-checking backend (tsc --noEmit)..."
+(
+  cd backend
+  npx tsc --noEmit
+)
+
+echo "Type checks passed."
