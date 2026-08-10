@@ -38,9 +38,9 @@ export const getFiles = <ThrowOnError extends boolean = false>(options?: Options
 });
 
 /**
- * Загрузить файл (аудио, видео, изображение и др.)
+ * Загрузить файл (изображение, аудио MP3, PDF, FB2)
  *
- * Файл сохраняется в MinIO
+ * Файл сохраняется в MinIO. Допустимые форматы: JPEG, PNG, WebP (изображения), MP3 (аудио), PDF, FB2 (документы).
  */
 export const appControllerUploadFile = <ThrowOnError extends boolean = false>(options: Options<AppControllerUploadFileData, ThrowOnError>): RequestResult<AppControllerUploadFileResponses, unknown, ThrowOnError> => (options.client ?? client).post<AppControllerUploadFileResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,

@@ -34,7 +34,7 @@ export type CreateSectionDto = {
     description?: string;
     itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
     itemsRows?: number;
-    transform: 'high' | 'short';
+    transform: 'high' | 'middle' | 'short';
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
     borderRadius?: boolean;
@@ -47,7 +47,7 @@ export type SectionEntity = {
     position: number;
     itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
     itemsRows?: number | null;
-    transform: 'high' | 'short';
+    transform: 'high' | 'middle' | 'short';
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
     borderRadius?: boolean;
@@ -125,7 +125,7 @@ export type UpdateSectionDto = {
     playlistsIds?: Array<string>;
     itemsSize?: 'small' | 'middle' | 'large' | 'xLarge';
     itemsRows?: number;
-    transform?: 'high' | 'short';
+    transform?: 'high' | 'middle' | 'short';
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
     borderRadius?: boolean;
@@ -266,6 +266,9 @@ export type GetFilesResponse = GetFilesResponses[keyof GetFilesResponses];
 
 export type AppControllerUploadFileData = {
     body: {
+        /**
+         * Допустимые форматы — JPEG, PNG, WebP, MP3, PDF, FB2. Другие форматы будут отклонены.
+         */
         file?: Blob | File;
     };
     path?: never;
