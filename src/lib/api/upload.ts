@@ -7,6 +7,10 @@
 //
 // Auth reuses the exact token source the API client's interceptor uses, so
 // uploads stay consistent with every other request.
+//
+// Uploads are guarded by a stall-based timeout instead of a fixed total
+// timeout: the request is aborted only when no progress arrives for
+// UPLOAD_STALL_TIMEOUT_MS.
 import { API_BASE_URL, getAccessToken } from './client';
 
 export interface UploadResult {
@@ -14,7 +18,7 @@ export interface UploadResult {
   fileUrl: string;
 }
 
-const UPLOAD_TIMEOUT_MS = 120_000;
+const UPLOAD_STALL_TIMEOUT_MS = 120_000;
 
 // Parses the server's error body for a human-readable message. Non-JSON or
 // unknown shapes fall through so the caller reports a generic failure.
@@ -68,31 +72,60 @@ export function uploadFileWithProgress(
 
   return new Promise<UploadResult>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    let stallTimer: ReturnType<typeof setTimeout> | undefined;
+    let stallAbort = false;
 
-    const abortFromSignal = (): void => xhr.abort();
+    const stopStallTimer = (): void => {
+      clearTimeout(stallTimer);
+      stallTimer = undefined;
+    };
+
+    // Starts (or restarts) the stall countdown. Any real progress resets it;
+    // firing means no progress arrived for UPLOAD_STALL_TIMEOUT_MS, so the
+    // upload is aborted and onabort rejects with the stall-specific message.
+    const restartStallTimer = (): void => {
+      stopStallTimer();
+      stallTimer = setTimeout(() => {
+        stopStallTimer();
+        stallAbort = true;
+        xhr.abort();
+      }, UPLOAD_STALL_TIMEOUT_MS);
+    };
+
+    const abortFromSignal = (): void => {
+      stopStallTimer();
+      xhr.abort();
+    };
     signal?.addEventListener('abort', abortFromSignal, { once: true });
 
     xhr.open('POST', `${API_BASE_URL}/files`);
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    xhr.timeout = UPLOAD_TIMEOUT_MS;
 
+    let lastLoaded = 0;
     xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) onProgress(event.loaded, event.total);
-    };
-
-    xhr.ontimeout = () => {
-      reject(new Error(`Загрузка превысила лимит времени (${UPLOAD_TIMEOUT_MS / 60_000} мин). Попробуйте ещё раз.`));
+      if (!event.lengthComputable) return;
+      onProgress(event.loaded, event.total);
+      if (event.loaded > lastLoaded) {
+        lastLoaded = event.loaded;
+        restartStallTimer();
+      }
     };
 
     xhr.onerror = () => {
+      stopStallTimer();
       reject(new Error('Ошибка сети при загрузке файла'));
     };
 
     xhr.onabort = () => {
-      reject(new Error('Загрузка отменена'));
+      stopStallTimer();
+      const message = stallAbort
+        ? `Загрузка зависла: нет прогресса в течение ${UPLOAD_STALL_TIMEOUT_MS / 60_000} мин. Попробуйте ещё раз.`
+        : 'Загрузка отменена';
+      reject(new Error(message));
     };
 
     xhr.onload = () => {
+      stopStallTimer();
       const isSuccess = xhr.status >= 200 && xhr.status < 300;
       if (!isSuccess) {
         const message = readServerMessage(xhr.responseText);
@@ -110,6 +143,7 @@ export function uploadFileWithProgress(
 
     const formData = new FormData();
     formData.append('file', file);
+    restartStallTimer();
     xhr.send(formData);
   });
 }
