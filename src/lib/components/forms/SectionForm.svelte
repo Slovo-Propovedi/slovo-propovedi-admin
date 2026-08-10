@@ -74,6 +74,7 @@
 
   const transformOptions = [
     { value: 'high', label: TRANSFORM_LABELS.high },
+    { value: 'middle', label: TRANSFORM_LABELS.middle },
     { value: 'short', label: TRANSFORM_LABELS.short },
   ];
 

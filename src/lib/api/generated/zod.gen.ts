@@ -37,7 +37,11 @@ export const zCreateSectionDto = z.strictObject({
         'xLarge'
     ]),
     itemsRows: z.number().optional(),
-    transform: z.enum(['high', 'short']),
+    transform: z.enum([
+        'high',
+        'middle',
+        'short'
+    ]),
     isDescriptionTitleOnSlideLarge: z.boolean().optional(),
     whereIsSlideTitleLocated: z.enum([
         'on',
@@ -92,7 +96,11 @@ export const zSectionEntity = z.strictObject({
         'xLarge'
     ]),
     itemsRows: z.number().nullish(),
-    transform: z.enum(['high', 'short']),
+    transform: z.enum([
+        'high',
+        'middle',
+        'short'
+    ]),
     isDescriptionTitleOnSlideLarge: z.boolean().optional().default(false),
     whereIsSlideTitleLocated: z.enum([
         'on',
@@ -146,7 +154,11 @@ export const zUpdateSectionDto = z.strictObject({
         'xLarge'
     ]).optional(),
     itemsRows: z.number().optional(),
-    transform: z.enum(['high', 'short']).optional(),
+    transform: z.enum([
+        'high',
+        'middle',
+        'short'
+    ]).optional(),
     isDescriptionTitleOnSlideLarge: z.boolean().optional(),
     whereIsSlideTitleLocated: z.enum([
         'on',

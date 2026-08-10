@@ -13,6 +13,7 @@ export const ITEMS_SIZE_LABELS: Record<NonNullable<CreateSectionDto['itemsSize']
 
 export const TRANSFORM_LABELS: Record<NonNullable<CreateSectionDto['transform']>, string> = {
   high: 'Высокий',
+  middle: 'Средний',
   short: 'Низкий',
 };
 

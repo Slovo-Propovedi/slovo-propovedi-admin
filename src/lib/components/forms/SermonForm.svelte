@@ -183,7 +183,7 @@
     </div>
     <div class="card-body">
       <CoverPicker label="Обложка" bind:value={artwork} bind:isUploading={artworkUploading} />
-      <FileUpload label="Аудио" kind="audio" accept="audio/*" bind:value={audioUrl} hint="MP3 или другой аудиофайл." bind:isUploading={audioUploading} />
+      <FileUpload label="Аудио" kind="audio" accept=".mp3,audio/mpeg" bind:value={audioUrl} hint="Только MP3 формат." bind:isUploading={audioUploading} />
       <Input label="Ссылка на YouTube" bind:value={youtubeUrl} placeholder="https://www.youtube.com/watch?v=…" />
       <FileUpload label="Текст проповеди" kind="any" bind:value={textFileUrl} hint="PDF или текстовый файл." bind:isUploading={textFileUploading} />
     </div>

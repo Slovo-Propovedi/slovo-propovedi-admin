@@ -60,9 +60,9 @@ export const getFilesOptions = (options?: Options<GetFilesData>) => queryOptions
 });
 
 /**
- * Загрузить файл (аудио, видео, изображение и др.)
+ * Загрузить файл (изображение, аудио MP3, PDF, FB2)
  *
- * Файл сохраняется в MinIO
+ * Файл сохраняется в MinIO. Допустимые форматы: JPEG, PNG, WebP (изображения), MP3 (аудио), PDF, FB2 (документы).
  */
 export const appControllerUploadFileMutation = (options?: Partial<Options<AppControllerUploadFileData>>): MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> => {
     const mutationOptions: MutationOptions<AppControllerUploadFileResponse, DefaultError, Options<AppControllerUploadFileData>> = {

@@ -27,6 +27,12 @@
   let controller: AbortController | null = null;
   let input: HTMLInputElement;
 
+  // Audio uploads are restricted to MP3: reject any other file before the
+  // request is even created.
+  function hasMp3Extension(fileName: string): boolean {
+    return fileName.toLowerCase().endsWith('.mp3');
+  }
+
   async function handleFile(event: Event): Promise<void> {
     // Never fire the request while another upload is in flight.
     if (isUploading) return;
@@ -35,6 +41,11 @@
     const file = target.files?.[0];
     target.value = '';
     if (!file) return;
+
+    if (kind === 'audio' && !hasMp3Extension(file.name)) {
+      error = 'Допускается только формат MP3.';
+      return;
+    }
 
     error = '';
     isUploading = true;
