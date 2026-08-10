@@ -103,6 +103,10 @@ export type PlaylistSermon = {
         number
     ] | null;
     position: number;
+    playlists: Array<{
+        id: string;
+        title: string;
+    }>;
 };
 
 export type PlaylistEntity = {
