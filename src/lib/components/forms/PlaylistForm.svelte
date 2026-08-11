@@ -102,7 +102,9 @@
 
     const common = {
       title: trimmed(title),
-      description: trimmed(description) || '',
+      // Nullable fields send `null` when cleared so the backend clears the
+      // column; `undefined` (omitting the key) would be read as "no change".
+      description: trimmed(description) || null,
       artwork: trimmed(artwork),
       // Always send the array: an empty array clears the relations on the
       // backend, while undefined would be interpreted as "no change".
