@@ -5,7 +5,7 @@
     playlistControllerFindAllOptions,
     sectionControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
-  import type { CreateSectionDto, SectionEntity } from '$lib/api/generated';
+  import type { CreateSectionDto, SectionEntity, UpdateSectionDto } from '$lib/api/generated';
   import { invalidateSection } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
   import { fieldText, trimmed } from '$lib/utils/strings';
@@ -131,14 +131,16 @@
     submitError = '';
 
     const rows = Number(itemsRows);
-    const common: CreateSectionDto = {
+    const common = {
       title: trimmed(title),
-      description: trimmed(description) || undefined,
+      // Nullable fields send `null` when cleared so the backend clears the
+      // column; `undefined` (omitting the key) would be read as "no change".
+      description: trimmed(description) || null,
       itemsSize: itemsSize as CreateSectionDto['itemsSize'],
-      itemsRows: fieldText(itemsRows) === '' || Number.isNaN(rows) ? undefined : rows,
+      itemsRows: fieldText(itemsRows) === '' || Number.isNaN(rows) ? null : rows,
       transform: transform as CreateSectionDto['transform'],
       isDescriptionTitleOnSlideLarge,
-      whereIsSlideTitleLocated: whereIsSlideTitleLocated as CreateSectionDto['whereIsSlideTitleLocated'],
+      whereIsSlideTitleLocated: whereIsSlideTitleLocated as UpdateSectionDto['whereIsSlideTitleLocated'],
       borderRadius,
     };
 

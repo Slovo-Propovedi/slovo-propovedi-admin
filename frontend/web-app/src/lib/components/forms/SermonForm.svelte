@@ -128,15 +128,17 @@
 
     const body = {
       title: trimmed(title),
-      description: trimmed(description),
       artist: trimmed(artist),
       artwork: trimmed(artwork),
-      book: trimmed(book) || undefined,
-      chapter: fieldText(chapter) === '' || Number.isNaN(chapterNumber) ? undefined : chapterNumber,
-      verse: verse ?? undefined,
-      youtubeUrl: trimmed(youtubeUrl) || undefined,
-      audioUrl: trimmed(audioUrl) || undefined,
-      textFileUrl: trimmed(textFileUrl) || undefined,
+      // Nullable fields send `null` when cleared so the backend clears the
+      // column; `undefined` (omitting the key) would be read as "no change".
+      description: trimmed(description) || null,
+      book: trimmed(book) || null,
+      chapter: fieldText(chapter) === '' || Number.isNaN(chapterNumber) ? null : chapterNumber,
+      verse: verse ?? null,
+      youtubeUrl: trimmed(youtubeUrl) || null,
+      audioUrl: trimmed(audioUrl) || null,
+      textFileUrl: trimmed(textFileUrl) || null,
       // Always send the array: an empty array clears the relations on the
       // backend, while null would be interpreted as "no change".
       playlistsIds: selectedPlaylistIds,

@@ -18,8 +18,8 @@ export const zIFileResponseDto = z.strictObject({
 export const zFileMetadataDto = z.strictObject({
     fileName: z.string(),
     fileUrl: z.string(),
-    size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
-    lastModified: z.iso.datetime().nullish()
+    size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
+    lastModified: z.iso.datetime().nullable()
 });
 
 export const zAllFilesResponse = z.strictObject({
@@ -29,14 +29,14 @@ export const zAllFilesResponse = z.strictObject({
 
 export const zCreateSectionDto = z.strictObject({
     title: z.string(),
-    description: z.string().optional(),
+    description: z.string().nullable(),
     itemsSize: z.enum([
         'small',
         'middle',
         'large',
         'xLarge'
     ]),
-    itemsRows: z.number().optional(),
+    itemsRows: z.number().nullable(),
     transform: z.enum([
         'high',
         'middle',
@@ -60,17 +60,17 @@ export const zPlaylistSermon = z.strictObject({
     id: z.string(),
     title: z.string(),
     description: z.string(),
-    textFileUrl: z.string().nullish(),
-    audioUrl: z.string().nullish(),
-    youtubeUrl: z.string().nullish(),
+    textFileUrl: z.string().nullable(),
+    audioUrl: z.string().nullable(),
+    youtubeUrl: z.string().nullable(),
     artist: z.string(),
     artwork: z.string(),
-    book: z.string().nullish(),
-    chapter: z.int().nullish(),
+    book: z.string().nullable(),
+    chapter: z.int().nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
-    ]).nullish(),
+    ]).nullable(),
     position: z.int(),
     playlists: z.array(z.strictObject({
         id: z.string(),
@@ -91,7 +91,7 @@ export const zSectionPlaylist = z.strictObject({
 export const zSectionEntity = z.strictObject({
     id: z.string(),
     title: z.string(),
-    description: z.string().nullish(),
+    description: z.string().nullable(),
     position: z.int(),
     itemsSize: z.enum([
         'small',
@@ -99,7 +99,7 @@ export const zSectionEntity = z.strictObject({
         'large',
         'xLarge'
     ]),
-    itemsRows: z.number().nullish(),
+    itemsRows: z.number().nullable(),
     transform: z.enum([
         'high',
         'middle',
@@ -148,28 +148,28 @@ export const zAllSectionsResponse = z.strictObject({
 });
 
 export const zUpdateSectionDto = z.strictObject({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    playlistsIds: z.array(z.string()).optional(),
+    title: z.string(),
+    description: z.string().nullable(),
+    playlistsIds: z.array(z.string()),
     itemsSize: z.enum([
         'small',
         'middle',
         'large',
         'xLarge'
-    ]).optional(),
-    itemsRows: z.number().optional(),
+    ]),
+    itemsRows: z.number().nullable(),
     transform: z.enum([
         'high',
         'middle',
         'short'
-    ]).optional(),
-    isDescriptionTitleOnSlideLarge: z.boolean().optional(),
+    ]),
+    isDescriptionTitleOnSlideLarge: z.boolean(),
     whereIsSlideTitleLocated: z.enum([
         'on',
         'under',
         'bothOnAndUnder'
-    ]).optional(),
-    borderRadius: z.boolean().optional()
+    ]),
+    borderRadius: z.boolean()
 });
 
 export const zStatusSectionsResponse = z.strictObject({
@@ -178,7 +178,7 @@ export const zStatusSectionsResponse = z.strictObject({
 
 export const zCreatePlaylistDto = z.strictObject({
     title: z.string(),
-    description: z.string(),
+    description: z.string().nullable(),
     artwork: z.string(),
     sermonsIds: z.array(z.string()).optional()
 });
@@ -189,10 +189,10 @@ export const zAllPlaylistsResponse = z.strictObject({
 });
 
 export const zUpdatePlaylistDto = z.strictObject({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    artwork: z.string().optional(),
-    sermonsIds: z.array(z.string()).optional(),
+    title: z.string(),
+    description: z.string().nullable(),
+    artwork: z.string(),
+    sermonsIds: z.array(z.string()),
     sectionsIds: z.array(z.string()).optional()
 });
 
@@ -214,18 +214,18 @@ export const zReorderPlaylistsDto = z.strictObject({
 
 export const zCreateSermonDto = z.strictObject({
     title: z.string(),
-    description: z.string(),
-    textFileUrl: z.string().optional(),
-    audioUrl: z.string().optional(),
-    youtubeUrl: z.string().optional(),
+    description: z.string().nullable(),
+    textFileUrl: z.string().nullable(),
+    audioUrl: z.string().nullable(),
+    youtubeUrl: z.string().nullable(),
     artist: z.string(),
     artwork: z.string(),
-    book: z.string().nullish(),
-    chapter: z.number().optional(),
+    book: z.string().nullable(),
+    chapter: z.number().nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
-    ]).optional(),
+    ]).nullable(),
     playlistsIds: z.array(z.string()).optional()
 });
 
@@ -236,20 +236,20 @@ export const zAllSermonsResponse = z.strictObject({
 });
 
 export const zUpdateSermonDto = z.strictObject({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    textFileUrl: z.string().optional(),
-    audioUrl: z.string().optional(),
-    youtubeUrl: z.string().optional(),
-    artist: z.string().optional(),
-    artwork: z.string().optional(),
-    book: z.string().nullish(),
-    chapter: z.number().optional(),
+    title: z.string(),
+    description: z.string().nullable(),
+    textFileUrl: z.string().nullable(),
+    audioUrl: z.string().nullable(),
+    youtubeUrl: z.string().nullable(),
+    artist: z.string(),
+    artwork: z.string(),
+    book: z.string().nullable(),
+    chapter: z.number().nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
-    ]).optional(),
-    playlistsIds: z.array(z.string()).optional()
+    ]).nullable(),
+    playlistsIds: z.array(z.string())
 });
 
 export const zStatusSermonResponse = z.strictObject({

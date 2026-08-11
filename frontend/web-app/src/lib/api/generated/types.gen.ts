@@ -20,8 +20,8 @@ export type IFileResponseDto = {
 export type FileMetadataDto = {
     fileName: string;
     fileUrl: string;
-    size?: number | null;
-    lastModified?: string | null;
+    size: number | null;
+    lastModified: string | null;
 };
 
 export type AllFilesResponse = {
@@ -31,9 +31,9 @@ export type AllFilesResponse = {
 
 export type CreateSectionDto = {
     title: string;
-    description?: string;
+    description: string | null;
     itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
-    itemsRows?: number;
+    itemsRows: number | null;
     transform: 'high' | 'middle' | 'short';
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
@@ -43,10 +43,10 @@ export type CreateSectionDto = {
 export type SectionEntity = {
     id: string;
     title: string;
-    description?: string | null;
+    description: string | null;
     position: number;
     itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
-    itemsRows?: number | null;
+    itemsRows: number | null;
     transform: 'high' | 'middle' | 'short';
     isDescriptionTitleOnSlideLarge?: boolean;
     whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
@@ -91,14 +91,14 @@ export type PlaylistSermon = {
     id: string;
     title: string;
     description: string;
-    textFileUrl?: string | null;
-    audioUrl?: string | null;
-    youtubeUrl?: string | null;
+    textFileUrl: string | null;
+    audioUrl: string | null;
+    youtubeUrl: string | null;
     artist: string;
     artwork: string;
-    book?: string | null;
-    chapter?: number | null;
-    verse?: number | [
+    book: string | null;
+    chapter: number | null;
+    verse: number | [
         number,
         number
     ] | null;
@@ -124,15 +124,15 @@ export type AllSectionsResponse = {
 };
 
 export type UpdateSectionDto = {
-    title?: string;
-    description?: string;
-    playlistsIds?: Array<string>;
-    itemsSize?: 'small' | 'middle' | 'large' | 'xLarge';
-    itemsRows?: number;
-    transform?: 'high' | 'middle' | 'short';
-    isDescriptionTitleOnSlideLarge?: boolean;
-    whereIsSlideTitleLocated?: 'on' | 'under' | 'bothOnAndUnder';
-    borderRadius?: boolean;
+    title: string;
+    description: string | null;
+    playlistsIds: Array<string>;
+    itemsSize: 'small' | 'middle' | 'large' | 'xLarge';
+    itemsRows: number | null;
+    transform: 'high' | 'middle' | 'short';
+    isDescriptionTitleOnSlideLarge: boolean;
+    whereIsSlideTitleLocated: 'on' | 'under' | 'bothOnAndUnder';
+    borderRadius: boolean;
 };
 
 export type StatusSectionsResponse = {
@@ -141,7 +141,7 @@ export type StatusSectionsResponse = {
 
 export type CreatePlaylistDto = {
     title: string;
-    description: string;
+    description: string | null;
     artwork: string;
     sermonsIds?: Array<string>;
 };
@@ -152,10 +152,10 @@ export type AllPlaylistsResponse = {
 };
 
 export type UpdatePlaylistDto = {
-    title?: string;
-    description?: string;
-    artwork?: string;
-    sermonsIds?: Array<string>;
+    title: string;
+    description: string | null;
+    artwork: string;
+    sermonsIds: Array<string>;
     sectionsIds?: Array<string>;
 };
 
@@ -177,18 +177,18 @@ export type ReorderPlaylistsDto = {
 
 export type CreateSermonDto = {
     title: string;
-    description: string;
-    textFileUrl?: string;
-    audioUrl?: string;
-    youtubeUrl?: string;
+    description: string | null;
+    textFileUrl: string | null;
+    audioUrl: string | null;
+    youtubeUrl: string | null;
     artist: string;
     artwork: string;
-    book?: string | null;
-    chapter?: number;
-    verse?: number | [
+    book: string | null;
+    chapter: number | null;
+    verse: number | [
         number,
         number
-    ];
+    ] | null;
     playlistsIds?: Array<string>;
 };
 
@@ -199,20 +199,20 @@ export type AllSermonsResponse = {
 };
 
 export type UpdateSermonDto = {
-    title?: string;
-    description?: string;
-    textFileUrl?: string;
-    audioUrl?: string;
-    youtubeUrl?: string;
-    artist?: string;
-    artwork?: string;
-    book?: string | null;
-    chapter?: number;
-    verse?: number | [
+    title: string;
+    description: string | null;
+    textFileUrl: string | null;
+    audioUrl: string | null;
+    youtubeUrl: string | null;
+    artist: string;
+    artwork: string;
+    book: string | null;
+    chapter: number | null;
+    verse: number | [
         number,
         number
-    ];
-    playlistsIds?: Array<string>;
+    ] | null;
+    playlistsIds: Array<string>;
 };
 
 export type StatusSermonResponse = {
