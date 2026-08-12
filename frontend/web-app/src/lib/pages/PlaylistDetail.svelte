@@ -103,6 +103,14 @@
   function openSermon(sermonId: string): void {
     navigate(`/sermons/${sermonId}`);
   }
+
+  // The subtitle under each sermon's title: the preacher, plus the scripture
+  // reference when one exists. formatReference returns '' for a sermon without
+  // a book, so a missing reference degrades to just the preacher.
+  function sermonSubtitle(sermon: PlaylistSermon): string {
+    const reference = formatReference(sermon.book, sermon.chapter, sermon.verse);
+    return reference ? `${sermon.artist} · ${reference}` : sermon.artist;
+  }
 </script>
 
 <div class="page-enter">
@@ -173,9 +181,7 @@
               {/if}
               <div class="list-item-body">
                 <div class="list-item-title">{sermon.title}</div>
-                <div class="list-item-subtitle">
-                  {sermon.artist || formatReference(sermon.book, sermon.chapter, sermon.verse)}
-                </div>
+                <div class="list-item-subtitle">{sermonSubtitle(sermon)}</div>
               </div>
             </div>
           {/snippet}

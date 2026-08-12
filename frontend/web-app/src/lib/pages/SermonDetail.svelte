@@ -67,7 +67,7 @@
         <h1 class="detail-hero-title">{sermon.title}</h1>
         <p class="detail-hero-meta">
           {#if sermon.artist}{sermon.artist}{/if}
-          {#if formatReference(sermon.book, sermon.chapter, sermon.verse) !== '—'}
+          {#if formatReference(sermon.book, sermon.chapter, sermon.verse)}
             · {formatReference(sermon.book, sermon.chapter, sermon.verse)}
           {/if}
         </p>
