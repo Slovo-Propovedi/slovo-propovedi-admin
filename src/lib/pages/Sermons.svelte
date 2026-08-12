@@ -2,13 +2,26 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { sermonControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
+  import { debounce } from '$lib/utils/debounce';
   import { formatReference } from '$lib/utils/labels';
   import Button from '$lib/components/Button.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
+  import Input from '$lib/components/Input.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
+  let searchInput = $state('');
+  let debouncedTerm = $state('');
+
+  // The query refetches only after the user pauses typing; an empty term sends
+  // no `search` param, which keeps the full unfiltered list on first load.
+  const applySearch = debounce((value: string) => {
+    debouncedTerm = value;
+  }, 300);
+
+  const sermonsQuery = createQuery(() =>
+    sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+  );
 
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 
@@ -30,6 +43,13 @@
       </Button>
     </div>
   </div>
+
+  <Input
+    label="Поиск"
+    placeholder="Название, проповедник, книга…"
+    bind:value={searchInput}
+    oninput={() => applySearch(searchInput)}
+  />
 
   {#if sermonsQuery.isPending}
     <div class="loading-inline">

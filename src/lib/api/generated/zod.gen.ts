@@ -433,7 +433,8 @@ export const zReorderSermonsInPlaylistResponse = zStatusPlaylistResponse;
 
 export const zSermonControllerFindAllQuery = z.strictObject({
     take: z.int().gte(1).lte(100).optional(),
-    cursor: z.uuid().optional()
+    cursor: z.uuid().optional(),
+    search: z.string().min(1).optional()
 });
 
 /**

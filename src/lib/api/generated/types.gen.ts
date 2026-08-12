@@ -571,6 +571,10 @@ export type SermonControllerFindAllData = {
     query?: {
         take?: number;
         cursor?: string;
+        /**
+         * Поисковый запрос по названию, проповеднику, книге и описанию
+         */
+        search?: string;
     };
     url: '/sermons';
 };
