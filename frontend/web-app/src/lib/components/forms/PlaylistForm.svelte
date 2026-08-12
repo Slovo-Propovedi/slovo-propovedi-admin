@@ -7,6 +7,7 @@
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { PlaylistEntity } from '$lib/api/generated';
   import { invalidatePlaylist } from '$lib/api/invalidate';
+  import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
   import { formatReference } from '$lib/utils/labels';
   import { trimmed } from '$lib/utils/strings';
@@ -53,7 +54,21 @@
 
   let artworkUploading = $state(false);
 
-  const sermonsQuery = createQuery(() => sermonControllerFindAllOptions());
+  // The sermon picker is search-driven: typing filters the CheckboxList via the
+  // debounced term, while `selectedSermonIds` stays the source of truth and
+  // persists across searches — a chosen sermon remains selected even when the
+  // current search filters it out of view. An empty term sends no `search`
+  // param, so the initial load shows the full unfiltered list.
+  let searchInput = $state('');
+  let debouncedTerm = $state('');
+
+  const applySearch = debounce((value: string) => {
+    debouncedTerm = value;
+  }, 300);
+
+  const sermonsQuery = createQuery(() =>
+    sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+  );
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 
   let sermonOptions = $derived(
@@ -144,6 +159,12 @@
       <h2>Проповеди плейлиста</h2>
     </div>
     <div class="card-body">
+      <Input
+        label="Поиск"
+        placeholder="Название, проповедник, книга…"
+        bind:value={searchInput}
+        oninput={() => applySearch(searchInput)}
+      />
       <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon} />
     </div>
   </div>
