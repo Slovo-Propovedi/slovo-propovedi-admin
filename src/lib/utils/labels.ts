@@ -56,17 +56,21 @@ export function parseVerse(start: unknown, end: unknown): Verse | undefined {
   return [startNumber, endNumber];
 }
 
-// Formats a scripture reference like "Иоанна 3 16" or "Иоанна 3 16–18".
+// Formats a scripture reference like "Иоанна 3:16" or "Иоанна 3:16–18".
+// The colon appears between chapter and verse only when both are present:
+// without a verse the reference degrades to "Иоанна 3", without a chapter to
+// "Иоанна 16", and with no parts at all to an empty string (never a dash).
 export function formatReference(
   book?: string | null,
   chapter?: number | null,
   verse?: Verse | null,
 ): string {
-  const parts: string[] = [];
-  if (book) parts.push(book);
-  if (chapter !== undefined && chapter !== null) parts.push(String(chapter));
-  if (verse !== undefined && verse !== null) parts.push(formatVerse(verse));
-  return parts.join(' ');
+  const chapterText = chapter !== undefined && chapter !== null ? String(chapter) : '';
+  const verseText = verse !== undefined && verse !== null ? formatVerse(verse) : '';
+
+  const reference = [chapterText, verseText].filter(Boolean).join(':');
+
+  return [book ?? '', reference].filter(Boolean).join(' ');
 }
 
 // Checks whether a URL points to an image (used to pick preview rendering).
