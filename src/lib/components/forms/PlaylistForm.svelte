@@ -9,7 +9,7 @@
   import { invalidatePlaylist } from '$lib/api/invalidate';
   import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { formatReference } from '$lib/utils/labels';
+  import { sermonSubtitle } from '$lib/utils/labels';
   import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
@@ -71,11 +71,13 @@
   );
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 
+  // Each row carries the raw sermon in `data` so the item snippet can mirror
+  // the full Sermons list row (cover, title, reference, media badges).
   let sermonOptions = $derived(
     sermons.map((sermon) => ({
       value: sermon.id,
       label: sermon.title,
-      meta: sermon.artist || formatReference(sermon.book, sermon.chapter, sermon.verse),
+      data: sermon,
     })),
   );
 
@@ -165,7 +167,35 @@
         bind:value={searchInput}
         oninput={() => applySearch(searchInput)}
       />
-      <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon} />
+      <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon}>
+        {#snippet item(option)}
+          {#if option.data}
+            {@const sermon = option.data}
+            {#if sermon.artwork}
+              <img class="list-item-cover" src={sermon.artwork} alt="" />
+            {:else}
+              <div class="list-item-cover list-item-cover-placeholder">
+                {sermon.title.slice(0, 1).toUpperCase()}
+              </div>
+            {/if}
+            <div class="list-item-body">
+              <div class="list-item-title">{sermon.title}</div>
+              <div class="list-item-subtitle">{sermonSubtitle(sermon)}</div>
+            </div>
+            <div class="list-item-actions">
+              {#if sermon.audioUrl}
+                <span class="badge badge-gold">аудио</span>
+              {/if}
+              {#if sermon.youtubeUrl}
+                <span class="badge badge-neutral">youtube</span>
+              {/if}
+              {#if sermon.textFileUrl}
+                <span class="badge badge-neutral">текст</span>
+              {/if}
+            </div>
+          {/if}
+        {/snippet}
+      </CheckboxList>
     </div>
   </div>
 

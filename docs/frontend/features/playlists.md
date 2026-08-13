@@ -38,7 +38,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 
 **Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Пустой термин → полная выборка без `search`.
 
-Мета строки: `artist` либо `formatReference(...)` (когда проповедника нет). `toggleSermon` — добавление/удаление id.
+Строки пикера рендерят **полную информацию о проповеди** через `item`-snippet `CheckboxList`: обложка (`sermon.artwork`, иначе плейсхолдер с первой буквой), название, подзаголовок «Проповедник · Книга глава:стихи» (`artist` + `formatReference(book, chapter, verse)`; без книги — только проповедник), бейджи медиа (аудио/youtube/текст по наличию URL). В `options` каждая строка несёт `{ value, label, data: sermon }` — `data` отдаёт сырую `SermonEntity` в snippet. `toggleSermon` — добавление/удаление id.
 
 Мутации: `playlistControllerCreateMutation` / `playlistControllerUpdateMutation`. Edit-режим **намеренно не шлёт `sectionsIds`** (форма ими не управляет). `onSuccess` → `invalidatePlaylist(queryClient[, id])` → `navigate('/playlists' | /playlists/:id)`.
 

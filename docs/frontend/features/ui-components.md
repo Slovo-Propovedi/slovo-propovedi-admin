@@ -13,7 +13,9 @@
 | `Textarea` | `Textarea.svelte` | `label`, `hint`, `error`, `value`, `id` | Многострочный ввод | все формы |
 | `Select` | `Select.svelte` | `label`, `hint`, `error`, `options[{value,label}]`, `value` | Выпадающий список | `SectionForm` |
 | `Button` | `Button.svelte` | `variant` ('primary'/'ghost'/'danger'), `size` ('sm'/'md'/'lg'), `loading`, `block`, children | Кнопка со встроенным спиннером | почти все страницы |
-| `CheckboxList` | `CheckboxList.svelte` | `options[{value,label,meta}]`, `selected[]`, `onToggle` | Группа чекбоксов | `SermonForm`, `SectionForm`, `PlaylistForm` |
+| `CheckboxList` | `CheckboxList.svelte` | `options[{value,label,meta?,data?}]`, `selected[]`, `onToggle`, `item?` (snippet) | Группа чекбоксов | `SermonForm`, `SectionForm`, `PlaylistForm` |
+
+> `CheckboxList` — generic (`T`), опции несут опциональный `data?: T` (сырой доменный объект). Опциональный `item?: Snippet<[CheckboxOption<T>]>` рендерит контент строки вместо дефолтных label/meta — обёртка `<label class="checkbox-option">` + чекбокс остаются, переключение работает и с rich-строкой. Без `item` рендер идентичен прежнему (совместимо со старыми вызовами). Пример: `PlaylistForm` рендерит полную карточку проповеди (обложка, «Проповедник · Книга глава:стихи», бейджи медиа) — см. [playlists.md](./playlists.md).
 | `Modal` | `Modal.svelte` | `title`, `open`, `onClose`, children, footer | Диалог: focus trap, Escape, клик по подложке | delete-confirm (3 детали), `ImageLibraryModal` |
 | `Toast` | `Toast.svelte` | `message`, `onDismiss` | Всплывающая ошибка (снизу справа, авто-dismiss 3 с) | `Sections`, `SectionDetail`, `PlaylistDetail` |
 | `LoadingSpinner` | `LoadingSpinner.svelte` | `large`, + attrs | Инлайн-спиннер | широко |

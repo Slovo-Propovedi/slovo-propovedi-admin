@@ -55,7 +55,7 @@
 ## PlaylistForm (общая форма)
 
 - **Пропсы:** `{ mode: 'create'|'edit'; id?; initial?: PlaylistEntity }`.
-- **Поля:** название, описание, обложка (`CoverPicker`, `bind:isUploading`). Блок «Проповеди плейлиста» — **поисковый** `CheckboxList`: `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `sermonControllerFindAllOptions({ query: { search } })` (фильтрация на сервере); `selectedSermonIds` — источник истины и **переживает поиск** (выбранные остаются отмеченными даже когда текущий поиск скрывает их). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог.
+- **Поля:** название, описание, обложка (`CoverPicker`, `bind:isUploading`). Блок «Проповеди плейлиста» — **поисковый** `CheckboxList`: `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `sermonControllerFindAllOptions({ query: { search } })` (фильтрация на сервере); `selectedSermonIds` — источник истины и **переживает поиск** (выбранные остаются отмеченными даже когда текущий поиск скрывает их). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Строки пикера показывают **полную информацию о проповеди** (как на странице списка проповедей): обложка или плейсхолдер с первой буквой, название, «Проповедник · Книга глава:стихи», бейджи медиа (аудио/youtube/текст).
 - **Мутации:** `playlistControllerCreateMutation` / `playlistControllerUpdateMutation`. В edit `sectionsIds` намеренно не шлётся (формой не управляется); `sermonsIds` всегда шлётся (bulk replace, пустой массив очищает).
 - **Валидация:** без клиентского zod — HTML `required` + backend `strictObject`. Nullable-поля шлют `null` при очистке против `undefined` («не трогать»).
 - **Submit** заблокирован, пока идёт загрузка обложки (`someUploadInProgress`).
