@@ -2,6 +2,11 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.1.1] - 2026-08-13
+
+### Bug Fixes
+- resolve container-name race in frontend deploy (drop --rm, force-remove in ExecStartPre)
+
 ## [0.1.0] - 2026-08-13
 
 ### Features
