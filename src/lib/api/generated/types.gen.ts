@@ -237,6 +237,23 @@ export type UserResponse = {
     email: string;
 };
 
+export type CreateUserRequest = {
+    name: string;
+    email: string;
+    username: string;
+    password: string;
+};
+
+export type UpdateUserRequest = {
+    name?: string;
+    email?: string;
+    username?: string;
+};
+
+export type ChangePasswordRequest = {
+    password: string;
+};
+
 export type AuthResponse = {
     accessToken: string;
     refreshToken: string;
@@ -723,3 +740,107 @@ export type AuthControllerGetProfileResponses = {
 };
 
 export type AuthControllerGetProfileResponse = AuthControllerGetProfileResponses[keyof AuthControllerGetProfileResponses];
+
+export type UsersControllerFindAllData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/users';
+};
+
+export type UsersControllerFindAllResponses = {
+    /**
+     * Список пользователей
+     */
+    200: Array<UserResponse>;
+};
+
+export type UsersControllerFindAllResponse = UsersControllerFindAllResponses[keyof UsersControllerFindAllResponses];
+
+export type UsersControllerCreateData = {
+    body: CreateUserRequest;
+    path?: never;
+    query?: never;
+    url: '/users';
+};
+
+export type UsersControllerCreateResponses = {
+    /**
+     * Пользователь создан
+     */
+    201: UserResponse;
+};
+
+export type UsersControllerCreateResponse = UsersControllerCreateResponses[keyof UsersControllerCreateResponses];
+
+export type UsersControllerRemoveData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/users/{id}';
+};
+
+export type UsersControllerRemoveResponses = {
+    /**
+     * Пользователь удалён
+     */
+    204: void;
+};
+
+export type UsersControllerRemoveResponse = UsersControllerRemoveResponses[keyof UsersControllerRemoveResponses];
+
+export type UsersControllerFindOneData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/users/{id}';
+};
+
+export type UsersControllerFindOneResponses = {
+    /**
+     * Пользователь
+     */
+    200: UserResponse;
+};
+
+export type UsersControllerFindOneResponse = UsersControllerFindOneResponses[keyof UsersControllerFindOneResponses];
+
+export type UsersControllerUpdateData = {
+    body: UpdateUserRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/users/{id}';
+};
+
+export type UsersControllerUpdateResponses = {
+    /**
+     * Пользователь обновлён
+     */
+    200: UserResponse;
+};
+
+export type UsersControllerUpdateResponse = UsersControllerUpdateResponses[keyof UsersControllerUpdateResponses];
+
+export type UsersControllerChangePasswordData = {
+    body: ChangePasswordRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/users/{id}/password';
+};
+
+export type UsersControllerChangePasswordResponses = {
+    /**
+     * Пароль изменён
+     */
+    204: void;
+};
+
+export type UsersControllerChangePasswordResponse = UsersControllerChangePasswordResponses[keyof UsersControllerChangePasswordResponses];

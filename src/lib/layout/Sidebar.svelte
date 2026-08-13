@@ -12,6 +12,7 @@
     { label: 'Плейлисты', path: '/playlists', icon: 'playlists' },
     { label: 'Проповеди', path: '/sermons', icon: 'sermons' },
     { label: 'Загрузить проповедь', path: '/sermons/upload', icon: 'upload' },
+    { label: 'Пользователи', path: '/users', icon: 'users' },
   ] as const;
 
   let activePath = $derived(route.path);

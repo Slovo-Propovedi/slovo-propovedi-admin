@@ -4,8 +4,8 @@ import * as z from 'zod';
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponses, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponses, AppControllerUploadFileData, AppControllerUploadFileResponses, AuthControllerGetProfileData, AuthControllerGetProfileResponses, AuthControllerRefreshData, AuthControllerRefreshResponses, AuthControllerSignInData, AuthControllerSignInResponses, GetFilesData, GetFilesResponses, HealthControllerCheckData, HealthControllerCheckResponses, PlaylistControllerCreateData, PlaylistControllerCreateResponses, PlaylistControllerFindAllData, PlaylistControllerFindAllResponses, PlaylistControllerFindOneData, PlaylistControllerFindOneResponses, PlaylistControllerRemoveData, PlaylistControllerRemoveResponses, PlaylistControllerUpdateData, PlaylistControllerUpdateResponses, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponses, ReorderSectionsData, ReorderSectionsResponses, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponses, SectionControllerCreateData, SectionControllerCreateResponses, SectionControllerFindAllData, SectionControllerFindAllResponses, SectionControllerFindOneData, SectionControllerFindOneResponses, SectionControllerRemoveData, SectionControllerRemoveResponses, SectionControllerUpdateData, SectionControllerUpdateResponses, SermonControllerCreateData, SermonControllerCreateResponses, SermonControllerFindAllData, SermonControllerFindAllResponses, SermonControllerFindOneData, SermonControllerFindOneResponses, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponses, SermonControllerRemoveData, SermonControllerRemoveResponses, SermonControllerUpdateData, SermonControllerUpdateResponses } from './types.gen';
-import { zAppControllerGetFilePath, zAppControllerGetFileResponse, zAppControllerGetStreamUrlPath, zAppControllerGetStreamUrlResponse, zAppControllerUploadFileBody, zAppControllerUploadFileResponse, zAuthControllerGetProfileResponse, zAuthControllerRefreshBody, zAuthControllerRefreshResponse, zAuthControllerSignInBody, zAuthControllerSignInResponse, zGetFilesResponse, zHealthControllerCheckResponse, zPlaylistControllerCreateBody, zPlaylistControllerCreateResponse, zPlaylistControllerFindAllResponse, zPlaylistControllerFindOnePath, zPlaylistControllerFindOneResponse, zPlaylistControllerRemovePath, zPlaylistControllerRemoveResponse, zPlaylistControllerUpdateBody, zPlaylistControllerUpdatePath, zPlaylistControllerUpdateResponse, zReorderPlaylistsInSectionBody, zReorderPlaylistsInSectionPath, zReorderPlaylistsInSectionResponse, zReorderSectionsBody, zReorderSectionsResponse, zReorderSermonsInPlaylistBody, zReorderSermonsInPlaylistPath, zReorderSermonsInPlaylistResponse, zSectionControllerCreateBody, zSectionControllerCreateResponse, zSectionControllerFindAllResponse, zSectionControllerFindOnePath, zSectionControllerFindOneResponse, zSectionControllerRemovePath, zSectionControllerRemoveResponse, zSectionControllerUpdateBody, zSectionControllerUpdatePath, zSectionControllerUpdateResponse, zSermonControllerCreateBody, zSermonControllerCreateResponse, zSermonControllerFindAllQuery, zSermonControllerFindAllResponse, zSermonControllerFindOnePath, zSermonControllerFindOneResponse, zSermonControllerGetStreamUrlPath, zSermonControllerGetStreamUrlResponse, zSermonControllerRemovePath, zSermonControllerRemoveResponse, zSermonControllerUpdateBody, zSermonControllerUpdatePath, zSermonControllerUpdateResponse } from './zod.gen';
+import type { AppControllerGetFileData, AppControllerGetFileResponses, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponses, AppControllerUploadFileData, AppControllerUploadFileResponses, AuthControllerGetProfileData, AuthControllerGetProfileResponses, AuthControllerRefreshData, AuthControllerRefreshResponses, AuthControllerSignInData, AuthControllerSignInResponses, GetFilesData, GetFilesResponses, HealthControllerCheckData, HealthControllerCheckResponses, PlaylistControllerCreateData, PlaylistControllerCreateResponses, PlaylistControllerFindAllData, PlaylistControllerFindAllResponses, PlaylistControllerFindOneData, PlaylistControllerFindOneResponses, PlaylistControllerRemoveData, PlaylistControllerRemoveResponses, PlaylistControllerUpdateData, PlaylistControllerUpdateResponses, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponses, ReorderSectionsData, ReorderSectionsResponses, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponses, SectionControllerCreateData, SectionControllerCreateResponses, SectionControllerFindAllData, SectionControllerFindAllResponses, SectionControllerFindOneData, SectionControllerFindOneResponses, SectionControllerRemoveData, SectionControllerRemoveResponses, SectionControllerUpdateData, SectionControllerUpdateResponses, SermonControllerCreateData, SermonControllerCreateResponses, SermonControllerFindAllData, SermonControllerFindAllResponses, SermonControllerFindOneData, SermonControllerFindOneResponses, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponses, SermonControllerRemoveData, SermonControllerRemoveResponses, SermonControllerUpdateData, SermonControllerUpdateResponses, UsersControllerChangePasswordData, UsersControllerChangePasswordResponses, UsersControllerCreateData, UsersControllerCreateResponses, UsersControllerFindAllData, UsersControllerFindAllResponses, UsersControllerFindOneData, UsersControllerFindOneResponses, UsersControllerRemoveData, UsersControllerRemoveResponses, UsersControllerUpdateData, UsersControllerUpdateResponses } from './types.gen';
+import { zAppControllerGetFilePath, zAppControllerGetFileResponse, zAppControllerGetStreamUrlPath, zAppControllerGetStreamUrlResponse, zAppControllerUploadFileBody, zAppControllerUploadFileResponse, zAuthControllerGetProfileResponse, zAuthControllerRefreshBody, zAuthControllerRefreshResponse, zAuthControllerSignInBody, zAuthControllerSignInResponse, zGetFilesResponse, zHealthControllerCheckResponse, zPlaylistControllerCreateBody, zPlaylistControllerCreateResponse, zPlaylistControllerFindAllResponse, zPlaylistControllerFindOnePath, zPlaylistControllerFindOneResponse, zPlaylistControllerRemovePath, zPlaylistControllerRemoveResponse, zPlaylistControllerUpdateBody, zPlaylistControllerUpdatePath, zPlaylistControllerUpdateResponse, zReorderPlaylistsInSectionBody, zReorderPlaylistsInSectionPath, zReorderPlaylistsInSectionResponse, zReorderSectionsBody, zReorderSectionsResponse, zReorderSermonsInPlaylistBody, zReorderSermonsInPlaylistPath, zReorderSermonsInPlaylistResponse, zSectionControllerCreateBody, zSectionControllerCreateResponse, zSectionControllerFindAllResponse, zSectionControllerFindOnePath, zSectionControllerFindOneResponse, zSectionControllerRemovePath, zSectionControllerRemoveResponse, zSectionControllerUpdateBody, zSectionControllerUpdatePath, zSectionControllerUpdateResponse, zSermonControllerCreateBody, zSermonControllerCreateResponse, zSermonControllerFindAllQuery, zSermonControllerFindAllResponse, zSermonControllerFindOnePath, zSermonControllerFindOneResponse, zSermonControllerGetStreamUrlPath, zSermonControllerGetStreamUrlResponse, zSermonControllerRemovePath, zSermonControllerRemoveResponse, zSermonControllerUpdateBody, zSermonControllerUpdatePath, zSermonControllerUpdateResponse, zUsersControllerChangePasswordBody, zUsersControllerChangePasswordPath, zUsersControllerChangePasswordResponse, zUsersControllerCreateBody, zUsersControllerCreateResponse, zUsersControllerFindAllResponse, zUsersControllerFindOnePath, zUsersControllerFindOneResponse, zUsersControllerRemovePath, zUsersControllerRemoveResponse, zUsersControllerUpdateBody, zUsersControllerUpdatePath, zUsersControllerUpdateResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -474,4 +474,88 @@ export const authControllerGetProfile = <ThrowOnError extends boolean = false>(o
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/profile',
     ...options
+});
+
+export const usersControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<UsersControllerFindAllData, ThrowOnError>): RequestResult<UsersControllerFindAllResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UsersControllerFindAllResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerFindAllResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users',
+    ...options
+});
+
+export const usersControllerCreate = <ThrowOnError extends boolean = false>(options: Options<UsersControllerCreateData, ThrowOnError>): RequestResult<UsersControllerCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<UsersControllerCreateResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zUsersControllerCreateBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerCreateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const usersControllerRemove = <ThrowOnError extends boolean = false>(options: Options<UsersControllerRemoveData, ThrowOnError>): RequestResult<UsersControllerRemoveResponses, unknown, ThrowOnError> => (options.client ?? client).delete<UsersControllerRemoveResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zUsersControllerRemovePath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerRemoveResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}',
+    ...options
+});
+
+export const usersControllerFindOne = <ThrowOnError extends boolean = false>(options: Options<UsersControllerFindOneData, ThrowOnError>): RequestResult<UsersControllerFindOneResponses, unknown, ThrowOnError> => (options.client ?? client).get<UsersControllerFindOneResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zUsersControllerFindOnePath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerFindOneResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}',
+    ...options
+});
+
+export const usersControllerUpdate = <ThrowOnError extends boolean = false>(options: Options<UsersControllerUpdateData, ThrowOnError>): RequestResult<UsersControllerUpdateResponses, unknown, ThrowOnError> => (options.client ?? client).patch<UsersControllerUpdateResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zUsersControllerUpdateBody,
+        path: zUsersControllerUpdatePath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerUpdateResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const usersControllerChangePassword = <ThrowOnError extends boolean = false>(options: Options<UsersControllerChangePasswordData, ThrowOnError>): RequestResult<UsersControllerChangePasswordResponses, unknown, ThrowOnError> => (options.client ?? client).patch<UsersControllerChangePasswordResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zUsersControllerChangePasswordBody,
+        path: zUsersControllerChangePasswordPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUsersControllerChangePasswordResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}/password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });

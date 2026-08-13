@@ -68,3 +68,15 @@ export function invalidateSection(queryClient: QueryClient, sectionId?: string):
     });
   }
 }
+
+// After touching a user, refresh the user list and (optionally) the user
+// detail. Users are standalone — nothing embeds them — so the list is the
+// only query that always needs refreshing.
+export function invalidateUsers(queryClient: QueryClient, userId?: string): void {
+  invalidateOperation(queryClient, 'usersControllerFindAll');
+  if (userId) {
+    queryClient.invalidateQueries({
+      queryKey: byOperationWithPath('usersControllerFindOne', { id: userId }),
+    });
+  }
+}

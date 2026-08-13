@@ -16,6 +16,10 @@
   import UploadSermon from '$lib/pages/UploadSermon.svelte';
   import SermonDetail from '$lib/pages/SermonDetail.svelte';
   import SermonEdit from '$lib/pages/SermonEdit.svelte';
+  import Users from '$lib/pages/Users.svelte';
+  import UserCreate from '$lib/pages/UserCreate.svelte';
+  import UserDetail from '$lib/pages/UserDetail.svelte';
+  import UserEdit from '$lib/pages/UserEdit.svelte';
   import type { Component } from 'svelte';
 
   interface RouteEntry {
@@ -39,6 +43,10 @@
     { pattern: '/sermons/:id/edit', component: SermonEdit },
     { pattern: '/sermons/:id', component: SermonDetail },
     { pattern: '/sermons', component: Sermons },
+    { pattern: '/users/create', component: UserCreate },
+    { pattern: '/users/:id/edit', component: UserEdit },
+    { pattern: '/users/:id', component: UserDetail },
+    { pattern: '/users', component: Users },
   ];
 
   const route = useRoute();

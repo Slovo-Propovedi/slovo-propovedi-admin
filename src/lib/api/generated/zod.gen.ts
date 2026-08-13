@@ -268,6 +268,23 @@ export const zUserResponse = z.strictObject({
     email: z.string()
 });
 
+export const zCreateUserRequest = z.strictObject({
+    name: z.string(),
+    email: z.string(),
+    username: z.string(),
+    password: z.string()
+});
+
+export const zUpdateUserRequest = z.strictObject({
+    name: z.string().optional(),
+    email: z.string().optional(),
+    username: z.string().optional()
+});
+
+export const zChangePasswordRequest = z.strictObject({
+    password: z.string()
+});
+
 export const zAuthResponse = z.strictObject({
     accessToken: z.string(),
     refreshToken: z.string(),
@@ -505,3 +522,55 @@ export const zAuthControllerRefreshResponse = zRefreshResponse;
  * Профиль пользователя
  */
 export const zAuthControllerGetProfileResponse = zUserResponse;
+
+/**
+ * Список пользователей
+ */
+export const zUsersControllerFindAllResponse = z.array(zUserResponse);
+
+export const zUsersControllerCreateBody = zCreateUserRequest;
+
+/**
+ * Пользователь создан
+ */
+export const zUsersControllerCreateResponse = zUserResponse;
+
+export const zUsersControllerRemovePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Пользователь удалён
+ */
+export const zUsersControllerRemoveResponse = z.void();
+
+export const zUsersControllerFindOnePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Пользователь
+ */
+export const zUsersControllerFindOneResponse = zUserResponse;
+
+export const zUsersControllerUpdateBody = zUpdateUserRequest;
+
+export const zUsersControllerUpdatePath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Пользователь обновлён
+ */
+export const zUsersControllerUpdateResponse = zUserResponse;
+
+export const zUsersControllerChangePasswordBody = zChangePasswordRequest;
+
+export const zUsersControllerChangePasswordPath = z.strictObject({
+    id: z.uuid()
+});
+
+/**
+ * Пароль изменён
+ */
+export const zUsersControllerChangePasswordResponse = z.void();

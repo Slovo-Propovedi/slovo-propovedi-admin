@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen';
-import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate } from '../sdk.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse } from '../types.gen';
+import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate, usersControllerChangePassword, usersControllerCreate, usersControllerFindAll, usersControllerFindOne, usersControllerRemove, usersControllerUpdate } from '../sdk.gen';
+import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse, UsersControllerChangePasswordData, UsersControllerChangePasswordResponse, UsersControllerCreateData, UsersControllerCreateResponse, UsersControllerFindAllData, UsersControllerFindAllResponse, UsersControllerFindOneData, UsersControllerFindOneResponse, UsersControllerRemoveData, UsersControllerRemoveResponse, UsersControllerUpdateData, UsersControllerUpdateResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -582,3 +582,89 @@ export const authControllerGetProfileOptions = (options?: Options<AuthController
     },
     queryKey: authControllerGetProfileQueryKey(options)
 });
+
+export const usersControllerFindAllQueryKey = (options?: Options<UsersControllerFindAllData>) => createQueryKey('usersControllerFindAll', options);
+
+export const usersControllerFindAllOptions = (options?: Options<UsersControllerFindAllData>) => queryOptions<UsersControllerFindAllResponse, DefaultError, UsersControllerFindAllResponse, ReturnType<typeof usersControllerFindAllQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await usersControllerFindAll({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: usersControllerFindAllQueryKey(options)
+});
+
+export const usersControllerCreateMutation = (options?: Partial<Options<UsersControllerCreateData>>): MutationOptions<UsersControllerCreateResponse, DefaultError, Options<UsersControllerCreateData>> => {
+    const mutationOptions: MutationOptions<UsersControllerCreateResponse, DefaultError, Options<UsersControllerCreateData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await usersControllerCreate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const usersControllerRemoveMutation = (options?: Partial<Options<UsersControllerRemoveData>>): MutationOptions<UsersControllerRemoveResponse, DefaultError, Options<UsersControllerRemoveData>> => {
+    const mutationOptions: MutationOptions<UsersControllerRemoveResponse, DefaultError, Options<UsersControllerRemoveData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await usersControllerRemove({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const usersControllerFindOneQueryKey = (options: Options<UsersControllerFindOneData>) => createQueryKey('usersControllerFindOne', options);
+
+export const usersControllerFindOneOptions = (options: Options<UsersControllerFindOneData>) => queryOptions<UsersControllerFindOneResponse, DefaultError, UsersControllerFindOneResponse, ReturnType<typeof usersControllerFindOneQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await usersControllerFindOne({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: usersControllerFindOneQueryKey(options)
+});
+
+export const usersControllerUpdateMutation = (options?: Partial<Options<UsersControllerUpdateData>>): MutationOptions<UsersControllerUpdateResponse, DefaultError, Options<UsersControllerUpdateData>> => {
+    const mutationOptions: MutationOptions<UsersControllerUpdateResponse, DefaultError, Options<UsersControllerUpdateData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await usersControllerUpdate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const usersControllerChangePasswordMutation = (options?: Partial<Options<UsersControllerChangePasswordData>>): MutationOptions<UsersControllerChangePasswordResponse, DefaultError, Options<UsersControllerChangePasswordData>> => {
+    const mutationOptions: MutationOptions<UsersControllerChangePasswordResponse, DefaultError, Options<UsersControllerChangePasswordData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await usersControllerChangePassword({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
