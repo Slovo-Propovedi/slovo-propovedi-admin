@@ -2,6 +2,18 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.2.0] - 2026-08-13
+
+### Features
+- admin UI — list, create, edit, detail, delete & password modals
+
+### Bug Fixes
+- hide self-delete button, clear modal errors, drop misleading password hint, graceful refetch error
+- preserve leading acronyms in changelog bullets
+
+### Maintenance
+- flatten structure (rm docs/backend, move frontend/{features,screens} to top level), de-version, strip backend docs, merge frontend/{README,architecture,conventions} into root
+
 ## [0.1.1] - 2026-08-13
 
 ### Bug Fixes
