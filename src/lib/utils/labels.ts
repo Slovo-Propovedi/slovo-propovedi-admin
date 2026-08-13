@@ -73,6 +73,23 @@ export function formatReference(
   return [book ?? '', reference].filter(Boolean).join(' ');
 }
 
+// The subtitle under a sermon's title: the preacher plus the scripture
+// reference when one exists. A missing reference degrades to just the
+// preacher, a missing preacher to just the reference, and neither to an
+// empty string — never a dangling separator or the text "null". Accepts any
+// object with these optional fields so both SermonEntity and PlaylistSermon
+// can use it.
+export function sermonSubtitle(sermon: {
+  artist?: string | null;
+  book?: string | null;
+  chapter?: number | null;
+  verse?: Verse | null;
+}): string {
+  const reference = formatReference(sermon.book, sermon.chapter, sermon.verse);
+  if (reference && sermon.artist) return `${sermon.artist} · ${reference}`;
+  return reference || (sermon.artist ?? '');
+}
+
 // Checks whether a URL points to an image (used to pick preview rendering).
 export function isImageUrl(url: string): boolean {
   return /\.(jpe?g|png|webp)(\?.*)?$/i.test(url);

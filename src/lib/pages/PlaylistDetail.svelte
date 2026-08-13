@@ -9,7 +9,7 @@
   import { invalidatePlaylist } from '$lib/api/invalidate';
   import { hasOrderChanged } from '$lib/utils/arrayOrder';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { formatReference } from '$lib/utils/labels';
+  import { sermonSubtitle } from '$lib/utils/labels';
   import { navigate } from '$lib/router/router.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import Button from '$lib/components/Button.svelte';
@@ -102,14 +102,6 @@
 
   function openSermon(sermonId: string): void {
     navigate(`/sermons/${sermonId}`);
-  }
-
-  // The subtitle under each sermon's title: the preacher, plus the scripture
-  // reference when one exists. formatReference returns '' for a sermon without
-  // a book, so a missing reference degrades to just the preacher.
-  function sermonSubtitle(sermon: PlaylistSermon): string {
-    const reference = formatReference(sermon.book, sermon.chapter, sermon.verse);
-    return reference ? `${sermon.artist} · ${reference}` : sermon.artist;
   }
 </script>
 

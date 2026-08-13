@@ -3,7 +3,7 @@
   import { sermonControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
   import { debounce } from '$lib/utils/debounce';
-  import { formatReference } from '$lib/utils/labels';
+  import { sermonSubtitle } from '$lib/utils/labels';
   import Button from '$lib/components/Button.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
@@ -91,10 +91,7 @@
           {/if}
           <div class="list-item-body">
             <div class="list-item-title">{sermon.title}</div>
-            <div class="list-item-subtitle">
-              {#if sermon.artist}{sermon.artist} · {/if}
-              {formatReference(sermon.book, sermon.chapter, sermon.verse)}
-            </div>
+            <div class="list-item-subtitle">{sermonSubtitle(sermon)}</div>
           </div>
           <div class="list-item-actions">
             {#if sermon.audioUrl}
