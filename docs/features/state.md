@@ -59,8 +59,11 @@ mutation.mutate({ body, path: { id } });
 | `invalidateSermon(qc, id?)` | `sermonControllerFindAll` + `playlistControllerFindAll` + `sectionControllerFindAll` + `playlistControllerFindOne` + `sectionControllerFindOne` (+ `sermonControllerFindOne` по `id`) |
 | `invalidatePlaylist(qc, id?)` | симметрично: playlists/sermons/sections (списки + детали) |
 | `invalidateSection(qc, id?)` | симметрично: sections/playlists/sermons (списки + детали) |
+| `invalidateUsers(qc, id?)` | `usersControllerFindAll` (+ `usersControllerFindOne` по `id`) |
 
 > ✅ `invalidateSermon` сбрасывает не только список проповедей, но и плейлисты/разделы, которые могут эту проповедь встраивать. Это и есть правило «инвалидация cross-entity» — всегда через `invalidate.ts`, а не руками.
+
+> ✅ `invalidateUsers` — автономный: пользователи **ничего не встраивают** (и не встраиваются в контент), поэтому сбрасывается только список (+ деталь по `id`). Cross-entity инвалидация ему не нужна.
 
 Точечная инвалидация детали — `invalidateQueries({ queryKey: [{ _id: op, path: { id } }] })` (внутри хелперов с `id`).
 
@@ -77,8 +80,9 @@ mutation.mutate({ body, path: { id } });
 - [sermons.md](./sermons.md) — `invalidateSermon`
 - [playlists.md](./playlists.md) — `invalidatePlaylist`
 - [sections.md](./sections.md) — `invalidateSection`
+- [users.md](./users.md) — `invalidateUsers`
 - [files.md](./files.md) — `invalidateFiles`
 - [../architecture.md](../architecture.md) — App.svelte, QueryClientProvider
 - [../conventions.md](../conventions.md) — runes, API-клиент
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — кодогенерация хуков
+- REST-контракт и кодогенерация хуков — [`../contracts/rest-api.md`](../contracts/rest-api.md)
 - [../README.md](../README.md) — индекс раздела фронтенда

@@ -1,4 +1,4 @@
-# docs/frontend/screens — Описание экранов админ-панели
+# docs/screens — Описание экранов админ-панели
 
 Папка `screens/` описывает **экраны** admin SPA «Слово.Проповеди» (Svelte 5 + Vite) — по одному документу на **сущность**. Каждый документ покрывает все страницы этой сущности: список, деталь, создание и редактирование.
 
@@ -13,7 +13,7 @@
 - **куда можно перейти** (навигация);
 - **состояния и optimistic-паттерны** (загрузка/пусто/ошибка, drag-and-drop).
 
-Тексты UI — на русском. Ссылки на код — конкретными путями (`src/lib/pages/...`, `src/lib/components/...`). Маршруты живут в `frontend/web-app/src/lib/router/Router.svelte`, логика роутера — в [`router.svelte.ts`](../../frontend/features/routing.md).
+Тексты UI — на русском. Ссылки на код — конкретными путями (`src/lib/pages/...`, `src/lib/components/...`). Маршруты живут в `src/lib/router/Router.svelte`, логика роутера — в [`router.svelte.ts`](../features/routing.md).
 
 > **Правило:** при изменении страницы обновляй соответствующий файл в этой папке в том же PR.
 
@@ -26,6 +26,7 @@
 | Разделы (sections) | [sections.md](./sections.md) | готов |
 | Плейлисты (playlists) | [playlists.md](./playlists.md) | готов |
 | Проповеди (sermons) | [sermons.md](./sermons.md) | готов |
+| Пользователи (users) | [users.md](./users.md) | готов |
 
 ## Структура файла экрана (шаблон)
 
@@ -75,7 +76,6 @@
 - [features/<entity>.md](../features/<entity>.md) — домен
 - [features/routing.md](../features/routing.md) — кастомный роутер
 - [features/state.md](../features/state.md) — состояние
-- [backend/modules/<entity>.md](../../backend/modules/<entity>.md) — API
 ```
 
 Простые экраны (login, home) можно описывать короче — шаблон не обязателен дословно. Для сущностей создание/редактирование — **тонкие обёртки над общей формой**, поэтому им отводится короткий подраздел без дублирования содержимого формы.
@@ -84,11 +84,10 @@
 
 ## Связанные документы
 
-- [../README.md](../README.md) — индекс docs/frontend
+- [../README.md](../README.md) — индекс docs/
 - [../features/routing.md](../features/routing.md) — кастомный history-роутер (механика `matchRoute`, порядок маршрутов)
 - [../features/state.md](../features/state.md) — серверное состояние и optimistic reorder
 - [../features/sermons.md](../features/sermons.md) — домен проповедей
 - [../features/playlists.md](../features/playlists.md) — домен плейлистов
 - [../features/sections.md](../features/sections.md) — домен разделов
-- [../contracts/rest-api.md](../../contracts/rest-api.md) — эндпоинты и конвейер кодогенерации
-- [../../backend/modules/README.md](../../backend/modules/README.md) — модули backend (API)
+- REST-контракт, эндпоинты и конвейер кодогенерации — [`../contracts/rest-api.md`](../contracts/rest-api.md)

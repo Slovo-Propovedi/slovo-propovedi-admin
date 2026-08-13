@@ -1,6 +1,6 @@
 # Фронтенд: UI-компоненты (инвентарь)
 
-Карта переиспользуемых UI-компонентов admin SPA. Пути — от `frontend/web-app/src/lib/components/`. Здесь фиксируются props и «где используется»; подробности поведения доменных форм — в соответствующих `features/*.md`.
+Карта переиспользуемых UI-компонентов admin SPA. Пути — от `src/lib/components/`. Здесь фиксируются props и «где используется»; подробности поведения доменных форм — в соответствующих `features/*.md`.
 
 **Слой:** frontend (feature: ui-components)
 **Статус:** актуально
@@ -27,7 +27,7 @@
 
 | Компонент | Файл | Ключевые props | Назначение | Где используется |
 |-----------|------|----------------|------------|------------------|
-| `Icon` | `Icon.svelte` | `name`, `size`, `class` | Инлайновый SVG-набор lucide-style по имени (`home`, `sections`, `playlists`, `sermons`, `upload`, `edit`, `trash`, `plus`, `back`, `close`, `external`, `check`, `images`, `alert`, `info`) | широко |
+| `Icon` | `Icon.svelte` | `name`, `size`, `class` | Инлайновый SVG-набор lucide-style по имени (`home`, `sections`, `playlists`, `sermons`, `upload`, `users`, `edit`, `trash`, `plus`, `back`, `close`, `external`, `check`, `images`, `alert`, `info`) | широко |
 | `Breadcrumbs` | `Breadcrumbs.svelte` | (ссылки зовут `navigate`) | Хлебные крошки | все create/edit/detail-страницы |
 | `DndList` | `DndList.svelte` | `items`, `onReorder(newOrder, isFinalize)`, children | Drag-and-drop список через `svelte-dnd-action`; вырезает shadow-плейсхолдер | `Sections`, `SectionDetail`, `PlaylistDetail` |
 
@@ -46,14 +46,16 @@
 | `SermonForm` | `forms/SermonForm.svelte` | `mode` ('create'/'edit'), `id?`, `initial?: SermonEntity` | Create/edit проповеди (см. [sermons.md](./sermons.md)) |
 | `SectionForm` | `forms/SectionForm.svelte` | `mode`, `id?`, `initial?: SectionEntity` | Create/edit раздела, enums (см. [sections.md](./sections.md)) |
 | `PlaylistForm` | `forms/PlaylistForm.svelte` | `mode`, `id?`, `initial?: PlaylistEntity` | Create/edit плейлиста + пикер (см. [playlists.md](./playlists.md)) |
+| `UserForm` | `forms/UserForm.svelte` | `mode` ('create'/'edit'), `id?`, `initial?: UserResponse` | Create/edit пользователя (см. [users.md](./users.md)) |
 
-> ✅ Все три формы используют общий паттерн: снапшот `initial` через замыкание на монтировании, поля — `$state`, submit — `createMutation` + `invalidate*` + `navigate` (см. [`../conventions.md`](../conventions.md)).
+> ✅ Все четыре формы используют общий паттерн: снапшот `initial` через замыкание на монтировании, поля — `$state`, submit — `createMutation` + `invalidate*` + `navigate` (см. [`../conventions.md`](../conventions.md)).
 
 ## Связанные документы
 
 - [sermons.md](./sermons.md) — SermonForm, Input/FileUpload/CoverPicker/CheckboxList
 - [playlists.md](./playlists.md) — PlaylistForm, DndList, CheckboxList, CoverPicker
 - [sections.md](./sections.md) — SectionForm, DndList, Select, CheckboxList
+- [users.md](./users.md) — UserForm, Input, Button, Modal
 - [files.md](./files.md) — FileUpload/CoverPicker/ImageLibraryModal, upload.ts
 - [../conventions.md](../conventions.md) — runes, null-vs-undefined, optimistic reorder
 - [../architecture.md](../architecture.md) — раскладка `src/`, app shell

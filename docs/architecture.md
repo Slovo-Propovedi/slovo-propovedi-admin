@@ -1,107 +1,155 @@
-# Архитектура: почему так (монорепозиторий)
+# Фронтенд: архитектура (почему так)
 
-Этот документ объясняет **мотивацию и устройство монорепозитория** admin-панели «Слово.Проповеди» на верхнем уровне: как связаны два приложения, из чего состоит runtime и куда движется проект. Детальная архитектура каждого приложения — в [`frontend/architecture.md`](./frontend/architecture.md) и [`backend/architecture.md`](./backend/architecture.md); здесь она не дублируется. За командами обращайся к [`conventions.md`](./conventions.md).
+Этот документ объясняет устройство admin-фронтенда «Слово.Проповеди» — **Svelte 5 SPA** на Vite. Код — истина; здесь фиксируются мотивация и раскладка, а не дублирование правил линтеров/тайпчекеров. За командами и OpenAPI-first workflow — [`conventions.md`](./conventions.md).
 
+**Слой:** frontend (admin SPA)
 **Статус:** актуально
 
-## Два приложения в одном репозитории
+## Стек и зависимости
 
-Проект — один git-репозиторий, собранный из двух независимых приложений плюс инфраструктура:
+| Назначение | Технология | Версия (package.json) | Примечание |
+|------------|------------|-----------------------|------------|
+| Framework | Svelte 5 (runes) | `svelte ^5.56.8` | runes включены в `svelte.config.js` (`compilerOptions.runes: true`) |
+| Сборка/дев-сервер | Vite | `vite ^7.2.2` | плагин `@sveltejs/vite-plugin-svelte` |
+| Серверное состояние | `@tanstack/svelte-query` | `^6.1.38` | `createQuery` / `createMutation` |
+| API-клиент | `@hey-api/client-fetch` | `^0.13.1` | сгенерированный SDK (`generated/`) |
+| Drag-and-drop | `svelte-dnd-action` | `^0.9.78` | обёртка `DndList.svelte` |
+| Валидация схем на клиенте | `zod` | `^4.4.3` | только в сгенерированных request/response-валидаторах; **не** для форм |
+| Типы/проверка | TypeScript | `^5.6.0` | strict, `noUncheckedIndexedAccess` |
+| `svelte-check` | devDependency | `^4.0.0` | скрипт `check` |
+| Генерация SDK | `@hey-api/openapi-ts` | `^0.99.0` | скрипт `gen:api` |
 
-```
-slovo-propovedi-admin/
-├── backend/          # NestJS API (TypeORM, zod, nestjs-zod, MinIO)
-├── frontend/
-│   └── web-app/      # Svelte 5 + Vite SPA (admin)
-├── postgres/         # данные БД + dump (initdb)
-├── volumes/minio/    # данные MinIO (объектное хранилище)
-├── Makefile          # корневые команды (docker, vault, codegen)
-├── docker-compose.yml
-├── .env              # секреты (зашифровываются в .vault)
-└── .vault            # зашифрованный ansible-vault снэпшот .env
-```
+> ⚠️ Zod на клиенте появляется только из сгенерированного кода (`zod.gen.ts`, request/response-валидаторы SDK). Вручную форм zod не валидирует — это осознанное решение (см. [`conventions.md`](./conventions.md)).
 
-Корневой `package.json` — тонкий (только `husky`); реальные скрипты живут в `backend/package.json` и `frontend/web-app/package.json`. Оркестрация — через `Makefile` и `docker-compose.yml`.
+## Сборка и Docker
 
-| Приложение | Стек | Где | Документация |
-|------------|------|-----|--------------|
-| Backend | NestJS 10, TypeORM 0.3 (`synchronize: false`), `nestjs-zod`, MinIO, PostgreSQL | `backend/` | [`backend/README.md`](./backend/README.md), [`backend/architecture.md`](./backend/architecture.md) |
-| Frontend | Svelte 5 (runes), Vite, `@tanstack/svelte-query`, `@hey-api/openapi-ts`, кастомный history-роутер | `frontend/web-app/` | [`frontend/README.md`](./frontend/README.md), [`frontend/architecture.md`](./frontend/architecture.md) |
+**Локальная разработка** (`vite.config.ts`):
 
-Связывает приложения **общий контракт REST API** — единственная точка пересечения. Backend реализует спецификацию, frontend потребляет её через сгенерированный SDK.
+- alias `$lib` → `./src/lib`;
+- dev-сервер: `host: true`, порт **4321**;
+- proxy `/api` → `http://localhost:3000` с удалением префикса (`rewrite`); используется через `VITE_API_BASE=/api` в `.env.development`.
 
-## Общий OpenAPI-контракт
-
-Обе стороны генерируются из **одной** OpenAPI-спецификации v0.4.0 «Admin API — Слово.Проповеди» (источник истины — во внешнем swagger-репозитории, URL `https://docs.slovo-propovedi.ru/openAPI.yaml`):
-
-```
-                    OpenAPI v0.4.0 (общий, внешний репозиторий)
-                       https://docs.slovo-propovedi.ru/openAPI.yaml
-                              │              │
-              Orval (backend)  │              │  @hey-api (frontend)
-                              ▼              ▼
-              backend/src/generated/   frontend/web-app/src/lib/api/generated/
-              (zod-схемы, strict)      (SDK + svelte-query + zod)
+```bash
+npm install
+npm run dev        # vite → http://localhost:4321, /api → localhost:3000
+npm run build      # vite build → dist/
+npm run preview    # vite preview (локальная проверка собранного бандла)
+npm run check      # svelte-check (типы по Svelte 5)
+npm run gen:api    # openapi-ts + патчи zod (см. contracts/rest-api.md)
 ```
 
-- **Backend** генерирует zod-схемы (`backend/src/generated/index.ts`) для валидации DTO и ответов через `nestjs-zod`.
-- **Frontend** генерирует SDK, типы и query/mutation-hooks (`frontend/web-app/src/lib/api/generated/`).
-- Frontend-страницы никогда не вызывают `fetch` напрямую (кроме XHR-загрузки файлов) — только сгенерированный SDK.
+> ✅ **Base URL в проде:** `client.ts` использует `VITE_API_BASE` либо по умолчанию `https://api.slovo-propovedi.ru`. SPA в проде обращается к API **напрямую** (без обратного прокси) — старый nginx `/api`-прокси удалён (см. комментарий в `nginx.conf`).
 
-Детали спецификации и конвейера кодогенерации — в [`contracts/rest-api.md`](./contracts/rest-api.md).
-
-## Runtime-топология (docker-compose)
-
-Сервисы поднимаются из `docker-compose.yml`:
-
-| Сервис | Образ | Порт наружу | Назначение |
-|--------|-------|-------------|------------|
-| `postgres` | `postgres:15` | `${POSTGRES_PORT}` → 5432 | БД; данные в `./postgres/data/`, dump в `./postgres/dump/` (initdb) |
-| `adminer` | `adminer` | `${ADMINER_PORT}` → 8080 | Web-клиент к БД |
-| `backend` | `./backend` (Dockerfile) | `3000:3000` | NestJS API |
-| `minio-server` | `minio/minio` | `${MINIO_MAIN_PORT_OUT}` : `${MINIO_CONSOLE_PORT_OUT}` | объектное хранилище (обложки, файлы) |
-
-Команды: `make up` / `make down` / `make restart` (см. [`conventions.md`](./conventions.md)).
-
-Поток данных на высоком уровне:
+**Контейнер** (`Dockerfile`) — многостадийная сборка:
 
 ```
-  Svelte page ──createQuery/mutation──▶ @tanstack/svelte-query
-        │                                    │  SDK (generated)
-        ▼                                    ▼
-  client.ts (baseUrl, token, 401-refresh)  ◀── fetch ──▶ backend (NestJS)
-                                                              │ TypeORM
-                                                              ▼
-                                                        PostgreSQL
+node:22-alpine (build: npm ci → npm run build, NODE_OPTIONS --max-old-space-size=384)
+        ↓ dist/
+nginx:alpine (serve, unprivileged USER 101:101)
+   EXPOSE 8080, COPY nginx.main.conf + nginx.conf
 ```
 
-Детальный поток данных внутри приложений — в [`frontend/architecture.md`](./frontend/architecture.md) и [`backend/architecture.md`](./backend/architecture.md).
+nginx-конфиг: SPA-fallback `try_files $uri $uri/ /index.html`, кэширование `/assets/` (`immutable, 1y`), security-заголовки (CSP и др.), gzip. Фронтенд-контейнер в локальный `docker-compose.yml` **не входит** — деплоится отдельно (ansible-playbook).
 
-## План разделения репозиториев
+## App shell (порядок старта)
 
-**Решение (ADR-001):** админ-фронтенд планируется вынести в **отдельный git-репозиторий**, а этот репозиторий станет чисто API-репозиторием (backend + инфраструктура). Обоснование — в [`decisions.md`](./decisions.md).
+```
+main.ts
+  ├─ import './app.css'                          # единственный глобальный стиль
+  ├─ onAuthExpired(() => navigate('/login'))      # сессия истекла → логин
+  ├─ await restoreSession()                       # восстановить профиль из токенов
+  └─ mount(App, { target: #app })
 
-Как это отражается уже сейчас:
+App.svelte
+  └─ new QueryClient({ staleTime: 30s, refetchOnWindowFocus: false, retry: 1 })
+  └─ <QueryClientProvider client>
+        └─ <Router/>                              # маршрутизация (features/routing.md)
+```
 
-- документация разложена по репозиториям-целям: `docs/frontend/` переедет с фронтендом, `docs/backend/` останется с API (см. [`README.md`](./README.md) → «Разделение репозиториев»);
-- `docs/contracts/` — общий контракт, актуален для обоих репозиториев;
-- OpenAPI-контракт и так живёт во внешнем swagger-репозитории (`slovo-propovedi-docs`), поэтому API и клиент не зависят от расположения друг друга в git.
+- **`main.ts`** — блокирующий `await restoreSession()` перед `mount`: пока профиль не восстановлен, `ProtectedRoute` показывает `LoadingScreen` и не рендерит защищённые страницы.
+- **`App.svelte`** — настройки `QueryClient` живут только здесь; `Router` обёрнут в `QueryClientProvider` (подробнее о настройках — [`features/state.md`](./features/state.md)).
+- **`Layout.svelte`** (`src/lib/layout/`) — двухпанельный каркас: `<Sidebar/>` + `<main class="app-main">{@render children()}</main>`.
+- **`Sidebar.svelte`** — логотип (`/assets/icon.png`), пункты навигации (`Главная /`, `Разделы /sections`, `Плейлисты /playlists`, `Проповеди /sermons`, `Загрузить проповедь /sermons/upload`, `Пользователи /users`); активный пункт — по самому специфичному префиксу; футер: аватар-инициалы + имя пользователя + кнопка «Выйти».
+- **`ProtectedRoute.svelte`** — guard: до `isReady && user` рендерит `LoadingScreen`; при готовом-но-не-авторизованном состоянии `$effect` отправляет на `/login` (подробно — [`features/auth.md`](./features/auth.md)).
 
-> ⚠️ До фактического разделения репозиторий остаётся монорепозиторием: оба приложения коммитятся и версионируются вместе, а `Makefile` оркеструет их сборку и запуск.
+## Роутер (обзор)
 
-## Секреты и окружение
+Роутер **самописный**, history-based, без сторонних библиотек. Высокоуровнево:
 
-- Все секреты — в `.env`, монтируется в контейнеры (`env_file: - .env`).
-- `.env` шифруется в `.vault` через `ansible-vault` (`make encrypt` / `make decrypt`). `.vault` закоммичен, `.env` — в `.gitignore`.
-- Backend читает конфиг через `@nestjs/config` (`POSTGRES_*`, `MINIO_*`, `DOCS_ENABLED`, `OPENAPI_SPEC_URL`).
-- Frontend: `VITE_API_BASE` (по умолчанию `https://api.slovo-propovedi.ru`, см. `src/lib/api/client.ts`); в локальной разработке — Vite-прокси `/api` → `http://localhost:3000` (`vite.config.ts`).
+- `src/lib/router/router.svelte.ts` — модульная реактивная `currentPath`, `navigate()`, `useRoute()`, `matchRoute()`, слушатель `popstate`.
+- `src/lib/router/Router.svelte` — декларативная таблица маршрутов, `$derived`-матчинг, 404→`/`, guard-обёртка.
+
+Детально (включая полную таблицу маршрутов) — [`features/routing.md`](./features/routing.md).
+
+## Серверное состояние (обзор)
+
+- `@tanstack/svelte-query`: страницы создают `createQuery(() => operationOptions(...))` и `createMutation(() => ({ ...operationMutation(), onSuccess, onError }))`.
+- Инвалидация кэша — через `src/lib/api/invalidate.ts` (`invalidateSermon/Playlist/Section/Files/Users`).
+- Локальное состояние — исключительно runes (`$state`, `$derived`, `$effect`); `svelte/store` не используется.
+
+Детально (паттерн, настройки QueryClient, cross-entity инвалидация) — [`features/state.md`](./features/state.md).
+
+## Тема (app.css)
+
+Единственный глобальный стиль — `src/app.css` (импортируется в `main.ts`; **отдельных `<style>` в компонентах нет**). Dark-only, без переключателя. Design tokens в `:root` (`app.css:6-38`):
+
+| Группа | Токены |
+|--------|--------|
+| Фон/поверхности | `--bg #0d0d12`, `--bg-soft #101018`, `--surface #16161e`, `--surface-2`, `--surface-3` |
+| Границы | `--border`, `--border-soft` |
+| Текст | `--text #f0ebe0`, `--text-secondary`, `--text-faint` |
+| Акцент (gold) | `--gold #c9a961`, `--gold-bright #e0c084`, `--gold-deep #a8874a` |
+| Служебные | `--danger #c95a5a`, `--success #6abf8e` |
+| Шрифты | `--font-display: 'Cormorant Garamond'`, `--font-sans: 'DM Sans'` |
+| Тени | `--shadow-card`, `--shadow-card-hover`, `--shadow-gold`, `--shadow-gold-hover` |
+| Ритм | `--radius 10px`, `--radius-lg 16px`, `--sidebar-width 260px` |
+
+Секции CSS: base, motion (`fade-in-up`/`fade-in`/`pulse-soft`, `.stagger`), layout (`.app-layout`, `.app-main`), sidebar, cards, buttons, forms, file upload, cover/library, list rows, DnD, badges, breadcrumbs, empty state, spinner, modal, login, detail, home stats, player, toast. Брейкпоинты 900px и 640px; уважает `prefers-reduced-motion`.
+
+## Раскладка src/
+
+```
+src/
+├── main.ts                    # точка входа: app.css, onAuthExpired, restoreSession, mount
+├── App.svelte                 # QueryClient + QueryClientProvider → Router
+├── app.css                    # единственный глобальный стиль + design tokens
+├── vite-env.d.ts
+└── lib/
+    ├── api/
+    │   ├── client.ts          # base URL, токены (localStorage), 401-refresh-retry
+    │   ├── upload.ts          # XHR-загрузка файлов (единственный не-SDK endpoint)
+    │   ├── invalidate.ts      # cross-entity инвалидация query-кэшей
+    │   ├── generated/         # @hey-api кодогенерация (не редактировать)
+    │   └── index.ts           # реэкспорт наружу
+    ├── router/
+    │   ├── router.svelte.ts   # history-router: currentPath/navigate/useRoute/matchRoute
+    │   └── Router.svelte      # декларативная таблица маршрутов + guard
+    ├── auth/
+    │   └── auth.svelte.ts     # rune-store сессии: login/restoreSession/logout
+    ├── layout/
+    │   ├── Layout.svelte      # Sidebar + <main>
+    │   ├── Sidebar.svelte     # навигация, пользователь, «Выйти»
+    │   └── ProtectedRoute.svelte  # guard по isReady && user
+    ├── pages/                 # страницы (Login, Home, Sermons*, Playlist*, Section*, User*, UploadSermon)
+    ├── components/
+    │   ├── forms/             # SermonForm, SectionForm, PlaylistForm, UserForm
+    │   └── …UI-примитивы и компоненты (см. features/ui-components.md)
+    └── utils/
+        ├── labels.ts          # русские лейблы, formatReference/parseVerse/formatVerse
+        ├── strings.ts         # trimmed/fieldText
+        ├── debounce.ts        # trailing debounce
+        ├── arrayOrder.ts      # hasOrderChanged (skip no-op reorder)
+        └── errors.ts          # getErrorMessage → русское сообщение
+```
 
 ## Связанные документы
 
-- [`README.md`](./README.md) — карта документации и правила для агентов
-- [`decisions.md`](./decisions.md) — ADR-001 «Разделение админки и API»
-- [`conventions.md`](./conventions.md) — команды, OpenAPI-first workflow, DoD
-- [`contracts/rest-api.md`](./contracts/rest-api.md) — общая спецификация и конвейер кодогенерации
-- [`frontend/architecture.md`](./frontend/architecture.md) — архитектура фронтенда
-- [`backend/architecture.md`](./backend/architecture.md) — архитектура бэкенда
-- [`debt.md`](./debt.md) — технический долг
+- [README.md](./README.md) — карта документации и правила для агентов
+- [conventions.md](./conventions.md) — runes, null-vs-undefined, API-клиент
+- [features/routing.md](./features/routing.md) — кастомный history-роутер
+- [features/state.md](./features/state.md) — серверное состояние и инвалидация
+- [features/ui-components.md](./features/ui-components.md) — инвентарь UI-компонентов
+- REST-контракт, конвейер кодогенерации, base URL — [`contracts/rest-api.md`](./contracts/rest-api.md)
+- [features/sermons.md](./features/sermons.md) — домен sermons
+- [features/playlists.md](./features/playlists.md) — домен playlists
+- [features/users.md](./features/users.md) — домен users

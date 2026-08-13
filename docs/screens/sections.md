@@ -13,7 +13,7 @@
 - `src/lib/pages/SectionEdit.svelte` — редактирование (обёртка над формой)
 - `src/lib/components/forms/SectionForm.svelte` — общая форма
 
-Раздел — это слайдер с плейлистами на главной странице сайта (см. [`../features/sections.md`](../features/sections.md) и [`../../backend/modules/section.md`](../../backend/modules/section.md)).
+Раздел — это слайдер с плейлистами на главной странице сайта (см. [`../features/sections.md`](../features/sections.md)).
 
 ## Список
 
@@ -73,4 +73,3 @@
 - [../features/sections.md](../features/sections.md) — домен разделов, enums, reorder
 - [../features/routing.md](../features/routing.md) — порядок маршрутов (static до dynamic)
 - [../features/state.md](../features/state.md) — optimistic reorder, инвалидация
-- [../../backend/modules/section.md](../../backend/modules/section.md) — API разделов

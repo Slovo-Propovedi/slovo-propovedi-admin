@@ -1,6 +1,6 @@
 # Фронтенд: аутентификация
 
-Как admin SPA логинится, хранит токены, восстанавливает сессию и защищает маршруты. Backend-сторона JWT — в [`../../backend/modules/auth.md`](../../backend/modules/auth.md).
+Как admin SPA логинится, хранит токены, восстанавливает сессию и защищает маршруты. Данные аутентификации приходят с backend API (JWT).
 
 **Слой:** frontend (feature: auth)
 **Файлы:** `src/lib/auth/auth.svelte.ts`, `src/lib/api/client.ts`, `src/lib/pages/Login.svelte`, `src/lib/layout/ProtectedRoute.svelte`
@@ -65,7 +65,5 @@ ProtectedRoute ──isReady && !user──▶ navigate('/login')
 
 - [routing.md](./routing.md) — где guard подключается в таблице маршрутов
 - [state.md](./state.md) — инвалидация кэшей после входа/выхода
-- [../../backend/modules/auth.md](../../backend/modules/auth.md) — JWT на backend, AuthGuard
-- [../../backend/modules/users.md](../../backend/modules/users.md) — admin-аккаунты (user)
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — эндпоинты auth, базовая URL
 - [../README.md](../README.md) — индекс раздела фронтенда
+- REST-контракт и эндпоинты auth — [`../contracts/rest-api.md`](../contracts/rest-api.md)

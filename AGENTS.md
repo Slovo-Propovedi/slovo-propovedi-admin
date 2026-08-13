@@ -6,10 +6,10 @@ Svelte 5 + Vite single-page application. This repo is the standalone frontend, s
 
 ## Read the knowledge base first
 
-- Start with `docs/frontend/README.md` and `docs/frontend/architecture.md` before touching UI code.
-- Read the relevant `docs/frontend/features/*.md` or `docs/frontend/screens/*.md` document before
+- Start with `docs/README.md` and `docs/architecture.md` before touching UI code.
+- Read the relevant `docs/features/*.md` or `docs/screens/*.md` document before
   implementing or changing a feature (state, routing, auth, files, sermons/playlists/sections).
-- Update the affected `docs/frontend/**` docs in the same commit as the code change.
+- Update the affected `docs/**` docs in the same commit as the code change.
 - Record any TODO/hack in `docs/debt.md` in the same commit.
 
 ## Stack & conventions
@@ -22,7 +22,7 @@ Svelte 5 + Vite single-page application. This repo is the standalone frontend, s
 - **No client-side zod for forms.** The backend validates (zod `strictObject`); forms rely on HTML
   `required`/`min` and surface backend errors via `getErrorMessage()`. Generated SDK request/response
   validators (`zod.gen.ts`) are the only zod on the client.
-- **Generated code is a contract.** Never edit `src/lib/api/generated/**` by hand — only regenerate.
+- **Generated code is a contract.** Never edit `src/lib/api/generated/**` by hand — only regenerate. The **source of truth** for the API contract on the frontend is the generated SDK and its zod-validators (`src/lib/api/generated/`, `zod.gen.ts`): prose describes, the schema decides. Do not pin the OpenAPI spec version in docs — the current version lives in `info.version` of the external `openAPI.yaml`.
 - UI texts in Russian; code/technical terms in English. Styles only in the global `app.css` (CSS
   custom properties from `:root`).
 

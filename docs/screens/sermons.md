@@ -13,7 +13,7 @@
 - `src/lib/pages/SermonEdit.svelte` — редактирование (обёртка над формой)
 - `src/lib/components/forms/SermonForm.svelte` — общая форма
 
-Проповедь — основная единица контента: аудио и/или текст/YouTube с привязкой к библейскому месту (см. [`../features/sermons.md`](../features/sermons.md) и [`../../backend/modules/sermon.md`](../../backend/modules/sermon.md)).
+Проповедь — основная единица контента: аудио и/или текст/YouTube с привязкой к библейскому месту (см. [`../features/sermons.md`](../features/sermons.md)).
 
 ## Список
 
@@ -41,7 +41,7 @@
   - ошибка удаления: `.field-error` в модалке.
 - **Мутации:** `deleteMutation` (`sermonControllerRemoveMutation`) → `invalidateSermon(queryClient, id)` + `navigate('/sermons')`.
 
-> ✅ Админка играет `audioUrl` из `SermonEntity` напрямую; эндпоинт `GET /sermons/:id/stream-url` не используется (см. [`../../contracts/rest-api.md`](../../contracts/rest-api.md)).
+> ✅ Админка играет `audioUrl` из `SermonEntity` напрямую; эндпоинт `GET /sermons/:id/stream-url` не используется (см. [`../contracts/rest-api.md`](../contracts/rest-api.md)).
 
 ## Загрузка
 
@@ -73,4 +73,3 @@
 - [../features/routing.md](../features/routing.md) — порядок маршрутов (static до dynamic)
 - [../features/state.md](../features/state.md) — серверное состояние, инвалидация
 - [../features/files.md](../features/files.md) — загрузка файлов (FileUpload, CoverPicker)
-- [../../backend/modules/sermon.md](../../backend/modules/sermon.md) — API проповедей

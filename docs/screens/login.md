@@ -55,4 +55,3 @@ export async function login(username: string, password: string): Promise<void> {
 - [../features/auth.md](../features/auth.md) — аутентификация: login, restore, refresh, guard
 - [../features/routing.md](../features/routing.md) — кастомный роутер и ветка `/login`
 - [../features/state.md](../features/state.md) — rune-store сессии
-- [../../backend/modules/auth.md](../../backend/modules/auth.md) — API аутентификации

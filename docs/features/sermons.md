@@ -1,6 +1,6 @@
 # Фронтенд: проповеди (sermons)
 
-Фронтовая часть домена sermons: список с поиском, загрузка, деталь, редактирование, форма. Backend-поведение (сущность, эндпоинты, сервис) — в [`../../backend/modules/sermon.md`](../../backend/modules/sermon.md).
+Фронтовая часть домена sermons: список с поиском, загрузка, деталь, редактирование, форма. Данные проповедей приходят с backend API.
 
 **Слой:** frontend (feature: sermons)
 **Файлы:** `src/lib/pages/{Sermons,UploadSermon,SermonDetail,SermonEdit}.svelte`, `src/lib/components/forms/SermonForm.svelte`
@@ -60,7 +60,6 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 - [files.md](./files.md) — загрузка аудио/обложки/текста
 - [state.md](./state.md) — `invalidateSermon`, cross-entity инвалидация
 - [ui-components.md](./ui-components.md) — Input/Textarea/FileUpload/CoverPicker/CheckboxList
-- [../../backend/modules/sermon.md](../../backend/modules/sermon.md) — backend: сущность, эндпоинты, поиск, `formatReference`
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — карта эндпоинтов sermons
+- REST-контракт и карта эндпоинтов sermons — [`../contracts/rest-api.md`](../contracts/rest-api.md)
 - [../conventions.md](../conventions.md) — null-vs-undefined, API-клиент
 - [../README.md](../README.md) — индекс раздела фронтенда

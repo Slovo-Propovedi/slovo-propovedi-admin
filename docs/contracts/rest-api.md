@@ -1,6 +1,8 @@
 # REST API — общая спецификация и кодогенерация
 
-Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`backend/src/generated/index.ts` и `frontend/web-app/src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** с обеих сторон и **карту реального использования** эндпоинтов sermons/playlists.
+> **Источник истины контракта — сгенерированный SDK и его zod-валидаторы** (`src/lib/api/generated/`, `zod.gen.ts`). Эта страница описывает контракт и конвейер @hey-api-кодогенерации; при расхождении между текстом и схемой решает **сгенерированная схема**. Версия спецификации в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml` (репозиторий `slovo-propovedi-docs`).
+
+Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`backend/src/generated/index.ts` и `frontend/web-app/src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** с обеих сторон и **карту реального использования** эндпоинтов sermons/playlists/users.
 
 **Статус:** актуально
 **Слой:** contracts (внешний протокол)
@@ -8,7 +10,7 @@
 ## Общая спецификация (источник истины)
 
 - **URL:** `https://docs.slovo-propovedi.ru/openAPI.yaml`
-- **Версия:** v0.4.0 «Admin API — Слово.Проповеди»
+- **Версия:** «Admin API — Слово.Проповеди»; в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml`
 - **Где живёт:** во **внешнем swagger-репозитории** `/home/egoreast/Programming/slovo-propovedi-docs`, НЕ в этом репозитории. `/openAPI.yaml` здесь gitignored и локально отсутствует.
 - **Публикация:** спецификация деплоится из `slovo-propovedi-docs` через Forgejo на тегах `v*` (`https://docs.slovo-propovedi.ru/openAPI.yaml`).
 - **Потребляется:** обеими кодогенерациями (Orval backend, @hey-api frontend), конфиги которых хардкодят этот URL как `input`.
@@ -79,9 +81,9 @@ make gen-api   # = gen-backend + gen-frontend
 
 > ✅ Правило: при изменении спецификации регенерируются **обе** стороны в том же PR, и коммитятся все сгенерированные файлы вместе с кодом. См. [`conventions.md`](../conventions.md).
 
-## Карта использования эндпоинтов (sermons + playlists)
+## Карта использования эндпоинтов (sermons + playlists + users)
 
-Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove используют `AuthGuard` (`backend/src/auth/guard/auth.guard.ts`); `findAll`/`findOne` публичны.
+Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove/delete используют `AuthGuard` (`backend/src/auth/guard/auth.guard.ts`); `findAll`/`findOne` у sermons/playlists публичны. **У users — все 6 эндпоинтов guarded (нет публичных чтений).**
 
 ### Sermons
 
@@ -106,6 +108,19 @@ make gen-api   # = gen-backend + gen-frontend
 | `PATCH /playlists/:id` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode edit, body `{ title, description, artwork, sermonsIds }` → bulk replace) |
 | `PATCH /playlists/:id/sermons/reorder` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`reorderSermonsInPlaylistMutation`, требует полный in-scope набор `sermonIds`) |
 | `DELETE /playlists/:id` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`playlistControllerRemoveMutation`) |
+
+### Users
+
+| Эндпоинт | Guard | Статус | Где используется |
+|----------|-------|--------|------------------|
+| `GET /users` | AuthGuard | ✅ живой | `Users.svelte` (`usersControllerFindAllOptions()`, клиентский поиск) |
+| `POST /users` | AuthGuard | ✅ живой | `UserForm.svelte` (`usersControllerCreateMutation`, mode create) |
+| `GET /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte`, `UserEdit.svelte` (`usersControllerFindOneOptions`) |
+| `PATCH /users/:id` | AuthGuard | ✅ живой | `UserForm.svelte` (`usersControllerUpdateMutation`, только changed-поля) |
+| `PATCH /users/:id/password` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerChangePasswordMutation`, body `{ password }`) |
+| `DELETE /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerRemoveMutation`, кнопка скрыта для своего аккаунта) |
+
+> ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — [`backend/modules/users.md`](../backend/modules/users.md).
 
 ## База URL и аутентификация
 

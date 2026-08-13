@@ -13,7 +13,7 @@
 - `src/lib/pages/PlaylistEdit.svelte` — редактирование (обёртка над формой)
 - `src/lib/components/forms/PlaylistForm.svelte` — общая форма
 
-Плейлист — упорядоченная подборка проповедей для разделов сайта (см. [`../features/playlists.md`](../features/playlists.md) и [`../../backend/modules/playlist.md`](../../backend/modules/playlist.md)).
+Плейлист — упорядоченная подборка проповедей для разделов сайта (см. [`../features/playlists.md`](../features/playlists.md)).
 
 ## Список
 
@@ -67,4 +67,3 @@
 - [../features/playlists.md](../features/playlists.md) — домен плейлистов, bulk-replace, reorder
 - [../features/routing.md](../features/routing.md) — порядок маршрутов (static до dynamic)
 - [../features/state.md](../features/state.md) — optimistic reorder, инвалидация
-- [../../backend/modules/playlist.md](../../backend/modules/playlist.md) — API плейлистов

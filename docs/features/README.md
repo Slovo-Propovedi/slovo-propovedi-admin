@@ -1,6 +1,6 @@
-# docs/frontend/features — Функциональные подсистемы фронтенда
+# docs/features — Функциональные подсистемы фронтенда
 
-Здесь описываются внутренние механизмы и домены admin SPA (Svelte 5): аутентификация, роутер, состояние, загрузка файлов, домены проповедей/плейлистов/разделов и карта UI-компонентов.
+Здесь описываются внутренние механизмы и домены admin SPA (Svelte 5): аутентификация, роутер, состояние, загрузка файлов, домены проповедей/плейлистов/разделов/пользователей и карта UI-компонентов.
 
 **Слой:** frontend (admin SPA)
 **Статус:** актуально
@@ -15,10 +15,11 @@
 | [sermons.md](./sermons.md) | Проповеди (фронт): список с поиском, `UploadSermon`, `SermonDetail/Edit`, `SermonForm`, мутации |
 | [playlists.md](./playlists.md) | Плейлисты (фронт): список, `PlaylistDetail` (reorder), create/edit, `PlaylistForm` с пикером |
 | [sections.md](./sections.md) | Разделы (фронт): список (reorder), `SectionDetail` (reorder), create/edit, `SectionForm` с enums |
+| [users.md](./users.md) | Пользователи (фронт): список с клиентским поиском, `UserDetail` (смена пароля), create/edit, `UserForm` |
 | [files.md](./files.md) | Подсистема файлов: `upload.ts` (XHR), `FileUpload`, `CoverPicker`, `ImageLibraryModal`, allow-list |
 | [ui-components.md](./ui-components.md) | Инвентарь UI-компонентов (таблица: component, файл, props, назначение, где используется) |
 
-> ✅ Для каждого домена есть backend-аналог в `docs/backend/`: `../../backend/modules/sermon.md`, `playlist.md`, `section.md`, `minio.md`. Здесь — только фронтовая часть; backend-поведение — по ссылкам.
+> ✅ Здесь — только фронтовая часть; поведение backend — в его собственном репозитории.
 
 ## Правило
 
@@ -29,8 +30,4 @@
 - [../README.md](../README.md) — индекс раздела фронтенда
 - [../architecture.md](../architecture.md) — стек, app shell, тема
 - [../conventions.md](../conventions.md) — runes, null-vs-undefined, API-клиент
-- [../../backend/modules/sermon.md](../../backend/modules/sermon.md) — backend-домен sermons
-- [../../backend/modules/playlist.md](../../backend/modules/playlist.md) — backend-домен playlists
-- [../../backend/modules/section.md](../../backend/modules/section.md) — backend-домен sections
-- [../../backend/modules/minio.md](../../backend/modules/minio.md) — объектное хранилище (файлы)
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — спецификация и конвейер кодогенерации
+- REST-контракт и конвейер кодогенерации — [`../contracts/rest-api.md`](../contracts/rest-api.md)

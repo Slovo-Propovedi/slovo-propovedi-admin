@@ -36,6 +36,10 @@ const routes = [
   { pattern: '/sermons/:id/edit', component: SermonEdit },
   { pattern: '/sermons/:id',      component: SermonDetail },
   { pattern: '/sermons',          component: Sermons },
+  { pattern: '/users/create',     component: UserCreate },
+  { pattern: '/users/:id/edit',   component: UserEdit },
+  { pattern: '/users/:id',        component: UserDetail },
+  { pattern: '/users',            component: Users },
 ];
 ```
 
@@ -61,8 +65,12 @@ const routes = [
 | `/sermons/:id/edit` | `SermonEdit.svelte` | `ProtectedRoute` |
 | `/sermons/:id` | `SermonDetail.svelte` | `ProtectedRoute` |
 | `/sermons` | `Sermons.svelte` | `ProtectedRoute` |
+| `/users/create` | `UserCreate.svelte` | `ProtectedRoute` |
+| `/users/:id/edit` | `UserEdit.svelte` | `ProtectedRoute` |
+| `/users/:id` | `UserDetail.svelte` | `ProtectedRoute` |
+| `/users` | `Users.svelte` | `ProtectedRoute` |
 
-> ✅ Порядок имеет значение: `/sections/create` идёт до `/sections/:id`, иначе `:id` захватил бы `create`. Аналогично `/sermons/upload` до `/sermons/:id`, и т.д. (статичные сегменты — первыми).
+> ✅ Порядок имеет значение: `/sections/create` идёт до `/sections/:id`, иначе `:id` захватил бы `create`. Аналогично `/sermons/upload` до `/sermons/:id`, `/users/create` до `/users/:id`, и т.д. (статичные сегменты — первыми).
 
 ## Взаимодействие с другими подсистемами
 

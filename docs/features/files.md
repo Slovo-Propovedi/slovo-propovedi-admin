@@ -1,6 +1,6 @@
 # Фронтенд: подсистема файлов
 
-Загрузка, выбор и хранение файлов (обложки, аудио, текст) в админке. Единственный «не-SDK» путь в приложении: загрузка идёт по XHR ради прогресса и abort. Backend/хранилище (MinIO) — в [`../../backend/modules/minio.md`](../../backend/modules/minio.md).
+Загрузка, выбор и хранение файлов (обложки, аудио, текст) в админке. Единственный «не-SDK» путь в приложении: загрузка идёт по XHR ради прогресса и abort. Сами файлы хранит backend (объектное хранилище).
 
 **Слой:** frontend (feature: files)
 **Файлы:** `src/lib/api/upload.ts`, `src/lib/components/{FileUpload,CoverPicker,ImageLibraryModal}.svelte`, `src/lib/api/invalidate.ts`
@@ -31,7 +31,7 @@ CoverPicker ── "Выбрать из библиотеки" ──► ImageLib
 - Разбор ответа на границе: валидный `UploadResult` доверяется; иначе — fail-fast с описательной ошибкой.
 - Без токена — сразу reject «Вы не авторизованы…».
 
-> ✅ Это единственный endpoint (`/files`), который не использует fetch-SDK — см. карту эндпоинтов в [`../../contracts/rest-api.md`](../../contracts/rest-api.md).
+> ✅ Это единственный endpoint (`/files`), который не использует fetch-SDK — см. карту эндпоинтов в [`../contracts/rest-api.md`](../contracts/rest-api.md).
 
 ## `FileUpload.svelte`
 
@@ -67,7 +67,6 @@ Props: `open` ($bindable), `onSelect(fileUrl)`.
 - [playlists.md](./playlists.md) — обложка плейлиста
 - [state.md](./state.md) — `invalidateFiles`, cross-entity инвалидация
 - [ui-components.md](./ui-components.md) — FileUpload/CoverPicker/ImageLibraryModal
-- [../../backend/modules/minio.md](../../backend/modules/minio.md) — MinIO, хранение файлов, эндпоинт `/files`
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — эндпоинт загрузки файлов
+- REST-контракт и эндпоинт загрузки файлов — [`../contracts/rest-api.md`](../contracts/rest-api.md)
 - [../conventions.md](../conventions.md) — правило «SDK — контракт», единственное XHR-исключение
 - [../README.md](../README.md) — индекс раздела фронтенда

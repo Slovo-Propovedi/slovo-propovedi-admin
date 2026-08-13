@@ -1,6 +1,6 @@
 # Фронтенд: разделы (sections)
 
-Фронтовая часть домена sections: список с drag-to-reorder, деталь (reorder плейлистов), создание/редактирование, форма с enums оформления. Backend-поведение (сущность, эндпоинты, reorder) — в [`../../backend/modules/section.md`](../../backend/modules/section.md).
+Фронтовая часть домена sections: список с drag-to-reorder, деталь (reorder плейлистов), создание/редактирование, форма с enums оформления. Данные разделов приходят с backend API.
 
 **Слой:** frontend (feature: sections)
 **Файлы:** `src/lib/pages/{Sections,SectionDetail,SectionCreate,SectionEdit}.svelte`, `src/lib/components/forms/SectionForm.svelte`
@@ -58,7 +58,6 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SectionEntity }`.
 - [playlists.md](./playlists.md) — плейлисты, входящие в раздел
 - [state.md](./state.md) — `invalidateSection`, cross-entity инвалидация
 - [ui-components.md](./ui-components.md) — DndList, Select, CheckboxList
-- [../../backend/modules/section.md](../../backend/modules/section.md) — backend: сущность, эндпоинты, reorder
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — карта эндпоинтов sections
+- REST-контракт и карта эндпоинтов sections — [`../contracts/rest-api.md`](../contracts/rest-api.md)
 - [../conventions.md](../conventions.md) — optimistic reorder, null-vs-undefined
 - [../README.md](../README.md) — индекс раздела фронтенда

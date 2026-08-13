@@ -1,6 +1,6 @@
 # Фронтенд: плейлисты (playlists)
 
-Фронтовая часть домена playlists: список, деталь с reorder проповедей, создание/редактирование, форма с поисковым пикером. Backend-поведение (bulk-replace, reorder, сущности) — в [`../../backend/modules/playlist.md`](../../backend/modules/playlist.md).
+Фронтовая часть домена playlists: список, деталь с reorder проповедей, создание/редактирование, форма с поисковым пикером. Данные плейлистов приходят с backend API.
 
 **Слой:** frontend (feature: playlists)
 **Файлы:** `src/lib/pages/{Playlists,PlaylistDetail,PlaylistCreate,PlaylistEdit}.svelte`, `src/lib/components/forms/PlaylistForm.svelte`
@@ -49,7 +49,6 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 - [files.md](./files.md) — обложка через `CoverPicker`
 - [state.md](./state.md) — `invalidatePlaylist`, cross-entity инвалидация
 - [ui-components.md](./ui-components.md) — DndList, CheckboxList, CoverPicker
-- [../../backend/modules/playlist.md](../../backend/modules/playlist.md) — backend: bulk-replace, reorder, сущности
-- [../../contracts/rest-api.md](../../contracts/rest-api.md) — карта эндпоинтов playlists
+- REST-контракт и карта эндпоинтов playlists — [`../contracts/rest-api.md`](../contracts/rest-api.md)
 - [../conventions.md](../conventions.md) — optimistic reorder, null-vs-undefined
 - [../README.md](../README.md) — индекс раздела фронтенда
