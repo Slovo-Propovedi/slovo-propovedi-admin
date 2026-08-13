@@ -132,7 +132,7 @@
             label="Пароль"
             type="password"
             bind:value={password}
-            placeholder="Минимум 8 символов"
+            placeholder="Пароль"
             hint="Пользователь войдёт в систему с этим паролем."
             required
           />

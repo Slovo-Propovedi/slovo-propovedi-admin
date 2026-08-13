@@ -6,6 +6,7 @@
     usersControllerRemoveMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { invalidateUsers } from '$lib/api/invalidate';
+  import { getAuthState } from '$lib/auth/auth.svelte';
   import { getErrorMessage } from '$lib/utils/errors';
   import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
@@ -20,6 +21,9 @@
   let { params = {} }: { params?: Record<string, string> } = $props();
   let id = $derived(params.id ?? '');
 
+  const auth = getAuthState();
+  let currentUserId = $derived(auth.user?.id);
+
   const userQuery = createQuery(() => usersControllerFindOneOptions({ path: { id } }));
   const queryClient = useQueryClient();
 
@@ -32,10 +36,17 @@
   let passwordError = $state('');
   let newPassword = $state('');
 
-  // Reset the typed password whenever the modal closes so the next open
+  // Reset transient modal state whenever a modal closes so the next open
   // starts from a clean field.
   $effect(() => {
-    if (!isPasswordOpen) newPassword = '';
+    if (!isPasswordOpen) {
+      newPassword = '';
+      passwordError = '';
+    }
+  });
+
+  $effect(() => {
+    if (!isDeleteOpen) deleteError = '';
   });
 
   const deleteMutation = createMutation(() => ({
@@ -98,10 +109,12 @@
         <Button variant="ghost" onclick={() => (isPasswordOpen = true)}>
           Сменить пароль
         </Button>
-        <Button variant="danger" onclick={() => (isDeleteOpen = true)}>
-          <Icon name="trash" size={16} />
-          Удалить
-        </Button>
+        {#if id !== currentUserId}
+          <Button variant="danger" onclick={() => (isDeleteOpen = true)}>
+            <Icon name="trash" size={16} />
+            Удалить
+          </Button>
+        {/if}
       </div>
     </div>
 
@@ -160,7 +173,6 @@
     type="password"
     label="Новый пароль"
     bind:value={newPassword}
-    placeholder="Минимум 8 символов"
   />
   {#if passwordError}
     <p class="field-error">{passwordError}</p>

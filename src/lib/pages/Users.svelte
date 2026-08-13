@@ -65,7 +65,7 @@
     <div class="loading-inline">
       <LoadingSpinner large />
     </div>
-  {:else if usersQuery.isError}
+  {:else if usersQuery.isError && !usersQuery.data}
     <div class="form-error-banner">{getErrorMessage(usersQuery.error)}</div>
   {:else if filteredUsers.length === 0}
     <div class="card">
