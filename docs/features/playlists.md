@@ -1,6 +1,6 @@
-# Фронтенд: плейлисты (playlists)
+# Плейлисты (playlists)
 
-Фронтовая часть домена playlists: список, деталь с reorder проповедей, создание/редактирование, форма с поисковым пикером. Данные плейлистов приходят с backend API.
+Домен playlists: список, деталь с reorder проповедей, создание/редактирование, форма с поисковым пикером. Данные плейлистов приходят с backend API.
 
 **Слой:** frontend (feature: playlists)
 **Файлы:** `src/lib/pages/{Playlists,PlaylistDetail,PlaylistCreate,PlaylistEdit}.svelte`, `src/lib/components/forms/PlaylistForm.svelte`

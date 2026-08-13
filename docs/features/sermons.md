@@ -1,6 +1,6 @@
-# Фронтенд: проповеди (sermons)
+# Проповеди (sermons)
 
-Фронтовая часть домена sermons: список с поиском, загрузка, деталь, редактирование, форма. Данные проповедей приходят с backend API.
+Домен sermons: список с поиском, загрузка, деталь, редактирование, форма. Данные проповедей приходят с backend API.
 
 **Слой:** frontend (feature: sermons)
 **Файлы:** `src/lib/pages/{Sermons,UploadSermon,SermonDetail,SermonEdit}.svelte`, `src/lib/components/forms/SermonForm.svelte`

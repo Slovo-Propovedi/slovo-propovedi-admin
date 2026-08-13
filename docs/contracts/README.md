@@ -2,7 +2,7 @@
 
 Папка `contracts/` описывает **внешние контракты данных** admin-панели «Слово.Проповеди»: то, что находится за пределами этого репозитория и с чем он обменивается данными.
 
-- **REST API** — общий для платформы контракт: спецификация OpenAPI «Admin API — Слово.Проповеди» (версия — в `info.version` внешнего `openAPI.yaml`) живёт во внешнем swagger-репозитории, а отсюда кодогенерируется в обе стороны (Orval → backend, @hey-api → frontend). Документируется здесь: [`rest-api.md`](./rest-api.md).
+- **REST API** — общий для платформы контракт: спецификация OpenAPI «Admin API — Слово.Проповеди» (версия — в `info.version` внешнего `openAPI.yaml`) живёт во внешнем swagger-репозитории, а отсюда кодогенерируется во фронтенд (@hey-api). Документируется здесь: [`rest-api.md`](./rest-api.md).
 
 От «схем» (например, `frontend/features/`) контракты отличаются тем, что описывают **протоколы и форматы данных**, а не бизнес-логику.
 
@@ -10,7 +10,7 @@
 
 | Файл | Назначение |
 |------|------------|
-| [`rest-api.md`](./rest-api.md) | Общая OpenAPI-спецификация, конвейер кодогенерации (Orval + @hey-api), карта эндпоинтов sermons/playlists |
+| [`rest-api.md`](./rest-api.md) | Общая OpenAPI-спецификация, конвейер кодогенерации (@hey-api), карта эндпоинтов sermons/playlists |
 
 ## Правила
 
@@ -28,6 +28,4 @@
 
 - [../README.md](../README.md) — карта всей документации и правила для агентов
 - [../conventions.md](../conventions.md) — OpenAPI-first workflow и команды регенерации
-- [../backend/modules/sermon.md](../backend/modules/sermon.md) — домен проповедей
-- [../backend/modules/playlist.md](../backend/modules/playlist.md) — домен плейлистов
 - [../debt.md](../debt.md) — технический долг

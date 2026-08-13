@@ -1,6 +1,6 @@
-# Фронтенд: разделы (sections)
+# Разделы (sections)
 
-Фронтовая часть домена sections: список с drag-to-reorder, деталь (reorder плейлистов), создание/редактирование, форма с enums оформления. Данные разделов приходят с backend API.
+Домен sections: список с drag-to-reorder, деталь (reorder плейлистов), создание/редактирование, форма с enums оформления. Данные разделов приходят с backend API.
 
 **Слой:** frontend (feature: sections)
 **Файлы:** `src/lib/pages/{Sections,SectionDetail,SectionCreate,SectionEdit}.svelte`, `src/lib/components/forms/SectionForm.svelte`

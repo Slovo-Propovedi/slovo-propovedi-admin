@@ -2,7 +2,7 @@
 
 > **Источник истины контракта — сгенерированный SDK и его zod-валидаторы** (`src/lib/api/generated/`, `zod.gen.ts`). Эта страница описывает контракт и конвейер @hey-api-кодогенерации; при расхождении между текстом и схемой решает **сгенерированная схема**. Версия спецификации в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml` (репозиторий `slovo-propovedi-docs`).
 
-Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`backend/src/generated/index.ts` и `frontend/web-app/src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** с обеих сторон и **карту реального использования** эндпоинтов sermons/playlists/users.
+Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** и **карту реального использования** эндпоинтов sermons/playlists/users.
 
 **Статус:** актуально
 **Слой:** contracts (внешний протокол)
@@ -13,40 +13,19 @@
 - **Версия:** «Admin API — Слово.Проповеди»; в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml`
 - **Где живёт:** во **внешнем swagger-репозитории** `/home/egoreast/Programming/slovo-propovedi-docs`, НЕ в этом репозитории. `/openAPI.yaml` здесь gitignored и локально отсутствует.
 - **Публикация:** спецификация деплоится из `slovo-propovedi-docs` через Forgejo на тегах `v*` (`https://docs.slovo-propovedi.ru/openAPI.yaml`).
-- **Потребляется:** обеими кодогенерациями (Orval backend, @hey-api frontend), конфиги которых хардкодят этот URL как `input`.
-
-> ⚠️ Этот же контракт документирован в братском проекте `slovo-propovedi-mobile/docs/contracts/rest-api.md`. Разница: mobile-клиент помечает большинство CRUD-эндпоинтов как **мёртвые** (нет admin-UI), тогда как здесь (admin) они **живые** и реально вызываются. Одна спецификация — разные карты использования.
+- **Потребляется:** кодогенерацией @hey-api; backend-сторона документирована в своём репозитории. Конфиг хардкодит этот URL как `input`.
 
 ## Конвейер кодогенерации
 
-### Backend — Orval (zod-схемы)
+### @hey-api/openapi-ts (SDK)
 
 | Параметр | Значение |
 |----------|----------|
-| Конфиг | `backend/orval.config.mjs` |
-| Ключ проекта | `backend-schemas` |
-| `input` | `https://docs.slovo-propovedi.ru/openAPI.yaml` |
-| `output` | `src/generated/index.ts` |
-| `client` | `zod` (`variant: 'full'`, `version: 4`) |
-| `strict` | все контексты `true` (param/query/header/body/response) |
-| Команда | `cd backend && npm run gen:schemas` |
-| Реализация | `backend/scripts/gen-schemas.mjs` — вызывает orval программно, затем prettier по выходному файлу |
-| Root-шорткат | `make gen-backend` |
-
-> ✅ `strict: true` для zod требует **per-context** ключей (Orval 8.23.0 молча нормализует простой `strict: true` в all-false) — см. комментарий в `orval.config.mjs`. Результат: каждая zod-схема на границе отбраковывает лишние ключи.
-
-`gen:schemas` = `node scripts/gen-schemas.mjs`. Выходные схемы используются в `@ZodResponse()` и DTO контроллеров (`backend/src/sermon/`, `backend/src/playlist/`).
-
-### Frontend — @hey-api/openapi-ts (SDK)
-
-| Параметр | Значение |
-|----------|----------|
-| Конфиг | `frontend/web-app/openapi-ts.config.ts` |
+| Конфиг | `openapi-ts.config.ts` |
 | `input` | `https://docs.slovo-propovedi.ru/openAPI.yaml` |
 | `output` | `src/lib/api/generated` |
 | Плагины | `@hey-api/sdk` (validator: true), `@hey-api/typescript`, `@tanstack/svelte-query`, `@hey-api/client-fetch`, `zod` (`compatibilityVersion: 4`) |
-| Команда | `cd frontend/web-app && npm run gen:api` |
-| Root-шорткат | `make gen-frontend` |
+| Команда | `npm run gen:api` |
 
 `gen:api` = `openapi-ts && node scripts/patch-zod-binary.mjs && node scripts/patch-zod-strict.mjs`.
 
@@ -73,17 +52,9 @@ generated/
 
 Потребители импортируют из `@tanstack/svelte-query.gen` (`sermonControllerFindAllOptions`, `playlistControllerUpdateMutation`, ...) и `types.gen.ts`. Реэкспорт наружу — через `src/lib/api/index.ts`.
 
-### Обе стороны сразу
-
-```bash
-make gen-api   # = gen-backend + gen-frontend
-```
-
-> ✅ Правило: при изменении спецификации регенерируются **обе** стороны в том же PR, и коммитятся все сгенерированные файлы вместе с кодом. См. [`conventions.md`](../conventions.md).
-
 ## Карта использования эндпоинтов (sermons + playlists + users)
 
-Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove/delete используют `AuthGuard` (`backend/src/auth/guard/auth.guard.ts`); `findAll`/`findOne` у sermons/playlists публичны. **У users — все 6 эндпоинтов guarded (нет публичных чтений).**
+Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove/delete используют `AuthGuard`; `findAll`/`findOne` у sermons/playlists публичны. **У users — все 6 эндпоинтов guarded (нет публичных чтений).**
 
 ### Sermons
 
@@ -96,7 +67,7 @@ make gen-api   # = gen-backend + gen-frontend
 | `DELETE /sermons/:id` | AuthGuard | ✅ живой | `SermonDetail.svelte` (`sermonControllerRemoveMutation`) |
 | `GET /sermons/:id/stream-url` | публичный | ❌ не используется | пресigned-URL для аудио; админка играет `audioUrl` из `SermonEntity` напрямую |
 
-> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация) и `search` (опциональный, min 1 символ, `ILIKE` по `title`/`artist`/`book`/`description`). UI вызывает его с `search` при вводе; без `take`/`search` бэкенд отвечает полной выборкой (`findAll` без `take` в `sermon.service.ts:105-185`). Подробности поиска — [`backend/modules/sermon.md`](../backend/modules/sermon.md).
+> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация) и `search` (опциональный, min 1 символ, `ILIKE` по `title`/`artist`/`book`/`description`). UI вызывает его с `search` при вводе; без `take`/`search` бэкенд отвечает полной выборкой. Детали поиска — на стороне backend API.
 
 ### Playlists
 
@@ -120,11 +91,11 @@ make gen-api   # = gen-backend + gen-frontend
 | `PATCH /users/:id/password` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerChangePasswordMutation`, body `{ password }`) |
 | `DELETE /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerRemoveMutation`, кнопка скрыта для своего аккаунта) |
 
-> ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — [`backend/modules/users.md`](../backend/modules/users.md).
+> ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — на стороне backend.
 
 ## База URL и аутентификация
 
-- **Base URL:** `https://api.slovo-propovedi.ru` — константа `API_BASE_URL` в `frontend/web-app/src/lib/api/client.ts` (`VITE_API_BASE` переопределяет; в локальной разработке `/api` → Vite-прокси на `localhost:3000`).
+- **Base URL:** `https://api.slovo-propovedi.ru` — константа `API_BASE_URL` в `src/lib/api/client.ts` (`VITE_API_BASE` переопределяет; в локальной разработке `/api` → Vite-прокси на `localhost:3000`).
 - **Аутентификация:** Bearer JWT. `client.ts` хранит пару токенов в `localStorage` (ключ `slovo_admin_tokens`), интерцептор добавляет `Authorization: Bearer <accessToken>` к каждому запросу, а на `401` (кроме `POST /auth/login` и `POST /auth/refresh`) выполняет `authControllerRefresh`, повторяет запрос один раз и только потом объявляет сессию истёкшей (`onAuthExpired`).
 - **Защита на сервере:** `AuthGuard` на мутирующих эндпоинтах (см. таблицы выше) + `ZodValidationPipe` (strict) на всех границах.
 
@@ -133,6 +104,4 @@ make gen-api   # = gen-backend + gen-frontend
 - [README.md](./README.md) — индекс contracts
 - [../architecture.md](../architecture.md) — поток данных, слои, runtime
 - [../conventions.md](../conventions.md) — OpenAPI-first workflow, команды регенерации, DoD
-- [../backend/modules/sermon.md](../backend/modules/sermon.md) — домен проповедей
-- [../backend/modules/playlist.md](../backend/modules/playlist.md) — домен плейлистов
 - [../debt.md](../debt.md) — долги по кодогенерации и внешней спецификации
