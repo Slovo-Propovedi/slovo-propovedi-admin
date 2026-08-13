@@ -276,10 +276,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME=/root"
-ExecStartPre=-/usr/bin/env sh -c '/usr/bin/env docker stop -t $STOP_GRACE $CONTAINER 2>/dev/null || true'
-ExecStartPre=-/usr/bin/env sh -c '/usr/bin/env docker rm $CONTAINER 2>/dev/null || true'
+ExecStartPre=-/usr/bin/env docker rm -f $CONTAINER
 ExecStartPre=/usr/bin/env docker create \\
-    --rm \\
     --name=$CONTAINER \\
     --log-driver=none \\
     --user=$SLOVO_UID:$SLOVO_GID \\
@@ -291,7 +289,7 @@ ExecStartPre=/usr/bin/env docker create \\
     $IMAGE
 ExecStartPre=/usr/bin/env docker network connect $TRAEFIK_NETWORK $CONTAINER
 ExecStart=/usr/bin/env docker start --attach $CONTAINER
-ExecStop=-/usr/bin/env sh -c '/usr/bin/env docker stop -t $STOP_GRACE $CONTAINER 2>/dev/null || true'
+ExecStop=-/usr/bin/env docker stop -t $STOP_GRACE $CONTAINER
 Restart=always
 RestartSec=30
 SyslogIdentifier=slovo-frontend
