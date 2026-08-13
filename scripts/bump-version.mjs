@@ -159,12 +159,17 @@ const SECTION_HEADINGS = [
   { groupKey: 'other', heading: '### Other' },
 ]
 
-// --- Render a bullet: unparsed subjects verbatim, conventional descriptions with a lowercased lead ---
-const lowerCaseFirstCharacter = (text) => text.charAt(0).toLowerCase() + text.slice(1)
+// --- Render a bullet: unparsed subjects verbatim, conventional descriptions with a sentence-style lead (acronyms preserved) ---
+const lowerCaseLeadUnlessAcronym = (text) => {
+  // Preserve leading acronyms (XHR, API, JS): when the second character is also
+  // an uppercase letter, the first character belongs to an all-caps run.
+  if (text.length >= 2 && /[A-Z]/.test(text[1])) return text
+  return text.charAt(0).toLowerCase() + text.slice(1)
+}
 
 const renderBullet = (commit) => {
   if (commit.kind === 'unparsed') return `- ${commit.rawSubject}`
-  return `- ${lowerCaseFirstCharacter(commit.description)}`
+  return `- ${lowerCaseLeadUnlessAcronym(commit.description)}`
 }
 
 // --- Render the full "## [version] - date" section; empty groups are dropped entirely ---
