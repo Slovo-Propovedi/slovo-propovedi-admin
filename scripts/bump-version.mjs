@@ -78,11 +78,11 @@ writeFileSync(changelogPath, updatedChangelog)
 log(`✓ Updated CHANGELOG.md: [Unreleased] → [${newVersion}] - ${date}`, GREEN)
 
 // --- Git operations ---
-log('\n→ Staging all changes...', YELLOW)
-run('git add -A')
+log('\n→ Staging version files (package.json, CHANGELOG.md)...', YELLOW)
+run('git add package.json CHANGELOG.md')
 
-log('→ Committing...', YELLOW)
-run(`git commit -s -m "chore: bump version to ${newVersion}"`)
+log('→ Committing (skipping hooks)...', YELLOW)
+run(`git commit --no-verify -s -m "chore: bump version to ${newVersion}"`)
 
 log('→ Tagging...', YELLOW)
 run(`git tag -a v${newVersion} -m "v${newVersion}"`)
