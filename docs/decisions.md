@@ -21,7 +21,7 @@
 
 **Контекст.** У платформы несколько клиентов (сайт, admin, mobile), которые потребляют один REST API. Ручное дублирование типов и клиентов по сторонам неизбежно рассинхронизируется и порождает баги контрактов. Одна спецификация, сгенерированная в разные клиенты, — единая точка истины.
 
-**Решение.** Единая OpenAPI-спецификация «Admin API — Слово.Проповеди» — источник истины (версия — в `info.version` внешнего `openAPI.yaml`). Она живёт во **внешнем swagger-репозитории** (URL `https://docs.slovo-propovedi.ru/openAPI.yaml`) и генерируется на фронтенде через **`@hey-api/openapi-ts`** → SDK, типы, svelte-query hooks в `src/lib/api/generated/`, команда `npm run gen:api`.
+**Решение.** Единая OpenAPI-спецификация «API — Слово.Проповеди» — источник истины (версия — в `info.version` внешнего `openAPI.yaml`). Она живёт во **внешнем swagger-репозитории** (URL `https://docs.slovo-propovedi.ru/openAPI.yaml`) и генерируется на фронтенде через **`@hey-api/openapi-ts`** → SDK, типы, svelte-query hooks в `src/lib/api/generated/`, команда `npm run gen:api`.
 
 Полный конвейер — в [`docs/contracts/rest-api.md`](./contracts/rest-api.md).
 

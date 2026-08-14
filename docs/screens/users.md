@@ -13,12 +13,12 @@
 - `src/lib/pages/UserEdit.svelte` — редактирование (обёртка над формой)
 - `src/lib/components/forms/UserForm.svelte` — общая форма
 
-Пользователь — админ-аккаунт с доступом к админ-панели (см. [`../features/users.md`](../features/users.md)). Ролей нет — все пользователи админы.
+Пользователь — админ-аккаунт системы. Роли (`UserRole` из SDK): `admin` — полный доступ (включая домен users), `moderator` — контент без users, `user` — в панель не входит (блокируется на входе, см. [`../features/auth.md`](../features/auth.md)). Домен `/users/*` доступен только `admin`: Sidebar скрывает ссылку, `Router.svelte` выбрасывает не-admin на `/`.
 
 ## Список
 
 - **Маршрут:** `/users`, без параметров.
-- **Что показывается:** заголовок «Пользователи», подзаголовок «Управление администраторами системы.», кнопка «Создать» (+ значок `plus`). Поле `<Input>` «Поиск» (placeholder «Имя, email или логин…»). Список `.list-grid` карточек `.list-item`: обложка-плейсхолдер (первая буква имени), имя, подзаголовок — email, бейдж `badge-neutral` — username.
+- **Что показывается:** заголовок «Пользователи», подзаголовок «Управление администраторами системы.», кнопка «Создать» (+ значок `plus`). Поле `<Input>` «Поиск» (placeholder «Имя, email или логин…»). Список `.list-grid` карточек `.list-item`: обложка-плейсхолдер (первая буква имени), имя, подзаголовок — email, бейдж `badge-gold` — роль (`ROLE_LABELS[user.role]`), бейдж `badge-neutral` — username.
 - **Откуда данные:** `usersControllerFindAllOptions()` (`createQuery`) — плоский массив `UserResponse[]`.
 - **Клиентский поиск + debounce:** `<Input>` «Поиск» + `debounce(300)` → реактивный `debouncedTerm`. Фильтрация — **на клиенте** по `name`/`email`/`username` (список маленький; в отличие от `/sermons`, где поиск серверный). Пустой термин показывает полный список.
 - **Компоненты:** `Button`, `EmptyState`, `Icon`, `Input`, `LoadingSpinner`.
@@ -31,7 +31,7 @@
 ## Деталь
 
 - **Маршрут:** `/users/:id`, параметр `:id` (uuid, из `matchRoute` → `params.id`).
-- **Что показывается:** `Breadcrumbs` («Пользователи / <имя>`), заголовок `user.name`, подзаголовок `user.email`, кнопки «Редактировать» (значок `edit`), «Сменить пароль», «Удалить» (значок `trash`). Блок `.detail-grid` со статистикой: Имя, Username, Email, ID.
+- **Что показывается:** `Breadcrumbs` («Пользователи / <имя>`), заголовок `user.name`, подзаголовок `user.email`, кнопки «Редактировать» (значок `edit`), «Сменить пароль», «Удалить» (значок `trash`). Блок `.detail-grid` со статистикой: Имя, Роль (`ROLE_LABELS[user.role]`), Username, Email, ID.
 - **Откуда данные:** `usersControllerFindOneOptions({ path: { id } })` (`createQuery`); мутации `usersControllerRemoveMutation` и `usersControllerChangePasswordMutation`.
 - **Компоненты:** `Breadcrumbs`, `Button`, `EmptyState`, `Icon`, `Input`, `LoadingSpinner`, `Modal`.
 - **Кнопка «Удалить» скрыта для собственного аккаунта:** рендерится только при `id !== currentUserId` (`currentUserId = auth.user?.id` через `getAuthState()` из `$lib/auth/auth.svelte.ts`). Дублирует серверную защиту self-delete (403).
@@ -46,7 +46,7 @@
 ## Создание
 
 - **Маршрут:** `/users/create`.
-- Тонкая обёртка над `<UserForm mode="create" />`: `Breadcrumbs` («Пользователи / Создать`), заголовок «Новый пользователь», подзаголовок «Все пользователи получают доступ к админ-панели».
+- Тонкая обёртка над `<UserForm mode="create" />`: `Breadcrumbs` («Пользователи / Создать`), заголовок «Новый пользователь», подзаголовок «Роль определяет доступ: администратор и модератор входят в панель, обычный пользователь — нет».
 - Данных страница не грузит — вся логика в `UserForm`.
 
 ## Редактирование
@@ -57,8 +57,8 @@
 ## UserForm (общая форма)
 
 - **Пропсы:** `{ mode: 'create'|'edit'; id?; initial?: UserResponse }`.
-- **Поля:** имя (`Input` required), email (`Input` type=email required), логин (`Input` required, hint «Необязательно совпадает с именем»). Пароль (`Input` type=password required) — **только в mode create** (в edit скрыт: смена пароля — отдельный эндпоинт на странице детали).
-- **Мутации:** `usersControllerCreateMutation` / `usersControllerUpdateMutation`. В **edit** отправляются **только changed-поля** (сравнение с `initial`); пустой payload → просто `navigate` без запроса.
+- **Поля:** имя (`Input` required), email (`Input` type=email required), логин (`Input` required, hint «Необязательно совпадает с именем»), роль (`Select` «Роль», опции `ROLE_LABELS`; по умолчанию `'user'`, показывается в обоих режимах). Пароль (`Input` type=password required) — **только в mode create** (в edit скрыт: смена пароля — отдельный эндпоинт на странице детали).
+- **Мутации:** `usersControllerCreateMutation` / `usersControllerUpdateMutation`. **Create** шлёт `role` всегда; в **edit** отправляются **только changed-поля** (включая `role`, сравнение с `initial?.role ?? 'user'`); пустой payload → просто `navigate` без запроса.
 - **Валидация:** без клиентского zod — HTML `required` + проверка заполненности в `handleSubmit` («Заполните все поля.», для create). Ошибки — `getErrorMessage` → `.form-error-banner`.
 - **После успеха:** create → `invalidateUsers(queryClient)` + `navigate('/users')`; edit → `invalidateUsers(queryClient, id)` + `navigate('/users/:id')`.
 

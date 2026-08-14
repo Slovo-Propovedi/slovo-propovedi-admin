@@ -227,6 +227,20 @@ export type SignInRequestDto = {
     password: string;
 };
 
+/**
+ * Роль пользователя в системе
+ */
+export const UserRole = {
+    ADMIN: 'admin',
+    MODERATOR: 'moderator',
+    USER: 'user'
+} as const;
+
+/**
+ * Роль пользователя в системе
+ */
+export type UserRole = typeof UserRole[keyof typeof UserRole];
+
 export type UserResponse = {
     id: string;
     name: string;
@@ -235,6 +249,7 @@ export type UserResponse = {
      */
     username: string;
     email: string;
+    role: UserRole;
 };
 
 export type CreateUserRequest = {
@@ -242,12 +257,14 @@ export type CreateUserRequest = {
     email: string;
     username: string;
     password: string;
+    role?: UserRole;
 };
 
 export type UpdateUserRequest = {
     name?: string;
     email?: string;
     username?: string;
+    role?: UserRole;
 };
 
 export type ChangePasswordRequest = {

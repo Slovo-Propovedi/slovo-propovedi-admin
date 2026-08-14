@@ -8,6 +8,8 @@
 
 > ⚠️ Users — единственный домен, где **все** запросы (включая чтения `usersControllerFindAll`/`FindOne`) идут под `AuthGuard`: на бэкенде у users нет публичных GET (в отличие от section/sermon/playlist).
 
+> ⚠️ **Домен admin-only:** `/users/*` доступен только роли `admin`. Sidebar скрывает ссылку «Пользователи» для не-admin; `Router.svelte` гейтит рендер страниц `/users*` (`forbidden`) и редиректит не-admin на `/` — страница не монтируется (см. [`auth.md`](./auth.md)). Роли: `admin` (полный доступ), `moderator` (контент без users), `user` (в панель не входит вовсе — блокируется на входе).
+
 ## Маршруты
 
 | Паттерн | Страница | Данные |
@@ -23,7 +25,7 @@
 
 - **Клиентский поиск + debounce:** `searchInput` → `debounce(300)` → `debouncedTerm`. Фильтрация идёт **на клиенте** по `name`/`email`/`username` (список маленький), а не на сервере — в отличие от sermons (там поиск серверный). Пустой термин показывает полный список.
 - Данные: `createQuery(() => usersControllerFindAllOptions())` → `usersQuery.data` (плоский массив `UserResponse[]`).
-- Карточки `.list-item` в `list-grid`: обложка-плейсхолдер (первая буква имени), имя, email; бейдж `username` (`badge-neutral`). Клик/Enter → `/users/:id`.
+- Карточки `.list-item` в `list-grid`: обложка-плейсхолдер (первая буква имени), имя, email; бейджи: `badge-gold` — роль (`ROLE_LABELS[user.role]`), `badge-neutral` — `username`. Клик/Enter → `/users/:id`.
 - Кнопка «Создать» (в шапке и в `EmptyState`-snippet) → `/users/create`.
 - Состояния: загрузка — `LoadingSpinner large`; пусто — `EmptyState` «Пользователей пока нет» (с hint «Создайте первого администратора…»); ошибка — `.form-error-banner` с `getErrorMessage`.
 
@@ -31,7 +33,7 @@
 
 - **Маршрут:** `/users/:id`, параметр `:id` (uuid, из `matchRoute` → `params.id`).
 - Данные: `usersControllerFindOneOptions({ path: { id } })`; мутации `usersControllerRemoveMutation` и `usersControllerChangePasswordMutation`.
-- **Что показывается:** `Breadcrumbs` («Пользователи / <имя>»), заголовок `user.name` + подзаголовок `user.email`, `.detail-grid` со статистикой: Имя, Username, Email, ID. Кнопки: «Редактировать» (→ `/users/:id/edit`), «Сменить пароль» (открывает password-`Modal`), «Удалить» (открывает delete-`Modal`).
+- **Что показывается:** `Breadcrumbs` («Пользователи / <имя>»), заголовок `user.name` + подзаголовок `user.email`, `.detail-grid` со статистикой: Имя, **Роль** (`ROLE_LABELS[user.role]`), Username, Email, ID. Кнопки: «Редактировать» (→ `/users/:id/edit`), «Сменить пароль» (открывает password-`Modal`), «Удалить» (открывает delete-`Modal`).
 - **Кнопка «Удалить» скрыта для собственного аккаунта:** рендерится только при `id !== currentUserId`, где `currentUserId = auth.user?.id` через `getAuthState()` из `$lib/auth/auth.svelte.ts`. Это дублирует защиту self-delete на бэкенде (403).
 - **Delete-`Modal`:** confirm → `deleteMutation.mutate({ path: { id } })` → `invalidateUsers(queryClient)` + `navigate('/users')`. Ошибка — `.field-error` в модалке; транзитное состояние сбрасывается при закрытии.
 - **Password-`Modal`:** поле `Input type="password"` «Новый пароль» → `passwordMutation.mutate({ body: { password }, path: { id } })` (`usersControllerChangePasswordMutation`). Пустой пароль блокируется клиентом («Введите новый пароль.»). `onSuccess` → `invalidateUsers(queryClient, id)` + закрытие модалки.
@@ -40,7 +42,7 @@
 ## Создание (`UserCreate.svelte`)
 
 - **Маршрут:** `/users/create`.
-- Тонкая обёртка над `<UserForm mode="create" />`: `Breadcrumbs` («Пользователи / Создать»), заголовок «Новый пользователь», подзаголовок «Все пользователи получают доступ к админ-панели».
+- Тонкая обёртка над `<UserForm mode="create" />`: `Breadcrumbs` («Пользователи / Создать»), заголовок «Новый пользователь», подзаголовок «Роль определяет доступ: администратор и модератор входят в панель, обычный пользователь — нет».
 - Данных страница не грузит — вся логика в `UserForm`.
 
 ## Редактирование (`UserEdit.svelte`)
@@ -58,10 +60,12 @@
 | `name` | `Input` required | «Имя» |
 | `email` | `Input` type=email required | «Email» |
 | `username` | `Input` required | «Логин», hint «Необязательно совпадает с именем» |
+| `role` | `Select` («Роль») | опции из `ROLE_LABELS` (`admin`/`moderator`/`user`); **в обоих режимах** (роль редактируема). Снапшот по умолчанию — `'user'` (least-privilege) |
 | `password` | `Input` type=password required | **только в mode create** (скрыт в edit; смена пароля — отдельный эндпоинт на детали) |
 
 - **Мутации:** `usersControllerCreateMutation` / `usersControllerUpdateMutation`.
-- **Edit отправляет только changed-поля:** payload собирается из полей, которые отличаются от `initial` (`name !== trimmed(initial.name)` и т.д.); пропущенные ключи на `PATCH` означают «не менять». Если изменений нет — просто `navigate` назад без запроса.
+- **Create шлёт `role` всегда:** тело `{ name, email, username, password, role }` (`zCreateUserRequest` — `strictObject`, поле есть в схеме после регенерации).
+- **Edit отправляет только changed-поля:** payload собирается из полей, которые отличаются от `initial` (`name !== trimmed(initial.name)` и т.д.), включая `role` (сравнение с `initial?.role ?? 'user'`); пропущенные ключи на `PATCH` означают «не менять». Если изменений нет — просто `navigate` назад без запроса.
 - **Валидация:** без клиентского zod — HTML `required` + проверка на заполненность в `handleSubmit` («Заполните все поля.», только для create, т.к. там обязателен пароль). Ошибки — `getErrorMessage` → `.form-error-banner`.
 - **После успеха:** create → `invalidateUsers(queryClient)` + `navigate('/users')`; edit → `invalidateUsers(queryClient, id)` + `navigate('/users/:id')`.
 

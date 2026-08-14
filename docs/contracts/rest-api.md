@@ -10,7 +10,7 @@
 ## Общая спецификация (источник истины)
 
 - **URL:** `https://docs.slovo-propovedi.ru/openAPI.yaml`
-- **Версия:** «Admin API — Слово.Проповеди»; в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml`
+- **Версия:** «API — Слово.Проповеди»; в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml`
 - **Где живёт:** во **внешнем swagger-репозитории** `/home/egoreast/Programming/slovo-propovedi-docs`, НЕ в этом репозитории. `/openAPI.yaml` здесь gitignored и локально отсутствует.
 - **Публикация:** спецификация деплоится из `slovo-propovedi-docs` через Forgejo на тегах `v*` (`https://docs.slovo-propovedi.ru/openAPI.yaml`).
 - **Потребляется:** кодогенерацией @hey-api; backend-сторона документирована в своём репозитории. Конфиг хардкодит этот URL как `input`.

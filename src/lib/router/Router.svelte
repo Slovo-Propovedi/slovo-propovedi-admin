@@ -1,5 +1,6 @@
 <script lang="ts">
   import { matchRoute, navigate, useRoute } from './router.svelte';
+  import { getAuthState } from '$lib/auth/auth.svelte';
   import ProtectedRoute from '$lib/layout/ProtectedRoute.svelte';
   import Layout from '$lib/layout/Layout.svelte';
   import Login from '$lib/pages/Login.svelte';
@@ -50,6 +51,7 @@
   ];
 
   const route = useRoute();
+  const auth = getAuthState();
 
   let match = $derived.by(() => {
     const currentPath = route.path;
@@ -65,11 +67,26 @@
   $effect(() => {
     if (match === null) navigate('/');
   });
+
+  // The users domain is admin-only; a moderator must not linger on pages the
+  // backend answers with 403. `forbidden` gates the render branch below so the
+  // page never mounts for a non-admin, and this effect still performs the
+  // redirect. A logged-out visitor is not forbidden — ProtectedRoute sends them
+  // to /login instead — so the two redirects never race. The check waits for a
+  // restored session so the guard never fires while the profile is loading.
+  let isUsersPath = $derived(route.path === '/users' || route.path.startsWith('/users/'));
+  let forbidden = $derived(
+    auth.isReady && isUsersPath && auth.user !== null && auth.user.role !== 'admin',
+  );
+
+  $effect(() => {
+    if (forbidden) navigate('/');
+  });
 </script>
 
 {#if isLogin}
   <Login />
-{:else if match}
+{:else if match && !forbidden}
   <ProtectedRoute>
     <Layout>
       <match.component params={match.params} />

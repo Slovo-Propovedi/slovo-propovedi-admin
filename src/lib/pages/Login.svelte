@@ -31,7 +31,7 @@
     <div class="login-brand">
       <img src="/assets/icon.png" alt="" />
       <h1>Слово проповеди</h1>
-      <p>Вход в админ-панель</p>
+      <p>Вход в систему</p>
     </div>
 
     {#if error}

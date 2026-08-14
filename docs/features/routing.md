@@ -46,6 +46,7 @@ const routes = [
 - `match` — `$derived`: первый совпавший паттерн побеждает.
 - **404:** `$effect` — если `match === null` → `navigate('/')` (редирект на Home).
 - **Auth guard:** `/login` рендерится «голым» (`<Login/>`); остальные — `<ProtectedRoute><Layout><component params={match.params}/></Layout></ProtectedRoute>`.
+- **Admin-only guard для `/users*`:** `$derived` `forbidden` (`auth.isReady && isUsersPath && auth.user !== null && auth.user.role !== 'admin'`) гейтит рендер — ветка `match && !forbidden` не монтирует страницу для не-admin; `$effect` при `forbidden` → `navigate('/')`. Не-admin не получает ни рендера, ни запроса, на который бэкенд ответил бы 403. Неавторизованный посетитель (`auth.user === null`) в гейт не попадает — его ведёт на `/login` `ProtectedRoute`.
 
 ## Таблица маршрутов (сводно)
 
@@ -65,17 +66,17 @@ const routes = [
 | `/sermons/:id/edit` | `SermonEdit.svelte` | `ProtectedRoute` |
 | `/sermons/:id` | `SermonDetail.svelte` | `ProtectedRoute` |
 | `/sermons` | `Sermons.svelte` | `ProtectedRoute` |
-| `/users/create` | `UserCreate.svelte` | `ProtectedRoute` |
-| `/users/:id/edit` | `UserEdit.svelte` | `ProtectedRoute` |
-| `/users/:id` | `UserDetail.svelte` | `ProtectedRoute` |
-| `/users` | `Users.svelte` | `ProtectedRoute` |
+| `/users/create` | `UserCreate.svelte` | `ProtectedRoute` + **admin-only** |
+| `/users/:id/edit` | `UserEdit.svelte` | `ProtectedRoute` + **admin-only** |
+| `/users/:id` | `UserDetail.svelte` | `ProtectedRoute` + **admin-only** |
+| `/users` | `Users.svelte` | `ProtectedRoute` + **admin-only** |
 
 > ✅ Порядок имеет значение: `/sections/create` идёт до `/sections/:id`, иначе `:id` захватил бы `create`. Аналогично `/sermons/upload` до `/sermons/:id`, `/users/create` до `/users/:id`, и т.д. (статичные сегменты — первыми).
 
 ## Взаимодействие с другими подсистемами
 
 - **Навигация из кода:** компоненты зовут `navigate(...)` из `router.svelte.ts` (Breadcrumbs, формы, Sidebar, Home). Ссылки `<a>` перехватывают `onclick` → `navigate` (SPA-переходы без релоада).
-- **Защита маршрутов:** `ProtectedRoute` — guard по сессии (см. [`auth.md`](./auth.md)); при истёкшей сессии `main.ts` через `onAuthExpired` отправляет на `/login`.
+- **Защита маршрутов:** `ProtectedRoute` — guard по сессии (см. [`auth.md`](./auth.md)); при истёкшей сессии `main.ts` через `onAuthExpired` отправляет на `/login`. Дополнительно `Router.svelte` содержит **admin-only guard** для `/users*`.
 - **Рендер страниц:** страницам передаётся `params` из `match.params` (например, `id` для `/sections/:id`).
 
 ## Связанные документы

@@ -8,6 +8,7 @@
   import { invalidateUsers } from '$lib/api/invalidate';
   import { getAuthState } from '$lib/auth/auth.svelte';
   import { getErrorMessage } from '$lib/utils/errors';
+  import { ROLE_LABELS } from '$lib/utils/labels';
   import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
@@ -122,6 +123,10 @@
       <div class="detail-stat">
         <div class="detail-stat-label">Имя</div>
         <div class="detail-stat-value">{user.name}</div>
+      </div>
+      <div class="detail-stat">
+        <div class="detail-stat-label">Роль</div>
+        <div class="detail-stat-value">{ROLE_LABELS[user.role]}</div>
       </div>
       <div class="detail-stat">
         <div class="detail-stat-label">Username</div>

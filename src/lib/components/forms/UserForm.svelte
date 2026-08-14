@@ -4,13 +4,19 @@
     usersControllerCreateMutation,
     usersControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
-  import type { UpdateUserRequest, UserResponse } from '$lib/api/generated/types.gen';
+  import type {
+    UpdateUserRequest,
+    UserResponse,
+    UserRole,
+  } from '$lib/api/generated/types.gen';
   import { invalidateUsers } from '$lib/api/invalidate';
   import { getErrorMessage } from '$lib/utils/errors';
+  import { ROLE_LABELS } from '$lib/utils/labels';
   import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import Input from '$lib/components/Input.svelte';
+  import Select from '$lib/components/Select.svelte';
 
   interface Props {
     mode: 'create' | 'edit';
@@ -22,12 +28,20 @@
 
   // The edit page mounts this form only after the record has loaded, so the
   // props stay stable for the form's lifetime. Reading them through closures
-  // snapshots the values seen at mount time.
-  function createFormSnapshot() {
+  // snapshots the values seen at mount time. The snapshot is typed at the
+  // boundary so `role` is already `UserRole` downstream — no casts.
+  function createFormSnapshot(): {
+    name: string;
+    email: string;
+    username: string;
+    role: UserRole;
+    password: string;
+  } {
     return {
       name: initial?.name ?? '',
       email: initial?.email ?? '',
       username: initial?.username ?? '',
+      role: initial?.role ?? 'user',
       password: '',
     };
   }
@@ -42,9 +56,18 @@
   let name = $state(formSnapshot.name);
   let email = $state(formSnapshot.email);
   let username = $state(formSnapshot.username);
+  let role = $state<UserRole>(formSnapshot.role);
   let password = $state(formSnapshot.password);
 
   let submitError = $state('');
+
+  // Least-privilege default: a new account starts as a plain user unless the
+  // administrator chooses otherwise.
+  const roleOptions: { value: UserRole; label: string }[] = [
+    { value: 'admin', label: ROLE_LABELS.admin },
+    { value: 'moderator', label: ROLE_LABELS.moderator },
+    { value: 'user', label: ROLE_LABELS.user },
+  ];
 
   const queryClient = useQueryClient();
 
@@ -85,6 +108,7 @@
       if (nameValue !== trimmed(initial?.name ?? '')) payload.name = nameValue;
       if (emailValue !== trimmed(initial?.email ?? '')) payload.email = emailValue;
       if (usernameValue !== trimmed(initial?.username ?? '')) payload.username = usernameValue;
+      if (role !== (initial?.role ?? 'user')) payload.role = role;
 
       if (Object.keys(payload).length === 0) {
         navigate(`/users/${id}`);
@@ -98,7 +122,13 @@
         return;
       }
       createMutation.mutate({
-        body: { name: nameValue, email: emailValue, username: usernameValue, password: passwordValue },
+        body: {
+          name: nameValue,
+          email: emailValue,
+          username: usernameValue,
+          password: passwordValue,
+          role: role,
+        },
       });
     }
   }
@@ -127,6 +157,7 @@
           hint="Необязательно совпадает с именем."
           required
         />
+        <Select label="Роль" bind:value={role} options={roleOptions} />
         {#if !isEdit}
           <Input
             label="Пароль"

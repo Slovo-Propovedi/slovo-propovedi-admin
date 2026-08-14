@@ -1,5 +1,5 @@
 // Display helpers and Russian labels shared across the admin panel.
-import type { CreateSectionDto, SermonEntity } from '$lib/api/generated';
+import type { CreateSectionDto, SermonEntity, UserRole } from '$lib/api/generated';
 import { fieldText } from '$lib/utils/strings';
 
 export type Verse = number | [number, number];
@@ -24,6 +24,12 @@ export const SLIDE_TITLE_LOCATION_LABELS: Record<
   on: 'На слайде',
   under: 'Под слайдом',
   bothOnAndUnder: 'И на, и под слайдом',
+};
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Администратор',
+  moderator: 'Модератор',
+  user: 'Пользователь',
 };
 
 // Formats a single verse or a verse range into a readable string.

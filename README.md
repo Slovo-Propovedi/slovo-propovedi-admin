@@ -4,7 +4,7 @@ Standalone frontend for the **Слово.Проповеди** admin panel: a **S
 application (dark theme, Russian UI). It was split from the former `slovo-propovedi-admin` monorepo;
 the old `frontend/web-app/` path is now this repository's root.
 
-The app talks to the **Admin API** backend over generated HTTP clients — there is no OpenAPI file in
+The app talks to the **API** backend over generated HTTP clients — there is no OpenAPI file in
 this repo (see [Regenerating the API client](#regenerating-the-api-client)).
 
 ## Prerequisites

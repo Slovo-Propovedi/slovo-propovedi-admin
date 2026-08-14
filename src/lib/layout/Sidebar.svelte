@@ -6,14 +6,21 @@
   const route = useRoute();
   const auth = getAuthState();
 
-  const navItems = [
+  const baseNavItems = [
     { label: 'Главная', path: '/', icon: 'home' },
     { label: 'Разделы', path: '/sections', icon: 'sections' },
     { label: 'Плейлисты', path: '/playlists', icon: 'playlists' },
     { label: 'Проповеди', path: '/sermons', icon: 'sermons' },
     { label: 'Загрузить проповедь', path: '/sermons/upload', icon: 'upload' },
-    { label: 'Пользователи', path: '/users', icon: 'users' },
   ] as const;
+
+  // The users domain is admin-only — the backend answers 403 to other roles,
+  // so the link appears only for administrators.
+  const adminOnlyNavItem = { label: 'Пользователи', path: '/users', icon: 'users' } as const;
+
+  let navItems = $derived(
+    auth.user?.role === 'admin' ? [...baseNavItems, adminOnlyNavItem] : baseNavItems,
+  );
 
   let activePath = $derived(route.path);
 

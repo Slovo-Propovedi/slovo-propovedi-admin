@@ -261,24 +261,36 @@ export const zSignInRequestDto = z.strictObject({
     password: z.string()
 });
 
+/**
+ * Роль пользователя в системе
+ */
+export const zUserRole = z.enum([
+    'admin',
+    'moderator',
+    'user'
+]);
+
 export const zUserResponse = z.strictObject({
     id: z.string(),
     name: z.string(),
     username: z.string(),
-    email: z.string()
+    email: z.string(),
+    role: zUserRole
 });
 
 export const zCreateUserRequest = z.strictObject({
     name: z.string(),
     email: z.string(),
     username: z.string(),
-    password: z.string()
+    password: z.string(),
+    role: zUserRole.optional()
 });
 
 export const zUpdateUserRequest = z.strictObject({
     name: z.string().optional(),
     email: z.string().optional(),
-    username: z.string().optional()
+    username: z.string().optional(),
+    role: zUserRole.optional()
 });
 
 export const zChangePasswordRequest = z.strictObject({

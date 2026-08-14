@@ -2,6 +2,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { usersControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { getErrorMessage } from '$lib/utils/errors';
+  import { ROLE_LABELS } from '$lib/utils/labels';
   import { navigate } from '$lib/router/router.svelte';
   import { debounce } from '$lib/utils/debounce';
   import Button from '$lib/components/Button.svelte';
@@ -102,6 +103,7 @@
             <div class="list-item-subtitle">{user.email}</div>
           </div>
           <div class="list-item-actions">
+            <span class="badge badge-gold">{ROLE_LABELS[user.role]}</span>
             <span class="badge badge-neutral">{user.username}</span>
           </div>
         </div>
