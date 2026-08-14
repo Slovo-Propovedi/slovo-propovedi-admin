@@ -97,6 +97,7 @@ generated/
 
 - **Base URL:** `https://api.slovo-propovedi.ru` — константа `API_BASE_URL` в `src/lib/api/client.ts` (`VITE_API_BASE` переопределяет; в локальной разработке `/api` → Vite-прокси на `localhost:3000`).
 - **Аутентификация:** Bearer JWT. `client.ts` хранит пару токенов в `localStorage` (ключ `slovo_admin_tokens`), интерцептор добавляет `Authorization: Bearer <accessToken>` к каждому запросу, а на `401` (кроме `POST /auth/login` и `POST /auth/refresh`) выполняет `authControllerRefresh`, повторяет запрос один раз и только потом объявляет сессию истёкшей (`onAuthExpired`).
+- **Выход:** `POST /auth/logout` (bearer, body `{ refreshToken }`, `204`) отзывает refresh-токен на сервере (denylist). `logout()` в `auth.svelte.ts` вызывает его best-effort перед очисткой локальных токенов; access-токен остаётся технически валидным ≤30 мин. Подробнее — [`features/auth.md`](../features/auth.md).
 - **Защита на сервере:** `AuthGuard` на мутирующих эндпоинтах (см. таблицы выше) + `ZodValidationPipe` (strict) на всех границах.
 
 ## Связанные документы

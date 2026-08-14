@@ -2,11 +2,12 @@
 //
 // The module keeps the profile in reactive state; components read it through
 // `getAuthState()` so every subscriber re-renders when the session changes.
-import { authControllerGetProfile, authControllerSignIn } from '$lib/api/generated';
+import { authControllerGetProfile, authControllerLogout, authControllerSignIn } from '$lib/api/generated';
 import type { UserResponse } from '$lib/api/generated';
 import {
   clearTokens,
   getAccessToken,
+  getRefreshToken,
   setTokens,
 } from '$lib/api/client';
 import { navigate } from '$lib/router/router.svelte';
@@ -81,10 +82,19 @@ export async function login(username: string, password: string): Promise<void> {
   }
 }
 
-export function logout(): void {
-  // Note: the backend has no revoke endpoint, so the refresh token remains
-  // valid until it expires. Tokens are cleared client-side only, which is the
-  // best we can do; the local session is gone immediately.
+export async function logout(): Promise<void> {
+  // The server revokes the refresh token (denylist) so it cannot be replayed
+  // after sign-out. The call is best-effort: a network error or an already
+  // invalid session must never block the local sign-out, so the tokens are
+  // read before the request and cleared only afterwards.
+  const refreshToken = getRefreshToken();
+  if (refreshToken) {
+    try {
+      await authControllerLogout({ body: { refreshToken } });
+    } catch {
+      // Best-effort: fall through to the local cleanup regardless.
+    }
+  }
   clearTokens();
   user = null;
   navigate('/login');

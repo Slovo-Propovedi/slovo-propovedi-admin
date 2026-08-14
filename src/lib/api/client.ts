@@ -40,6 +40,10 @@ export function getAccessToken(): string | undefined {
   return loadTokens().accessToken;
 }
 
+export function getRefreshToken(): string | undefined {
+  return loadTokens().refreshToken;
+}
+
 export function setTokens(accessToken: string, refreshToken?: string): void {
   const stored = loadTokens();
   localStorage.setItem(TOKENS_KEY, JSON.stringify({ accessToken, refreshToken: refreshToken ?? stored.refreshToken }));

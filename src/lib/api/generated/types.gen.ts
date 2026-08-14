@@ -281,6 +281,13 @@ export type RefreshTokenDto = {
     refreshToken: string;
 };
 
+export type LogoutRequestDto = {
+    /**
+     * Refresh-токен, который нужно отозвать
+     */
+    refreshToken: string;
+};
+
 export type RefreshResponse = {
     accessToken: string;
     refreshToken: string;
@@ -741,6 +748,22 @@ export type AuthControllerRefreshResponses = {
 };
 
 export type AuthControllerRefreshResponse = AuthControllerRefreshResponses[keyof AuthControllerRefreshResponses];
+
+export type AuthControllerLogoutData = {
+    body: LogoutRequestDto;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type AuthControllerLogoutResponses = {
+    /**
+     * Сессия завершена, refresh-токен отозван
+     */
+    204: void;
+};
+
+export type AuthControllerLogoutResponse = AuthControllerLogoutResponses[keyof AuthControllerLogoutResponses];
 
 export type AuthControllerGetProfileData = {
     body?: never;

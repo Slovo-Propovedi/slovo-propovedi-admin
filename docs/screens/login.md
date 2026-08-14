@@ -52,7 +52,7 @@ export async function login(username: string, password: string): Promise<void> {
 - `user` устанавливается из `data.user` (`UserResponse`, тип `AuthUser`), затем `navigate('/')` — только для admin/moderator.
 - `getAuthState()` возвращает реактивный `{ user, isReady, isLoggingIn }` — компоненты читают его для перерисовки.
 
-> ✅ Выход (logout) — только клиентский: серверного revoke-эндпоинта нет. `logout()` очищает токены, сбрасывает `user` и делает `navigate('/login')` (см. [`../features/auth.md`](../features/auth.md)).
+> ✅ Выход (logout) сначала отзывает refresh-токен на сервере (`POST /auth/logout`, best-effort), затем чистит локальные токены, сбрасывает `user` и делает `navigate('/login')`. Access-токен после выхода технически валиден ≤30 мин (см. [`../features/auth.md`](../features/auth.md)).
 
 ## Роутинг и guard
 

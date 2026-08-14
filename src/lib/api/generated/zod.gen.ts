@@ -307,6 +307,10 @@ export const zRefreshTokenDto = z.strictObject({
     refreshToken: z.string()
 });
 
+export const zLogoutRequestDto = z.strictObject({
+    refreshToken: z.string()
+});
+
 export const zRefreshResponse = z.strictObject({
     accessToken: z.string(),
     refreshToken: z.string()
@@ -529,6 +533,13 @@ export const zAuthControllerRefreshBody = zRefreshTokenDto;
  * Новая пара токенов
  */
 export const zAuthControllerRefreshResponse = zRefreshResponse;
+
+export const zAuthControllerLogoutBody = zLogoutRequestDto;
+
+/**
+ * Сессия завершена, refresh-токен отозван
+ */
+export const zAuthControllerLogoutResponse = z.void();
 
 /**
  * Профиль пользователя

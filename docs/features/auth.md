@@ -17,6 +17,8 @@ main.ts ──await restoreSession()──▶ authControllerGetProfile (с refre
 client.ts ──401 (кроме /auth/*)──▶ refreshTokens() (single-flight, 1 retry)
                                        └─ не удалось → notifyAuthExpired() → navigate('/login')
 ProtectedRoute ──isReady && !user──▶ navigate('/login')
+Sidebar «Выйти» ──logout()──▶ authControllerLogout({ refreshToken }, best-effort)
+                                       └─ clearTokens(); user = null; navigate('/login')
 ```
 
 ## `auth.svelte.ts` — rune-store сессии
@@ -28,17 +30,17 @@ ProtectedRoute ──isReady && !user──▶ navigate('/login')
 | `AuthUser` | Тип сессионного профиля. **`AuthUser = UserResponse`** (сгенерированный тип — единый источник истины): `id`, `name`, `username`, `email`, `role` (`UserRole` из SDK). |
 | `login(username, password)` | `authControllerSignIn({ body: { username, password } })` → `setTokens(accessToken, refreshToken)`. **Роль `user` блокируется при входе:** `user = null`, `clearTokens()`, бросок «У вас нет доступа к админ-панели» (показывается на Login). `navigate('/')` — только для admin/moderator. |
 | `restoreSession()` | Если есть access-токен → `authControllerGetProfile({ throwOnError: true })`. **Роль `user` при восстановлении:** `clearTokens()`, `user = null`, `navigate('/login')` — обработка устаревшего токена пониженного/обычного пользователя. При ошибке — `clearTokens()` + `user = null`. В `finally` — `isReady = true`. |
-| `logout()` | `clearTokens()`, `user = null`, `navigate('/login')`. Бэкенд не имеет revoke-эндпоинта — выход клиентский (refresh-токен жив до истечения). |
+| `logout()` | Читает сохранённый `refreshToken` (если токена нет — guard-clause: вызов на сервер пропускается), вызывает `authControllerLogout({ body: { refreshToken } })` **best-effort** — сетевая ошибка или уже недействительный токен не блокируют локальный выход. Затем `clearTokens()`, `user = null`, `navigate('/login')`. Refresh-токен отзывается на сервере (denylist) до очистки локальных токенов; access-токен остаётся технически валидным до истечения срока (≤30 мин). |
 | `getAuthState()` | `{ user, isReady, isLoggingIn }` — реактивные геттеры. |
 
 > ✅ **Политика ролей:** admin и moderator входят в панель; роль `user` **блокируется на входе** — ей в панели делать нечего. Домен `/users/*` — **только для admin** (у moderator бэкенд отвечает 403), поэтому ссылка в Sidebar и route-guard в `Router.svelte` скрывают/выбрасывают не-admin из `/users` (см. ниже).
 
-> ⚠️ На сервере **нет эндпоинта отзыва токена** — `logout()` чистит только клиентское хранилище. Это документированное ограничение (комментарий в коде и долг в `../debt.md`).
+> ✅ **Выход отзывает refresh-токен на сервере.** `POST /auth/logout` (спека 0.7.0) помещает refresh-токен в denylist до очистки локальных токенов. Вызов best-effort: при недоступности сети или 401 локальный выход всё равно завершается. Access-токен после выхода технически валиден до истечения срока (≤30 мин).
 
 ## Хранение токенов
 
 - Ключ `localStorage`: **`slovo_admin_tokens`** — `{ accessToken?, refreshToken? }`.
-- Хелперы в `client.ts`: `getAccessToken()`, `setTokens(access, refresh)`, `clearTokens()`, `refreshTokens()`.
+- Хелперы в `client.ts`: `getAccessToken()`, `getRefreshToken()`, `setTokens(access, refresh)`, `clearTokens()`, `refreshTokens()`.
 - `setTokens` сохраняет старый `refreshToken`, если новый не передан.
 
 ## `client.ts` — refresh-retry

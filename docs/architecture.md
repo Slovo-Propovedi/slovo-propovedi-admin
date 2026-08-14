@@ -69,7 +69,7 @@ App.svelte
 - **`main.ts`** — блокирующий `await restoreSession()` перед `mount`: пока профиль не восстановлен, `ProtectedRoute` показывает `LoadingScreen` и не рендерит защищённые страницы.
 - **`App.svelte`** — настройки `QueryClient` живут только здесь; `Router` обёрнут в `QueryClientProvider` (подробнее о настройках — [`features/state.md`](./features/state.md)).
 - **`Layout.svelte`** (`src/lib/layout/`) — двухпанельный каркас: `<Sidebar/>` + `<main class="app-main">{@render children()}</main>`.
-- **`Sidebar.svelte`** — логотип (`/assets/icon.png`), пункты навигации (`Главная /`, `Разделы /sections`, `Плейлисты /playlists`, `Проповеди /sermons`, `Загрузить проповедь /sermons/upload`, `Пользователи /users` — **только для роли `admin`**, через `$derived`-массив `navItems`); активный пункт — по самому специфичному префиксу; футер: аватар-инициалы + имя пользователя + кнопка «Выйти».
+- **`Sidebar.svelte`** — логотип (`/assets/icon.png`), пункты навигации (`Главная /`, `Разделы /sections`, `Плейлисты /playlists`, `Проповеди /sermons`, `Загрузить проповедь /sermons/upload`, `Пользователи /users` — **только для роли `admin`**, через `$derived`-массив `navItems`); активный пункт — по самому специфичному префиксу; футер: аватар-инициалы + имя пользователя + кнопка «Выйти» (вызывает `logout()` — серверный отзыв refresh-токена + очистка локальных токенов).
 - **`ProtectedRoute.svelte`** — guard: до `isReady && user` рендерит `LoadingScreen`; при готовом-но-не-авторизованном состоянии `$effect` отправляет на `/login` (подробно — [`features/auth.md`](./features/auth.md)).
 
 ## Роутер (обзор)

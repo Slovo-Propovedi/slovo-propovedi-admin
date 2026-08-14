@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen';
-import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate, usersControllerChangePassword, usersControllerCreate, usersControllerFindAll, usersControllerFindOne, usersControllerRemove, usersControllerUpdate } from '../sdk.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse, UsersControllerChangePasswordData, UsersControllerChangePasswordResponse, UsersControllerCreateData, UsersControllerCreateResponse, UsersControllerFindAllData, UsersControllerFindAllResponse, UsersControllerFindOneData, UsersControllerFindOneResponse, UsersControllerRemoveData, UsersControllerRemoveResponse, UsersControllerUpdateData, UsersControllerUpdateResponse } from '../types.gen';
+import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerLogout, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate, usersControllerChangePassword, usersControllerCreate, usersControllerFindAll, usersControllerFindOne, usersControllerRemove, usersControllerUpdate } from '../sdk.gen';
+import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerLogoutData, AuthControllerLogoutResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse, UsersControllerChangePasswordData, UsersControllerChangePasswordResponse, UsersControllerCreateData, UsersControllerCreateResponse, UsersControllerFindAllData, UsersControllerFindAllResponse, UsersControllerFindOneData, UsersControllerFindOneResponse, UsersControllerRemoveData, UsersControllerRemoveResponse, UsersControllerUpdateData, UsersControllerUpdateResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -528,7 +528,7 @@ export const sermonControllerUpdateMutation = (options?: Partial<Options<SermonC
 };
 
 /**
- * Вход в админ-панель
+ * Вход в систему
  *
  * Возвращает JWT токен для дальнейших запросов
  */
@@ -555,6 +555,25 @@ export const authControllerRefreshMutation = (options?: Partial<Options<AuthCont
     const mutationOptions: MutationOptions<AuthControllerRefreshResponse, DefaultError, Options<AuthControllerRefreshData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await authControllerRefresh({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Выход из системы
+ *
+ * Отзывает refresh-токен (denylist). Access-токен остаётся технически валидным до истечения срока (не более 30 минут); клиент обязан удалить оба токена.
+ */
+export const authControllerLogoutMutation = (options?: Partial<Options<AuthControllerLogoutData>>): MutationOptions<AuthControllerLogoutResponse, DefaultError, Options<AuthControllerLogoutData>> => {
+    const mutationOptions: MutationOptions<AuthControllerLogoutResponse, DefaultError, Options<AuthControllerLogoutData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await authControllerLogout({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
