@@ -82,15 +82,21 @@ export async function login(username: string, password: string): Promise<void> {
   }
 }
 
+const LOGOUT_TIMEOUT_MS = 3000;
+
 export async function logout(): Promise<void> {
   // The server revokes the refresh token (denylist) so it cannot be replayed
-  // after sign-out. The call is best-effort: a network error or an already
-  // invalid session must never block the local sign-out, so the tokens are
-  // read before the request and cleared only afterwards.
+  // after sign-out. The call is best-effort and time-bounded: a network error,
+  // an already invalid session, or a hung connection must never block the
+  // local sign-out, so the tokens are read before the request and cleared
+  // only afterwards.
   const refreshToken = getRefreshToken();
   if (refreshToken) {
     try {
-      await authControllerLogout({ body: { refreshToken } });
+      await Promise.race([
+        authControllerLogout({ body: { refreshToken } }),
+        new Promise<void>((resolve) => setTimeout(resolve, LOGOUT_TIMEOUT_MS)),
+      ]);
     } catch {
       // Best-effort: fall through to the local cleanup regardless.
     }
