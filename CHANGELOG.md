@@ -2,6 +2,14 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.4.0] - 2026-08-14
+
+### Features
+- revoke refresh token on logout
+
+### Bug Fixes
+- bound best-effort logout call with timeout
+
 ## [0.3.0] - 2026-08-14
 
 ### Features
