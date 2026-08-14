@@ -2,6 +2,14 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.3.0] - 2026-08-14
+
+### Features
+- add user roles (admin/moderator/user) with role-based access control
+
+### Maintenance
+- strip backend leaks + fix stale paths; docs(features): drop redundant 'Фронтенд:' H1 prefixes
+
 ## [0.2.0] - 2026-08-13
 
 ### Features
