@@ -62,8 +62,8 @@
 ## SectionForm (общая форма)
 
 - **Пропсы:** `{ mode: 'create'|'edit'; id?; initial?: SectionEntity }`.
-- **Поля:** название, описание; оформление — `Select` размер карточек (`small/middle/large/xLarge`), `Select` высота (`high/middle/short`), `Select` расположение заголовка (`on/under/bothOnAndUnder`), «Строк» (`number`, опционально), чекбоксы «Крупный заголовок описания на слайде» и «Скруглённые углы карточек». В режиме **edit** дополнительно блок «Плейлисты раздела» — `CheckboxList` (`playlistControllerFindAllOptions()`).
-- **Мутации:** `sectionControllerCreateMutation` / `sectionControllerUpdateMutation`. В edit тело включает `playlistsIds: selectedPlaylistIds` (пустой массив очищает состав раздела).
+- **Поля:** название, описание; оформление — `Select` размер карточек (`small/middle/large/xLarge`), `Select` высота (`high/middle/short`), `Select` расположение заголовка (`on/under/bothOnAndUnder`), «Строк» (`number`, опционально), чекбоксы «Крупный заголовок описания на слайде» и «Скруглённые углы карточек». В режиме **edit** дополнительно блок «Плейлисты раздела» — `CheckboxList` (`playlistControllerFindAllOptions()`). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты».
+- **Мутации:** `sectionControllerCreateMutation` / `sectionControllerUpdateMutation`. В edit тело включает `playlistsIds: selectedPlaylistIds` (пустой массив очищает состав раздела). Связь с плейлистами двунаправленная: плейлист со своей стороны управляет ею через `sectionsIds` в `PlaylistForm` (см. [`../features/playlists.md`](../features/playlists.md)).
 - **Валидация:** без клиентского zod — HTML `required`/`min` + backend `strictObject`. Nullable-поля шлют `null` при очистке (чтобы очистить колонку) против `undefined` («не трогать»).
 - **После успеха:** `invalidateSection(queryClient, id)` + `navigate('/sections')` (create) или `navigate('/sections/:id')` (edit).
 

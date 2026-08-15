@@ -28,6 +28,7 @@
 
 ## Решено
 
+- [x] **`nullable: true` + OpenAPI 3.2 ломает openapi-ts** — спецификация переведена на null-union типы (`5bc9b4d`, тег `v0.8.1` в `slovo-propovedi-docs`); `https://docs.slovo-propovedi.ru/openAPI.yaml` отдаёт исправленную версию (0 `nullable`), SDK перегенерирован штатно, nullability и `sectionsIds` сохранены. — 2026-08-15.
 - [x] **Поиск проповедей по `GET /sermons`** (query `search`) — реализован на бэкенде и в UI (`Sermons.svelte`, debounce-инпут), добавлен поисковый пикер в `PlaylistForm.svelte`. — 2026-08-12.
 - [x] **`PlaylistForm` грузил весь каталог проповедей** ради выбора — теперь пикер поисковый с серверной фильтрацией (`sermonControllerFindAllOptions({ query: { search } })`). — 2026-08-12.
 

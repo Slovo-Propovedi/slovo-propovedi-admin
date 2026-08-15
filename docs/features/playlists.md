@@ -35,12 +35,15 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 | `description` | `Textarea` | nullable → `null` при очистке |
 | `artwork` | `CoverPicker` | |
 | `selectedSermonIds` | поисковый `CheckboxList` | см. ниже |
+| `selectedSectionIds` | `CheckboxList` | через `sectionControllerFindAllOptions`, см. ниже |
 
 **Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Пустой термин → полная выборка без `search`.
 
 Строки пикера рендерят **полную информацию о проповеди** через `item`-snippet `CheckboxList`: обложка (`sermon.artwork`, иначе плейсхолдер с первой буквой), название, подзаголовок «Проповедник · Книга глава:стихи» (`artist` + `formatReference(book, chapter, verse)`; без книги — только проповедник), бейджи медиа (аудио/youtube/текст по наличию URL). В `options` каждая строка несёт `{ value, label, data: sermon }` — `data` отдаёт сырую `SermonEntity` в snippet. `toggleSermon` — добавление/удаление id.
 
-Мутации: `playlistControllerCreateMutation` / `playlistControllerUpdateMutation`. Edit-режим **намеренно не шлёт `sectionsIds`** (форма ими не управляет). `onSuccess` → `invalidatePlaylist(queryClient[, id])` → `navigate('/playlists' | /playlists/:id)`.
+**Пикер секций:** `createQuery(() => sectionControllerFindAllOptions())` → `CheckboxList` со строками `{ value: section.id, label: section.title }` (без поиска — разделов немного, а API поиска не даёт). Состояния блока: загрузка — `LoadingSpinner` (`.loading-inline`), ошибка — «Не удалось загрузить секции» (`.form-error-banner`). `selectedSectionIds` инициализируется из `initial.sections` в edit-режиме.
+
+Мутации: `playlistControllerCreateMutation` / `playlistControllerUpdateMutation`. Тело **всегда** включает `sermonsIds` и `sectionsIds` — массивы-отношения шлются в обоих режимах (пустой массив очищает связи на backend; `undefined` значил бы «не трогать»). `onSuccess` → `invalidatePlaylist(queryClient[, id])` → `navigate('/playlists' | /playlists/:id)`.
 
 ## Связанные документы
 

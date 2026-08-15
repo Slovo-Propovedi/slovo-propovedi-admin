@@ -180,7 +180,8 @@ export const zCreatePlaylistDto = z.strictObject({
     title: z.string(),
     description: z.string().nullable(),
     artwork: z.string(),
-    sermonsIds: z.array(z.string()).optional()
+    sermonsIds: z.array(z.string()).optional(),
+    sectionsIds: z.array(z.string()).optional()
 });
 
 export const zAllPlaylistsResponse = z.strictObject({
@@ -317,6 +318,11 @@ export const zRefreshResponse = z.strictObject({
 });
 
 /**
+ * Состояние сервиса
+ */
+export const zHealthControllerCheckResponse = zHealthResponse;
+
+/**
  * List of image files
  */
 export const zGetFilesResponse = zAllFilesResponse;
@@ -347,11 +353,6 @@ export const zAppControllerGetFilePath = z.strictObject({
  * Информация о файле
  */
 export const zAppControllerGetFileResponse = zIFileResponseDto;
-
-/**
- * Состояние сервиса
- */
-export const zHealthControllerCheckResponse = zHealthResponse;
 
 /**
  * Список разделов

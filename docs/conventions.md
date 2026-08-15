@@ -36,7 +36,7 @@
 
 - `SermonForm`: `chapter`/`verse`/`audioUrl`/`youtubeUrl`/`textFileUrl`/`book`/`description` — nullable, при очистке шлют `null`; `playlistsIds` — всегда массив.
 - `SectionForm`: `description`/`itemsRows` — `null` при очистке; `playlistsIds` — массив.
-- `PlaylistForm`: `description` — `null`; `sermonsIds` — массив. В edit-режиме `sectionsIds` **намеренно опущен** (форма им не управляет).
+- `PlaylistForm`: `description` — `null`; `sermonsIds` и `sectionsIds` — всегда массивы (оба режима, пустой массив очищает связи).
 
 > ✅ Это соответствует backend-валидации: zod-схемы на границе (`strictObject`) различают `null` и отсутствие ключа.
 

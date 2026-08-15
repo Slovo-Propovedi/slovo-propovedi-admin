@@ -73,10 +73,10 @@ generated/
 
 | Эндпоинт | Guard | Статус | Где используется |
 |----------|-------|--------|------------------|
-| `POST /playlists` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode create) |
+| `POST /playlists` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode create, body `{ title, description, artwork, sermonsIds, sectionsIds }` — массивы шлются всегда) |
 | `GET /playlists` | публичный | ✅ живой | `Playlists.svelte` |
 | `GET /playlists/:id` | публичный | ✅ живой | `PlaylistDetail.svelte`, `PlaylistEdit.svelte` |
-| `PATCH /playlists/:id` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode edit, body `{ title, description, artwork, sermonsIds }` → bulk replace) |
+| `PATCH /playlists/:id` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode edit, body `{ title, description, artwork, sermonsIds, sectionsIds }` → bulk replace обоих отношений) |
 | `PATCH /playlists/:id/sermons/reorder` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`reorderSermonsInPlaylistMutation`, требует полный in-scope набор `sermonIds`) |
 | `DELETE /playlists/:id` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`playlistControllerRemoveMutation`) |
 

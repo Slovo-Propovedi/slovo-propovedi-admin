@@ -55,6 +55,8 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SectionEntity }`.
 
 Мутации: `sectionControllerCreateMutation` / `sectionControllerUpdateMutation`. Edit: `playlistsIds` — массив (пустой очищает связи); create — без него. `onSuccess` → `invalidateSection(queryClient[, id])` → `navigate('/sections' | /sections/:id)`.
 
+> Связь раздел ↔ плейлист — **двунаправленная**: раздел управляет составом через `playlistsIds` (`SectionForm`), а плейлист — через `sectionsIds` (`PlaylistForm`, оба режима). `invalidatePlaylist`/`invalidateSection` сбрасывают обе стороны (см. [`state.md`](./state.md)).
+
 ## Связанные документы
 
 - [playlists.md](./playlists.md) — плейлисты, входящие в раздел

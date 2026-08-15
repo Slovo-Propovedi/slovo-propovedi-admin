@@ -2,8 +2,9 @@
   import { createMutation as makeMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
   import {
     playlistControllerCreateMutation,
-    sermonControllerFindAllOptions,
     playlistControllerUpdateMutation,
+    sectionControllerFindAllOptions,
+    sermonControllerFindAllOptions,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { PlaylistEntity } from '$lib/api/generated';
   import { invalidatePlaylist } from '$lib/api/invalidate';
@@ -16,6 +17,7 @@
   import CheckboxList from '$lib/components/CheckboxList.svelte';
   import CoverPicker from '$lib/components/CoverPicker.svelte';
   import Input from '$lib/components/Input.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Textarea from '$lib/components/Textarea.svelte';
 
   interface Props {
@@ -35,6 +37,7 @@
       description: initial?.description ?? '',
       artwork: initial?.artwork ?? '',
       selectedSermonIds: initial?.sermons?.map((sermon) => sermon.id) ?? [],
+      selectedSectionIds: initial?.sections?.map((section) => section.id) ?? [],
     };
   }
 
@@ -49,6 +52,7 @@
   let description = $state(formSnapshot.description);
   let artwork = $state(formSnapshot.artwork);
   let selectedSermonIds = $state<string[]>(formSnapshot.selectedSermonIds);
+  let selectedSectionIds = $state<string[]>(formSnapshot.selectedSectionIds);
 
   let submitError = $state('');
 
@@ -87,6 +91,24 @@
       : [...selectedSermonIds, value];
   }
 
+  // The section picker is a plain (non-search) list: sections are few and the
+  // backend exposes no search param, so the whole catalog is loaded once.
+  const sectionsQuery = createQuery(() => sectionControllerFindAllOptions());
+  let sections = $derived(sectionsQuery.data?.sections ?? []);
+
+  let sectionOptions = $derived(
+    sections.map((section) => ({
+      value: section.id,
+      label: section.title,
+    })),
+  );
+
+  function toggleSection(value: string): void {
+    selectedSectionIds = selectedSectionIds.includes(value)
+      ? selectedSectionIds.filter((sectionId) => sectionId !== value)
+      : [...selectedSectionIds, value];
+  }
+
   const queryClient = useQueryClient();
 
   const createMutation = makeMutation(() => ({
@@ -123,13 +145,13 @@
       // column; `undefined` (omitting the key) would be read as "no change".
       description: trimmed(description) || null,
       artwork: trimmed(artwork),
-      // Always send the array: an empty array clears the relations on the
+      // Always send the arrays: an empty array clears the relations on the
       // backend, while undefined would be interpreted as "no change".
       sermonsIds: selectedSermonIds,
+      sectionsIds: selectedSectionIds,
     };
 
     if (isEdit) {
-      // sectionsIds is intentionally omitted: the form does not manage them.
       updateMutation.mutate({ body: common, path: { id } });
     } else {
       createMutation.mutate({ body: common });
@@ -196,6 +218,23 @@
           {/if}
         {/snippet}
       </CheckboxList>
+    </div>
+  </div>
+
+  <div class="card" style:margin-top="20px">
+    <div class="card-header">
+      <h2>Секции</h2>
+    </div>
+    <div class="card-body">
+      {#if sectionsQuery.isPending}
+        <div class="loading-inline">
+          <LoadingSpinner large />
+        </div>
+      {:else if sectionsQuery.isError && !sectionsQuery.data}
+        <div class="form-error-banner">Не удалось загрузить секции</div>
+      {:else}
+        <CheckboxList options={sectionOptions} selected={selectedSectionIds} onToggle={toggleSection} />
+      {/if}
     </div>
   </div>
 

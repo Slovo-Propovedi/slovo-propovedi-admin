@@ -39,6 +39,24 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
     return [params];
 };
 
+export const healthControllerCheckQueryKey = (options?: Options<HealthControllerCheckData>) => createQueryKey('healthControllerCheck', options);
+
+/**
+ * Проверить состояние сервиса
+ */
+export const healthControllerCheckOptions = (options?: Options<HealthControllerCheckData>) => queryOptions<HealthControllerCheckResponse, DefaultError, HealthControllerCheckResponse, ReturnType<typeof healthControllerCheckQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await healthControllerCheck({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: healthControllerCheckQueryKey(options)
+});
+
 export const getFilesQueryKey = (options?: Options<GetFilesData>) => createQueryKey('getFiles', options);
 
 /**
@@ -112,24 +130,6 @@ export const appControllerGetFileOptions = (options: Options<AppControllerGetFil
         return data;
     },
     queryKey: appControllerGetFileQueryKey(options)
-});
-
-export const healthControllerCheckQueryKey = (options?: Options<HealthControllerCheckData>) => createQueryKey('healthControllerCheck', options);
-
-/**
- * Проверить состояние сервиса
- */
-export const healthControllerCheckOptions = (options?: Options<HealthControllerCheckData>) => queryOptions<HealthControllerCheckResponse, DefaultError, HealthControllerCheckResponse, ReturnType<typeof healthControllerCheckQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await healthControllerCheck({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: healthControllerCheckQueryKey(options)
 });
 
 export const sectionControllerFindAllQueryKey = (options?: Options<SectionControllerFindAllData>) => createQueryKey('sectionControllerFindAll', options);

@@ -22,6 +22,20 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Проверить состояние сервиса
+ */
+export const healthControllerCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthControllerCheckData, ThrowOnError>): RequestResult<HealthControllerCheckResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthControllerCheckResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zHealthControllerCheckResponse.parseAsync(data),
+    url: '/health',
+    ...options
+});
+
+/**
  * List image files
  *
  * Returns a list of all image files in storage (for cover reuse feature)
@@ -84,20 +98,6 @@ export const appControllerGetFile = <ThrowOnError extends boolean = false>(optio
     }).parseAsync(data),
     responseValidator: async (data) => await zAppControllerGetFileResponse.parseAsync(data),
     url: '/files/{fileName}',
-    ...options
-});
-
-/**
- * Проверить состояние сервиса
- */
-export const healthControllerCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthControllerCheckData, ThrowOnError>): RequestResult<HealthControllerCheckResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthControllerCheckResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zHealthControllerCheckResponse.parseAsync(data),
-    url: '/health',
     ...options
 });
 
