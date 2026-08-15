@@ -3,6 +3,7 @@
   import {
     sermonControllerCreateMutation,
     playlistControllerFindAllOptions,
+    sermonControllerGetDistinctValuesOptions,
     sermonControllerUpdateMutation,
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { SermonEntity } from '$lib/api/generated';
@@ -13,6 +14,7 @@
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
+  import Combobox from '$lib/components/Combobox.svelte';
   import CoverPicker from '$lib/components/CoverPicker.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import Input from '$lib/components/Input.svelte';
@@ -79,6 +81,16 @@
 
   const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
+
+  // Suggestions for the artist/book comboboxes. Best-effort: on error or an
+  // empty result the comboboxes just behave like plain inputs — the form
+  // itself must never depend on this query, so it stays silent.
+  const distinctValuesQuery = createQuery(() => ({
+    ...sermonControllerGetDistinctValuesOptions(),
+    staleTime: 5 * 60 * 1000,
+  }));
+  let artists = $derived(distinctValuesQuery.data?.artists ?? []);
+  let books = $derived(distinctValuesQuery.data?.books ?? []);
 
   let playlistOptions = $derived(
     playlists.map((playlist) => ({
@@ -168,8 +180,8 @@
     <div class="card-body">
       <div class="form-grid">
         <Input label="Название" bind:value={title} placeholder="Например: Сила веры" required />
-        <Input label="Исполнитель" bind:value={artist} placeholder="Кто читает проповедь" required />
-        <Input label="Книга" bind:value={book} placeholder="Например: Иоанна" />
+        <Combobox label="Исполнитель" bind:value={artist} options={artists} placeholder="Кто читает проповедь" required />
+        <Combobox label="Книга" bind:value={book} options={books} placeholder="Например: Иоанна" />
         <Input label="Глава" bind:value={chapter} type="number" min="1" />
       </div>
       <div class="form-grid">

@@ -236,6 +236,14 @@ export const zAllSermonsResponse = z.strictObject({
     nextCursor: z.string().nullable()
 });
 
+/**
+ * Списки уникальных значений проповедников и книг
+ */
+export const zSermonDistinctValuesResponse = z.strictObject({
+    artists: z.array(z.string()),
+    books: z.array(z.string())
+});
+
 export const zUpdateSermonDto = z.strictObject({
     title: z.string(),
     description: z.string().nullable(),
@@ -482,6 +490,11 @@ export const zSermonControllerCreateBody = zCreateSermonDto;
  * Проповедь создана
  */
 export const zSermonControllerCreateResponse = zSermonEntity;
+
+/**
+ * Списки уникальных значений проповедников и книг
+ */
+export const zSermonControllerGetDistinctValuesResponse = zSermonDistinctValuesResponse;
 
 export const zSermonControllerGetStreamUrlPath = z.strictObject({
     id: z.uuid()

@@ -61,6 +61,7 @@ generated/
 | Эндпоинт | Guard | Статус | Где используется |
 |----------|-------|--------|------------------|
 | `GET /sermons` | публичный | ✅ живой | `Sermons.svelte` (`sermonControllerFindAllOptions()` с `search`), `PlaylistForm.svelte` (поисковый пикер) |
+| `GET /sermons/distinct-values` | публичный | ✅ живой | `SermonForm.svelte` (`sermonControllerGetDistinctValuesOptions()`, подсказки для Исполнителя/Книги) |
 | `GET /sermons/:id` | публичный | ✅ живой | `SermonDetail.svelte`, `SermonEdit.svelte` |
 | `POST /sermons` | AuthGuard | ✅ живой | `SermonForm.svelte` (`sermonControllerCreateMutation`) |
 | `PATCH /sermons/:id` | AuthGuard | ✅ живой | `SermonForm.svelte` (`sermonControllerUpdateMutation`) |

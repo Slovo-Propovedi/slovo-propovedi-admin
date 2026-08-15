@@ -199,6 +199,14 @@ export type AllSermonsResponse = {
     nextCursor: string | null;
 };
 
+/**
+ * Списки уникальных значений проповедников и книг
+ */
+export type SermonDistinctValuesResponse = {
+    artists: Array<string>;
+    books: Array<string>;
+};
+
 export type UpdateSermonDto = {
     title: string;
     description: string | null;
@@ -645,6 +653,22 @@ export type SermonControllerCreateResponses = {
 };
 
 export type SermonControllerCreateResponse = SermonControllerCreateResponses[keyof SermonControllerCreateResponses];
+
+export type SermonControllerGetDistinctValuesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/sermons/distinct-values';
+};
+
+export type SermonControllerGetDistinctValuesResponses = {
+    /**
+     * Списки уникальных значений проповедников и книг
+     */
+    200: SermonDistinctValuesResponse;
+};
+
+export type SermonControllerGetDistinctValuesResponse = SermonControllerGetDistinctValuesResponses[keyof SermonControllerGetDistinctValuesResponses];
 
 export type SermonControllerGetStreamUrlData = {
     body?: never;

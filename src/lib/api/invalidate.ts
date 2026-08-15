@@ -4,7 +4,10 @@
 // sections carry their playlists. Touching any of them therefore refreshes
 // the related lists AND details, otherwise list/detail pages show stale data.
 import type { QueryClient } from '@tanstack/svelte-query';
-import { getFilesQueryKey } from '$lib/api/generated/@tanstack/svelte-query.gen';
+import {
+  getFilesQueryKey,
+  sermonControllerGetDistinctValuesQueryKey,
+} from '$lib/api/generated/@tanstack/svelte-query.gen';
 
 function byOperation(operation: string): [{ _id: string }] {
   return [{ _id: operation }];
@@ -25,13 +28,15 @@ export function invalidateFiles(queryClient: QueryClient): void {
 }
 
 // After touching a sermon, refresh the sermon list/detail plus every playlist
-// and section query that may embed it.
+// and section query that may embed it, and the distinct-values suggestions
+// (a new preacher or book must appear in the combobox right after create/update).
 export function invalidateSermon(queryClient: QueryClient, sermonId?: string): void {
   invalidateOperation(queryClient, 'sermonControllerFindAll');
   invalidateOperation(queryClient, 'playlistControllerFindAll');
   invalidateOperation(queryClient, 'sectionControllerFindAll');
   invalidateOperation(queryClient, 'playlistControllerFindOne');
   invalidateOperation(queryClient, 'sectionControllerFindOne');
+  queryClient.invalidateQueries({ queryKey: sermonControllerGetDistinctValuesQueryKey() });
   if (sermonId) {
     queryClient.invalidateQueries({
       queryKey: byOperationWithPath('sermonControllerFindOne', { id: sermonId }),

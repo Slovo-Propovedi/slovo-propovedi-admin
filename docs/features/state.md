@@ -56,7 +56,7 @@ mutation.mutate({ body, path: { id } });
 |---------|-----------|
 | `invalidateOperation(qc, op)` | по имени операции (`{ _id }`) |
 | `invalidateFiles(qc)` | `getFilesQueryKey()` (после загрузки обложки) |
-| `invalidateSermon(qc, id?)` | `sermonControllerFindAll` + `playlistControllerFindAll` + `sectionControllerFindAll` + `playlistControllerFindOne` + `sectionControllerFindOne` (+ `sermonControllerFindOne` по `id`) |
+| `invalidateSermon(qc, id?)` | `sermonControllerFindAll` + `playlistControllerFindAll` + `sectionControllerFindAll` + `playlistControllerFindOne` + `sectionControllerFindOne` + `sermonControllerGetDistinctValues` (+ `sermonControllerFindOne` по `id`) |
 | `invalidatePlaylist(qc, id?)` | симметрично: playlists/sermons/sections (списки + детали) |
 | `invalidateSection(qc, id?)` | симметрично: sections/playlists/sermons (списки + детали) |
 | `invalidateUsers(qc, id?)` | `usersControllerFindAll` (+ `usersControllerFindOne` по `id`) |

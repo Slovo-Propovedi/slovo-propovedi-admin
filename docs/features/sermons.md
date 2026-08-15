@@ -29,8 +29,8 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | Поле | Контрол | Заметки |
 |------|---------|---------|
 | `title` | `Input` required | |
-| `artist` | `Input` required | проповедник |
-| `book` | `Input` | nullable → `null` при очистке |
+| `artist` | `Combobox` required | проповедник; подсказки из `sermonControllerGetDistinctValuesOptions` |
+| `book` | `Combobox` | nullable → `null` при очистке; подсказки из `sermonControllerGetDistinctValuesOptions` |
 | `chapter` | `Input` type=number | nullable → `null`; `fieldText` парсит |
 | `verseStart` / `verseEnd` | два `Input` number | `parseVerse` → `number \| [n,n] \| null` |
 | `description` | `Textarea` required | nullable |
@@ -42,9 +42,11 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 
 Блок «Плейлисты»: пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`).
 
+Поля «Исполнитель» и «Книга» — `Combobox` (см. [ui-components.md](./ui-components.md)): обычный `input` с фильтруемым списком ранее использованных значений из `sermonControllerGetDistinctValuesOptions` (`staleTime: 5 мин`). Подсказки — best-effort: при ошибке или пустом списке комбобокс ведёт себя как обычный инпут, сабмит не блокируется и ошибка не показывается.
+
 Мутации: `sermonControllerCreateMutation` / `sermonControllerUpdateMutation`. Тело — по семантике null/undefined (см. [`../conventions.md`](../conventions.md)): nullable → `null` при очистке, `playlistsIds` — всегда массив. Submit блокируется, пока идёт любая загрузка (`someUploadInProgress`). Ошибки — `getErrorMessage` → `.form-error-banner`.
 
-`onSuccess` → `invalidateSermon(queryClient[, id])` → `navigate('/sermons' | /sermons/:id)`.
+`onSuccess` → `invalidateSermon(queryClient[, id])` → `navigate('/sermons' | /sermons/:id)`. `invalidateSermon` дополнительно сбрасывает кэш `sermonControllerGetDistinctValues`, чтобы новые проповедник/книга сразу появились в подсказках.
 
 > ⚠️ Поле в API называется `playlistsIds` (обрати внимание на порядок: `playlists`, а не `playlistIds`).
 
