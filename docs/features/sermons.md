@@ -38,7 +38,9 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | `audioUrl` | `FileUpload kind="audio"` (MP3-guard) | nullable |
 | `textFileUrl` | `FileUpload kind="any"` | nullable |
 | `artwork` | `CoverPicker` | обязательная (string) |
-| `selectedPlaylistIds` | `CheckboxList` (только edit) | грузится через `playlistControllerFindAllOptions` |
+| `selectedPlaylistIds` | `CheckboxList` (create и edit) | грузится через `playlistControllerFindAllOptions` |
+
+Блок «Плейлисты»: пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`).
 
 Мутации: `sermonControllerCreateMutation` / `sermonControllerUpdateMutation`. Тело — по семантике null/undefined (см. [`../conventions.md`](../conventions.md)): nullable → `null` при очистке, `playlistsIds` — всегда массив. Submit блокируется, пока идёт любая загрузка (`someUploadInProgress`). Ошибки — `getErrorMessage` → `.form-error-banner`.
 

@@ -47,6 +47,7 @@
 
 - **Маршрут:** `/sermons/upload`.
 - Тонкая обёртка над `<SermonForm mode="create" />`: `Breadcrumbs` («Проповеди / Загрузка проповеди»), заголовок «Новая проповедь», подзаголовок «Загрузите аудио, текст и оформление проповеди».
+- В форме доступен блок «Плейлисты»: можно сразу выбрать плейлисты (ноль, один или несколько), в которые попадёт новая проповедь при создании.
 - Данных страница не грузит — вся логика в `SermonForm`.
 
 ## Редактирование
@@ -60,7 +61,7 @@
 - **Поля:**
   - «Основное»: название, исполнитель, книга, глава (`number`); «Стих (с)» / «Стих (по)» (`number`, для диапазона, парсятся через `parseVerse` → `number | [n, n] | null`); описание.
   - «Медиа»: обложка (`CoverPicker`), аудио (`FileUpload kind="audio"`, только MP3, `accept=".mp3,audio/mpeg"`), ссылка на YouTube (`Input`), текст (`FileUpload kind="any"`).
-  - В режиме **edit** — блок «Плейлисты»: `CheckboxList` (`playlistControllerFindAllOptions()`).
+  - В режимах **create** и **edit** — блок «Плейлисты»: `CheckboxList` (`playlistControllerFindAllOptions()`). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты».
 - **Мутации:** `sermonControllerCreateMutation` / `sermonControllerUpdateMutation`. Тело всегда включает `playlistsIds: selectedPlaylistIds` (пустой массив очищает связь).
 - **Валидация:** без клиентского zod — HTML `required`/`min` + backend `strictObject`. Nullable-поля (`book`, `chapter`, `verse`, `youtubeUrl`, `audioUrl`, `textFileUrl`) шлют `null` при очистке против `undefined` («не трогать»).
 - **Submit** заблокирован, пока идёт любая загрузка файла (`someUploadInProgress` = обложка ‖ аудио ‖ текст).

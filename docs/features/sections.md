@@ -43,6 +43,8 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SectionEntity }`.
 | `borderRadius` | checkbox | |
 | `selectedPlaylistIds` | `CheckboxList` (только edit) | через `playlistControllerFindAllOptions` |
 
+Блок «Плейлисты раздела»: пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`).
+
 **Enums — через label-мапы** в `utils/labels.ts`:
 
 | Enum | Значения (value → label) |

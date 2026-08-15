@@ -16,6 +16,7 @@
   import CoverPicker from '$lib/components/CoverPicker.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import Input from '$lib/components/Input.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Textarea from '$lib/components/Textarea.svelte';
 
   interface Props {
@@ -191,16 +192,22 @@
     </div>
   </div>
 
-  {#if isEdit}
-    <div class="card" style:margin-top="20px">
-      <div class="card-header">
-        <h2>Плейлисты</h2>
-      </div>
-      <div class="card-body">
-        <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
-      </div>
+  <div class="card" style:margin-top="20px">
+    <div class="card-header">
+      <h2>Плейлисты</h2>
     </div>
-  {/if}
+    <div class="card-body">
+      {#if playlistsQuery.isPending}
+        <div class="loading-inline">
+          <LoadingSpinner large />
+        </div>
+      {:else if playlistsQuery.isError && !playlistsQuery.data}
+        <div class="form-error-banner">Не удалось загрузить плейлисты</div>
+      {:else}
+        <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
+      {/if}
+    </div>
+  </div>
 
   <div class="form-actions">
     <Button type="button" variant="ghost" onclick={() => navigate(isEdit ? `/sermons/${id}` : '/sermons')}>

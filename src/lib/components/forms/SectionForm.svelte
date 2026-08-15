@@ -18,6 +18,7 @@
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
   import Input from '$lib/components/Input.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Select from '$lib/components/Select.svelte';
   import Textarea from '$lib/components/Textarea.svelte';
 
@@ -205,7 +206,15 @@
         <h2>Плейлисты раздела</h2>
       </div>
       <div class="card-body">
-        <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
+        {#if playlistsQuery.isPending}
+          <div class="loading-inline">
+            <LoadingSpinner large />
+          </div>
+        {:else if playlistsQuery.isError && !playlistsQuery.data}
+          <div class="form-error-banner">Не удалось загрузить плейлисты</div>
+        {:else}
+          <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
+        {/if}
       </div>
     </div>
   {/if}
