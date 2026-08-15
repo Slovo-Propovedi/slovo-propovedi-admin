@@ -12,7 +12,7 @@
 | `Input` | `Input.svelte` | `label`, `hint`, `error`, `value` ($bindable), `id`, + HTMLInput attrs | Текстовый/number-инпут с автогенерацией id | `Login`, `Sermons`, все формы |
 | `Textarea` | `Textarea.svelte` | `label`, `hint`, `error`, `value`, `id` | Многострочный ввод | все формы |
 | `Select` | `Select.svelte` | `label`, `hint`, `error`, `options[{value,label}]`, `value` | Выпадающий список | `SectionForm` |
-| `Combobox` | `Combobox.svelte` | `label`, `hint`, `error`, `options: string[]`, `value` ($bindable), `id`, + HTMLInput attrs | Инпут с фильтруемым списком подсказок (case-insensitive, можно вводить своё значение); keyboard: стрелки/Enter/Escape, ARIA combobox/listbox | `SermonForm` (Исполнитель/Книга) |
+| `Combobox` | `Combobox.svelte` | `label`, `hint`, `error`, `options: string[]`, `value` ($bindable), `id`, + HTMLInput attrs | Инпут с фильтруемым списком подсказок (case-insensitive, можно вводить своё значение); keyboard: стрелки/Home/End/Enter/Escape, активная подсказка подскролливается в список, список закрывается по потере фокуса (Tab), ARIA combobox/listbox | `SermonForm` (Исполнитель/Книга) |
 | `Button` | `Button.svelte` | `variant` ('primary'/'ghost'/'danger'), `size` ('sm'/'md'/'lg'), `loading`, `block`, children | Кнопка со встроенным спиннером | почти все страницы |
 | `CheckboxList` | `CheckboxList.svelte` | `options[{value,label,meta?,data?}]`, `selected[]`, `onToggle`, `item?` (snippet) | Группа чекбоксов | `SermonForm`, `SectionForm`, `PlaylistForm` |
 

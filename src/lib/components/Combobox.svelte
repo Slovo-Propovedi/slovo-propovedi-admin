@@ -70,6 +70,11 @@
   }
 
   function handleKeydown(event: KeyboardEvent): void {
+    // During an IME composition (e.g. Russian text) keys drive the
+    // composition, not the combobox — ignore them so Enter/Escape/arrows
+    // don't select or close mid-composition.
+    if (event.isComposing) return;
+
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       if (!isOpen) {
@@ -128,6 +133,24 @@
     }
   }
 
+  // Close when focus leaves the control (e.g. Tab) per the ARIA APG combobox
+  // pattern. `relatedTarget` is the element gaining focus; if it is null
+  // (focus went nowhere) or outside the control we close. Option mousedown
+  // calls preventDefault and keeps focus in the input, so it never fires.
+  function handleFocusOut(event: FocusEvent): void {
+    const nextTarget = event.relatedTarget;
+    if (rootEl && nextTarget instanceof Node && rootEl.contains(nextTarget)) return;
+    closeDropdown();
+  }
+
+  // Browsers do not auto-scroll to the aria-activedescendant target, so nudge
+  // the scrollable list when the active option changes. `block: 'nearest'`
+  // keeps the page itself still when the dropdown opens.
+  $effect(() => {
+    if (activeIndex < 0) return;
+    document.getElementById(optionId(activeIndex))?.scrollIntoView({ block: 'nearest' });
+  });
+
   // Close when clicking anywhere outside the control. The click itself keeps
   // its natural target (another field, a button), so focus is not stolen.
   $effect(() => {
@@ -143,7 +166,7 @@
   });
 </script>
 
-<div class="field" bind:this={rootEl}>
+<div class="field" bind:this={rootEl} onfocusout={handleFocusOut}>
   {#if label}
     <label class="field-label" for={id}>{label}</label>
   {/if}
