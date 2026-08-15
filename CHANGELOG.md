@@ -2,6 +2,14 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.6.0] - 2026-08-15
+
+### Features
+- combobox suggestions for preacher and book fields in sermon form
+
+### Bug Fixes
+- combobox a11y — scroll active option into view, close on focus loss
+
 ## [0.5.0] - 2026-08-15
 
 ### Features
