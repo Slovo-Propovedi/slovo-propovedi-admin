@@ -10,14 +10,15 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions()` |
+| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions({ query: { search } })` |
 | `/playlists/create` | `PlaylistCreate.svelte` | — (`PlaylistForm`, mode create) |
 | `/playlists/:id` | `PlaylistDetail.svelte` | `playlistControllerFindOneOptions` + `playlistControllerRemoveMutation` + `reorderSermonsInPlaylistMutation` |
 | `/playlists/:id/edit` | `PlaylistEdit.svelte` | `playlistControllerFindOneOptions` → `PlaylistForm`, mode edit |
 
 ## Список (`Playlists.svelte`)
 
-`createQuery(playlistControllerFindAllOptions)` → карточки; клик → `/playlists/:id`. Состояния: загрузка — `LoadingSpinner`, пусто — `EmptyState`, ошибки — штатно.
+- Debounce-поиск как на странице проповедей: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. Пустой термин не шлёт `search` → полная выборка.
+- `createQuery` → карточки; клик → `/playlists/:id`. Состояния: загрузка — `LoadingSpinner`, пусто — `EmptyState` (с CTA), поиск без совпадений — `EmptyState` «Ничего не найдено» без CTA, ошибки — штатно.
 
 ## Деталь и reorder (`PlaylistDetail.svelte`)
 
@@ -37,7 +38,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 | `selectedSermonIds` | поисковый `CheckboxList` | см. ниже |
 | `selectedSectionIds` | `CheckboxList` | через `sectionControllerFindAllOptions`, см. ниже |
 
-**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Пустой термин → полная выборка без `search`.
+**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Рядом с поиском показывается счётчик «Выбрано: N» (только когда выборка непуста), чтобы скрытые поиском выборы оставались заметными. Пустой термин → полная выборка без `search`.
 
 Строки пикера рендерят **полную информацию о проповеди** через `item`-snippet `CheckboxList`: обложка (`sermon.artwork`, иначе плейсхолдер с первой буквой), название, подзаголовок «Проповедник · Книга глава:стихи» (`artist` + `formatReference(book, chapter, verse)`; без книги — только проповедник), бейджи медиа (аудио/youtube/текст по наличию URL). В `options` каждая строка несёт `{ value, label, data: sermon }` — `data` отдаёт сырую `SermonEntity` в snippet. `toggleSermon` — добавление/удаление id.
 

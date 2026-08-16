@@ -61,7 +61,7 @@
 - **Поля:**
   - «Основное»: название, исполнитель, книга, глава (`number`); «Стих (с)» / «Стих (по)» (`number`, для диапазона, парсятся через `parseVerse` → `number | [n, n] | null`); описание.
   - «Медиа»: обложка (`CoverPicker`), аудио (`FileUpload kind="audio"`, только MP3, `accept=".mp3,audio/mpeg"`), ссылка на YouTube (`Input`), текст (`FileUpload kind="any"`).
-  - В режимах **create** и **edit** — блок «Плейлисты»: `CheckboxList` (`playlistControllerFindAllOptions()`). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты».
+  - В режимах **create** и **edit** — блок «Плейлисты»: **поисковый** `CheckboxList` (`playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } })` с `debounce(300)`; `selectedPlaylistIds` — источник истины и переживает поиск; рядом с поиском счётчик «Выбрано: N», когда выборка непуста). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты», активный поиск без совпадений — «Ничего не найдено».
 - **Мутации:** `sermonControllerCreateMutation` / `sermonControllerUpdateMutation`. Тело всегда включает `playlistsIds: selectedPlaylistIds` (пустой массив очищает связь).
 - **Валидация:** без клиентского zod — HTML `required`/`min` + backend `strictObject`. Nullable-поля (`book`, `chapter`, `verse`, `youtubeUrl`, `audioUrl`, `textFileUrl`) шлют `null` при очистке против `undefined` («не трогать»).
 - **Submit** заблокирован, пока идёт любая загрузка файла (`someUploadInProgress` = обложка ‖ аудио ‖ текст).

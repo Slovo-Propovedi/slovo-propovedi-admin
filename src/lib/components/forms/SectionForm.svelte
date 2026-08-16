@@ -7,6 +7,7 @@
   } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import type { CreateSectionDto, SectionEntity, UpdateSectionDto } from '$lib/api/generated';
   import { invalidateSection } from '$lib/api/invalidate';
+  import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
   import { fieldText, trimmed } from '$lib/utils/strings';
   import {
@@ -85,7 +86,21 @@
     { value: 'bothOnAndUnder', label: SLIDE_TITLE_LOCATION_LABELS.bothOnAndUnder },
   ];
 
-  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
+  // The playlist picker is search-driven: typing filters the CheckboxList via
+  // the debounced term, while `selectedPlaylistIds` stays the source of truth
+  // and persists across searches — a chosen playlist remains selected even
+  // when the current search hides it from view. An empty term sends no
+  // `search` param, so the initial load shows the full unfiltered list.
+  let searchInput = $state('');
+  let debouncedTerm = $state('');
+
+  const applySearch = debounce((value: string) => {
+    debouncedTerm = value;
+  }, 300);
+
+  const playlistsQuery = createQuery(() =>
+    playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+  );
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
   let playlistOptions = $derived(
@@ -206,12 +221,21 @@
         <h2>Плейлисты раздела</h2>
       </div>
       <div class="card-body">
+        <Input
+          label="Поиск"
+          placeholder="Название, описание…"
+          bind:value={searchInput}
+          oninput={() => applySearch(searchInput)}
+          hint={selectedPlaylistIds.length > 0 ? `Выбрано: ${selectedPlaylistIds.length}` : undefined}
+        />
         {#if playlistsQuery.isPending}
           <div class="loading-inline">
             <LoadingSpinner large />
           </div>
         {:else if playlistsQuery.isError && !playlistsQuery.data}
           <div class="form-error-banner">Не удалось загрузить плейлисты</div>
+        {:else if debouncedTerm !== '' && !playlistsQuery.isError && playlistOptions.length === 0}
+          <p class="field-hint">Ничего не найдено</p>
         {:else}
           <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
         {/if}

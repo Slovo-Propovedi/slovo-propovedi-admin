@@ -41,9 +41,9 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SectionEntity }`.
 | `itemsRows` | `Input` number | nullable → `null` |
 | `isDescriptionTitleOnSlideLarge` | checkbox | |
 | `borderRadius` | checkbox | |
-| `selectedPlaylistIds` | `CheckboxList` (только edit) | через `playlistControllerFindAllOptions` |
+| `selectedPlaylistIds` | `CheckboxList` (только edit) | **поисковый** пикер через `playlistControllerFindAllOptions({ query: { search } })` |
 
-Блок «Плейлисты раздела»: пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`).
+Блок «Плейлисты раздела»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } })` (фильтрация на сервере); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
 
 **Enums — через label-мапы** в `utils/labels.ts`:
 

@@ -188,6 +188,7 @@
         placeholder="Название, проповедник, книга…"
         bind:value={searchInput}
         oninput={() => applySearch(searchInput)}
+        hint={selectedSermonIds.length > 0 ? `Выбрано: ${selectedSermonIds.length}` : undefined}
       />
       <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon}>
         {#snippet item(option)}

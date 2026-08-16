@@ -421,6 +421,10 @@ export const zReorderPlaylistsInSectionPath = z.strictObject({
  */
 export const zReorderPlaylistsInSectionResponse = zStatusSectionsResponse;
 
+export const zPlaylistControllerFindAllQuery = z.strictObject({
+    search: z.string().min(1).optional()
+});
+
 /**
  * Список плейлистов
  */

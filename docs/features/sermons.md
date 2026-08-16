@@ -38,9 +38,9 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | `audioUrl` | `FileUpload kind="audio"` (MP3-guard) | nullable |
 | `textFileUrl` | `FileUpload kind="any"` | nullable |
 | `artwork` | `CoverPicker` | обязательная (string) |
-| `selectedPlaylistIds` | `CheckboxList` (create и edit) | грузится через `playlistControllerFindAllOptions` |
+| `selectedPlaylistIds` | `CheckboxList` (create и edit) | **поисковый** пикер через `playlistControllerFindAllOptions({ query: { search } })` |
 
-Блок «Плейлисты»: пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`).
+Блок «Плейлисты»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } })` (фильтрация на сервере); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
 
 Поля «Исполнитель» и «Книга» — `Combobox` (см. [ui-components.md](./ui-components.md)): обычный `input` с фильтруемым списком ранее использованных значений из `sermonControllerGetDistinctValuesOptions` (`staleTime: 5 мин`). Подсказки — best-effort: при ошибке или пустом списке комбобокс ведёт себя как обычный инпут, сабмит не блокируется и ошибка не показывается.
 

@@ -514,7 +514,12 @@ export type ReorderPlaylistsInSectionResponse = ReorderPlaylistsInSectionRespons
 export type PlaylistControllerFindAllData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Поисковый запрос по названию и описанию
+         */
+        search?: string;
+    };
     url: '/playlists';
 };
 

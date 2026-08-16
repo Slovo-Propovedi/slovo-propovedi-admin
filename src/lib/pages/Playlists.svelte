@@ -2,12 +2,25 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { playlistControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
+  import { debounce } from '$lib/utils/debounce';
   import Button from '$lib/components/Button.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Icon from '$lib/components/Icon.svelte';
+  import Input from '$lib/components/Input.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  const playlistsQuery = createQuery(() => playlistControllerFindAllOptions());
+  let searchInput = $state('');
+  let debouncedTerm = $state('');
+
+  // The query refetches only after the user pauses typing; an empty term sends
+  // no `search` param, which keeps the full unfiltered list on first load.
+  const applySearch = debounce((value: string) => {
+    debouncedTerm = value;
+  }, 300);
+
+  const playlistsQuery = createQuery(() =>
+    playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+  );
 
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
@@ -30,22 +43,39 @@
     </div>
   </div>
 
+  <Input
+    label="Поиск"
+    placeholder="Название, описание…"
+    bind:value={searchInput}
+    oninput={() => applySearch(searchInput)}
+  />
+
   {#if playlistsQuery.isPending}
     <div class="loading-inline">
       <LoadingSpinner large />
     </div>
   {:else if playlists.length === 0}
-    <div class="card">
-      <EmptyState
-        icon="♫"
-        title="Плейлистов пока нет"
-        hint="Соберите проповеди в подборку, чтобы показывать их в разделах."
-      >
-        {#snippet action()}
-          <Button onclick={() => navigate('/playlists/create')}>Создать плейлист</Button>
-        {/snippet}
-      </EmptyState>
-    </div>
+    {#if debouncedTerm !== '' && !playlistsQuery.isError}
+      <div class="card">
+        <EmptyState
+          icon="♫"
+          title="Ничего не найдено"
+          hint={`По запросу «${debouncedTerm}» ничего не найдено`}
+        />
+      </div>
+    {:else}
+      <div class="card">
+        <EmptyState
+          icon="♫"
+          title="Плейлистов пока нет"
+          hint="Соберите проповеди в подборку, чтобы показывать их в разделах."
+        >
+          {#snippet action()}
+            <Button onclick={() => navigate('/playlists/create')}>Создать плейлист</Button>
+          {/snippet}
+        </EmptyState>
+      </div>
+    {/if}
   {:else}
     <div class="list-grid stagger">
       {#each playlists as playlist}
