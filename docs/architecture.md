@@ -104,7 +104,7 @@ App.svelte
 | Тени | `--shadow-card`, `--shadow-card-hover`, `--shadow-gold`, `--shadow-gold-hover` |
 | Ритм | `--radius 10px`, `--radius-lg 16px`, `--sidebar-width 260px` |
 
-Секции CSS: base, motion (`fade-in-up`/`fade-in`/`pulse-soft`, `.stagger`), layout (`.app-layout`, `.app-main`), sidebar, cards, buttons, forms, file upload, cover/library, list rows, DnD, badges, breadcrumbs, empty state, spinner, modal, login, detail, home stats, player, toast. Брейкпоинты 900px и 640px; уважает `prefers-reduced-motion`.
+Разделы CSS: base, motion (`fade-in-up`/`fade-in`/`pulse-soft`, `.stagger`), layout (`.app-layout`, `.app-main`), sidebar, cards, buttons, forms, file upload, cover/library, list rows, DnD, badges, breadcrumbs, empty state, spinner, modal, login, detail, home stats, player, toast. Брейкпоинты 900px и 640px; уважает `prefers-reduced-motion`.
 
 ## Раскладка src/
 

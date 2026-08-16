@@ -224,7 +224,7 @@
 
   <div class="card" style:margin-top="20px">
     <div class="card-header">
-      <h2>Секции</h2>
+      <h2>Разделы</h2>
     </div>
     <div class="card-body">
       {#if sectionsQuery.isPending}
@@ -232,7 +232,7 @@
           <LoadingSpinner large />
         </div>
       {:else if sectionsQuery.isError && !sectionsQuery.data}
-        <div class="form-error-banner">Не удалось загрузить секции</div>
+        <div class="form-error-banner">Не удалось загрузить разделы</div>
       {:else}
         <CheckboxList options={sectionOptions} selected={selectedSectionIds} onToggle={toggleSection} />
       {/if}
