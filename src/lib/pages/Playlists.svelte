@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createQuery, keepPreviousData } from '@tanstack/svelte-query';
   import { playlistControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { getErrorMessage } from '$lib/utils/errors';
   import { navigate } from '$lib/router/router.svelte';
   import { debounce } from '$lib/utils/debounce';
   import Button from '$lib/components/Button.svelte';
@@ -70,6 +71,8 @@
     <div class="loading-inline">
       <LoadingSpinner large />
     </div>
+  {:else if playlistsQuery.isError && !playlistsQuery.data}
+    <div class="form-error-banner">{getErrorMessage(playlistsQuery.error)}</div>
   {:else if playlists.length === 0}
     {#if debouncedTerm !== '' && !playlistsQuery.isError}
       <div class="card">

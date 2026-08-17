@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createQuery, keepPreviousData } from '@tanstack/svelte-query';
   import { sermonControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
+  import { getErrorMessage } from '$lib/utils/errors';
   import { navigate } from '$lib/router/router.svelte';
   import { debounce } from '$lib/utils/debounce';
   import { sermonSubtitle } from '$lib/utils/labels';
@@ -73,6 +74,8 @@
     <div class="loading-inline">
       <LoadingSpinner large />
     </div>
+  {:else if sermonsQuery.isError && !sermonsQuery.data}
+    <div class="form-error-banner">{getErrorMessage(sermonsQuery.error)}</div>
   {:else if sermons.length === 0}
     <div class="card">
       <EmptyState
