@@ -10,8 +10,8 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { parseVerse } from '$lib/utils/labels';
-  import { fieldText, trimmed } from '$lib/utils/strings';
+  import { parseChapter, parseVerse } from '$lib/utils/labels';
+  import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
@@ -39,7 +39,12 @@
       artist: initial?.artist ?? '',
       artwork: initial?.artwork ?? '',
       book: initial?.book ?? '',
-      chapter: initial?.chapter == null ? '' : String(initial.chapter),
+      chapterStart: initial?.chapter == null
+        ? ''
+        : String(Array.isArray(initial.chapter) ? initial.chapter[0] : initial.chapter),
+      chapterEnd: initial?.chapter != null && Array.isArray(initial.chapter)
+        ? String(initial.chapter[1])
+        : '',
       verseStart: initial?.verse == null
         ? ''
         : String(Array.isArray(initial.verse) ? initial.verse[0] : initial.verse),
@@ -65,7 +70,8 @@
   let artist = $state(formSnapshot.artist);
   let artwork = $state(formSnapshot.artwork);
   let book = $state(formSnapshot.book);
-  let chapter = $state(formSnapshot.chapter);
+  let chapterStart = $state(formSnapshot.chapterStart);
+  let chapterEnd = $state(formSnapshot.chapterEnd);
   let verseStart = $state(formSnapshot.verseStart);
   let verseEnd = $state(formSnapshot.verseEnd);
   let description = $state(formSnapshot.description);
@@ -151,7 +157,7 @@
   function handleSubmit(): void {
     submitError = '';
 
-    const chapterNumber = Number(chapter);
+    const chapter = parseChapter(chapterStart, chapterEnd);
     const verse = parseVerse(verseStart, verseEnd);
 
     const body = {
@@ -162,7 +168,7 @@
       // column; `undefined` (omitting the key) would be read as "no change".
       description: trimmed(description) || null,
       book: trimmed(book) || null,
-      chapter: fieldText(chapter) === '' || Number.isNaN(chapterNumber) ? null : chapterNumber,
+      chapter: chapter ?? null,
       verse: verse ?? null,
       youtubeUrl: trimmed(youtubeUrl) || null,
       audioUrl: trimmed(audioUrl) || null,
@@ -197,7 +203,10 @@
         <Input label="Название" bind:value={title} placeholder="Например: Сила веры" required />
         <Combobox label="Исполнитель" bind:value={artist} options={artists} placeholder="Кто читает проповедь" required />
         <Combobox label="Книга" bind:value={book} options={books} placeholder="Например: Иоанна" />
-        <Input label="Глава" bind:value={chapter} type="number" min="1" />
+      </div>
+      <div class="form-grid">
+        <Input label="Глава (с)" bind:value={chapterStart} type="number" min="1" hint="Оставьте пустым, если глава не нужна." />
+        <Input label="Глава (по)" bind:value={chapterEnd} type="number" min="1" hint="Для диапазона глав, например 10–11." />
       </div>
       <div class="form-grid">
         <Input label="Стих (с)" bind:value={verseStart} type="number" min="1" hint="Оставьте пустым, если стих не нужен." />

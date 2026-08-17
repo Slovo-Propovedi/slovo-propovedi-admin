@@ -66,7 +66,10 @@ export const zPlaylistSermon = z.strictObject({
     artist: z.string(),
     artwork: z.string(),
     book: z.string().nullable(),
-    chapter: z.int().nullable(),
+    chapter: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
@@ -134,7 +137,10 @@ export const zSermonEntity = z.strictObject({
     artist: z.string(),
     artwork: z.string(),
     book: z.string().nullable(),
-    chapter: z.number().nullable(),
+    chapter: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
@@ -222,7 +228,10 @@ export const zCreateSermonDto = z.strictObject({
     artist: z.string(),
     artwork: z.string(),
     book: z.string().nullable(),
-    chapter: z.number().nullable(),
+    chapter: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
@@ -253,7 +262,10 @@ export const zUpdateSermonDto = z.strictObject({
     artist: z.string(),
     artwork: z.string(),
     book: z.string().nullable(),
-    chapter: z.number().nullable(),
+    chapter: z.union([
+        z.int(),
+        z.tuple([z.int(), z.int()])
+    ]).nullable(),
     verse: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])

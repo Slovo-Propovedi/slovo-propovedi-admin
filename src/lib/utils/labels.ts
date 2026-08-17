@@ -3,6 +3,7 @@ import type { CreateSectionDto, SermonEntity, UserRole } from '$lib/api/generate
 import { fieldText } from '$lib/utils/strings';
 
 export type Verse = number | [number, number];
+export type Chapter = number | [number, number];
 
 export const ITEMS_SIZE_LABELS: Record<NonNullable<CreateSectionDto['itemsSize']>, string> = {
   small: 'Маленький',
@@ -39,18 +40,25 @@ export function formatVerse(verse?: Verse | null): string {
   return String(verse);
 }
 
-// Parses the two verse inputs of a form into the wire type. Both fields are
+// Formats a single chapter or a chapter range into a readable string.
+export function formatChapter(chapter?: Chapter | null): string {
+  if (chapter === undefined || chapter === null) return '—';
+  if (Array.isArray(chapter)) return `${chapter[0]}–${chapter[1]}`;
+  return String(chapter);
+}
+
+// Parses the two range inputs of a form into the wire type. Both fields are
 // optional; the output follows this table:
-// - only "from"    → single verse number (16)
+// - only "from"    → single number (16)
 // - "from" + "to"  → range tuple [16, 18]
-// - neither        → undefined (no verse)
+// - neither        → undefined (no value)
 // - only "to"      → undefined: a lone end without a start is a user mistake,
 //                    so it is ignored rather than inventing a start.
 // A range collapses to a single number when the end is empty or equals the
 // start. The inputs are Svelte-bound `<input type="number">` fields, so they
 // arrive as numbers (or null when cleared); `fieldText` parses them at the
 // boundary without crashing on non-string values.
-export function parseVerse(start: unknown, end: unknown): Verse | undefined {
+function parseRange(start: unknown, end: unknown): number | [number, number] | undefined {
   const startText = fieldText(start);
   if (startText === '') return undefined;
   const startNumber = Number(startText);
@@ -62,19 +70,52 @@ export function parseVerse(start: unknown, end: unknown): Verse | undefined {
   return [startNumber, endNumber];
 }
 
+// Verse and chapter share the same wire shape (number or [start, end]), so
+// both parse through the same range parser.
+export function parseVerse(start: unknown, end: unknown): Verse | undefined {
+  return parseRange(start, end);
+}
+
+export function parseChapter(start: unknown, end: unknown): Chapter | undefined {
+  return parseRange(start, end);
+}
+
 // Formats a scripture reference like "Иоанна 3:16" or "Иоанна 3:16–18".
 // The colon appears between chapter and verse only when both are present:
 // without a verse the reference degrades to "Иоанна 3", without a chapter to
 // "Иоанна 16", and with no parts at all to an empty string (never a dash).
+// Chapter ranges extend the notation: "Иоанна 3:16–4:2" spans two chapters,
+// and a chapter range alone degrades to "Иоанна 3–4".
 export function formatReference(
   book?: string | null,
-  chapter?: number | null,
+  chapter?: Chapter | null,
   verse?: Verse | null,
 ): string {
-  const chapterText = chapter !== undefined && chapter !== null ? String(chapter) : '';
-  const verseText = verse !== undefined && verse !== null ? formatVerse(verse) : '';
+  const hasChapter = chapter !== undefined && chapter !== null;
+  const hasVerse = verse !== undefined && verse !== null;
 
-  const reference = [chapterText, verseText].filter(Boolean).join(':');
+  let reference = '';
+  if (hasChapter && Array.isArray(chapter)) {
+    if (hasVerse && Array.isArray(verse)) {
+      // A chapter range with a verse range spans both: "3:16–4:2".
+      reference = `${chapter[0]}:${verse[0]}–${chapter[1]}:${verse[1]}`;
+    } else {
+      // A chapter range never pairs with a single verse (the backend rejects
+      // it), so the display degrades to the chapter range alone rather than
+      // inventing a misleading shape.
+      reference = `${chapter[0]}–${chapter[1]}`;
+    }
+  } else if (hasChapter) {
+    if (hasVerse && Array.isArray(verse)) {
+      reference = `${chapter}:${verse[0]}–${verse[1]}`;
+    } else if (hasVerse) {
+      reference = `${chapter}:${verse}`;
+    } else {
+      reference = String(chapter);
+    }
+  } else if (hasVerse) {
+    reference = formatVerse(verse);
+  }
 
   return [book ?? '', reference].filter(Boolean).join(' ');
 }
@@ -88,7 +129,7 @@ export function formatReference(
 export function sermonSubtitle(sermon: {
   artist?: string | null;
   book?: string | null;
-  chapter?: number | null;
+  chapter?: Chapter | null;
   verse?: Verse | null;
 }): string {
   const reference = formatReference(sermon.book, sermon.chapter, sermon.verse);

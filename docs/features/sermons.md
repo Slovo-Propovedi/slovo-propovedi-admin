@@ -19,7 +19,7 @@
 
 - Debounce-поиск: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. Пустой термин не шлёт `search` → полная выборка.
 - Плоский список карточек (`list-grid`); клик → `/sermons/:id`.
-- Подзаголовок карточки — **«Проповедник · Книга глава:стихи»** через `formatReference(book, chapter, verse)` (`utils/labels.ts`); бейджи `аудио`/`youtube`/`текст` по наличию `audioUrl`/`youtubeUrl`/`textFileUrl`.
+- Подзаголовок карточки — **«Проповедник · Книга глава:стихи»** через `formatReference(book, chapter, verse)` (`utils/labels.ts`); нотация поддерживает диапазоны глав и стихов (`3:16–18`, `3:16–4:2`, `3–4`); бейджи `аудио`/`youtube`/`текст` по наличию `audioUrl`/`youtubeUrl`/`textFileUrl`.
 - Состояния: загрузка — `LoadingSpinner large`; пусто — `EmptyState` «Проповедей пока нет»; ошибки — штатно через `@tanstack/svelte-query`.
 
 ## Форма (`SermonForm.svelte`)
@@ -31,7 +31,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | `title` | `Input` required | |
 | `artist` | `Combobox` required | проповедник; подсказки из `sermonControllerGetDistinctValuesOptions` |
 | `book` | `Combobox` | nullable → `null` при очистке; подсказки из `sermonControllerGetDistinctValuesOptions` |
-| `chapter` | `Input` type=number | nullable → `null`; `fieldText` парсит |
+| `chapterStart` / `chapterEnd` | два `Input` number | `parseChapter` → `number \| [n,n] \| null`; nullable → `null` |
 | `verseStart` / `verseEnd` | два `Input` number | `parseVerse` → `number \| [n,n] \| null` |
 | `description` | `Textarea` required | nullable |
 | `youtubeUrl` | `Input` | nullable |

@@ -79,7 +79,10 @@ export type SermonEntity = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | null;
+    chapter: number | [
+        number,
+        number
+    ] | null;
     verse: number | [
         number,
         number
@@ -97,7 +100,10 @@ export type PlaylistSermon = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | null;
+    chapter: number | [
+        number,
+        number
+    ] | null;
     verse: number | [
         number,
         number
@@ -185,7 +191,10 @@ export type CreateSermonDto = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | null;
+    chapter: number | [
+        number,
+        number
+    ] | null;
     verse: number | [
         number,
         number
@@ -216,7 +225,10 @@ export type UpdateSermonDto = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | null;
+    chapter: number | [
+        number,
+        number
+    ] | null;
     verse: number | [
         number,
         number
