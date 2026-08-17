@@ -72,7 +72,8 @@ export const zPlaylistSermon = z.strictObject({
     ]).nullable(),
     verse: z.union([
         z.int(),
-        z.tuple([z.int(), z.int()])
+        z.tuple([z.int(), z.int()]),
+        z.array(z.union([z.int(), z.tuple([z.int(), z.int()])])).min(1)
     ]).nullable(),
     position: z.int(),
     playlists: z.array(z.strictObject({
@@ -143,7 +144,8 @@ export const zSermonEntity = z.strictObject({
     ]).nullable(),
     verse: z.union([
         z.int(),
-        z.tuple([z.int(), z.int()])
+        z.tuple([z.int(), z.int()]),
+        z.array(z.union([z.int(), z.tuple([z.int(), z.int()])])).min(1)
     ]).nullable(),
     playlists: z.array(zPlaylistEntity)
 });
@@ -231,11 +233,12 @@ export const zCreateSermonDto = z.strictObject({
     chapter: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
-    ]).nullable(),
+    ]).nullish(),
     verse: z.union([
         z.int(),
-        z.tuple([z.int(), z.int()])
-    ]).nullable(),
+        z.tuple([z.int(), z.int()]),
+        z.array(z.union([z.int(), z.tuple([z.int(), z.int()])])).min(1)
+    ]).nullish(),
     playlistsIds: z.array(z.string()).optional()
 });
 
@@ -265,11 +268,12 @@ export const zUpdateSermonDto = z.strictObject({
     chapter: z.union([
         z.int(),
         z.tuple([z.int(), z.int()])
-    ]).nullable(),
+    ]).nullish(),
     verse: z.union([
         z.int(),
-        z.tuple([z.int(), z.int()])
-    ]).nullable(),
+        z.tuple([z.int(), z.int()]),
+        z.array(z.union([z.int(), z.tuple([z.int(), z.int()])])).min(1)
+    ]).nullish(),
     playlistsIds: z.array(z.string())
 });
 

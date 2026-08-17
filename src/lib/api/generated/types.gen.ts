@@ -83,10 +83,16 @@ export type SermonEntity = {
         number,
         number
     ] | null;
+    /**
+     * Стих или стихи проповеди. Массив из двух целых чисел трактуется как диапазон от–до; массив, содержащий кортежи или смесь целых и кортежей, трактуется как список разрозненных отрезков (например [9,18] — диапазон, [[9,18],20] — отрезок 9–18 и стих 20).
+     */
     verse: number | [
         number,
         number
-    ] | null;
+    ] | Array<number | [
+        number,
+        number
+    ]> | null;
     playlists: Array<PlaylistEntity>;
 };
 
@@ -104,10 +110,16 @@ export type PlaylistSermon = {
         number,
         number
     ] | null;
+    /**
+     * Стих или стихи проповеди. Массив из двух целых чисел трактуется как диапазон от–до; массив, содержащий кортежи или смесь целых и кортежей, трактуется как список разрозненных отрезков (например [9,18] — диапазон, [[9,18],20] — отрезок 9–18 и стих 20).
+     */
     verse: number | [
         number,
         number
-    ] | null;
+    ] | Array<number | [
+        number,
+        number
+    ]> | null;
     position: number;
     playlists: Array<{
         id: string;
@@ -191,14 +203,20 @@ export type CreateSermonDto = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | [
+    chapter?: number | [
         number,
         number
     ] | null;
-    verse: number | [
+    /**
+     * Стих или стихи проповеди. Массив из двух целых чисел трактуется как диапазон от–до; массив, содержащий кортежи или смесь целых и кортежей, трактуется как список разрозненных отрезков (например [9,18] — диапазон, [[9,18],20] — отрезок 9–18 и стих 20).
+     */
+    verse?: number | [
         number,
         number
-    ] | null;
+    ] | Array<number | [
+        number,
+        number
+    ]> | null;
     playlistsIds?: Array<string>;
 };
 
@@ -225,14 +243,20 @@ export type UpdateSermonDto = {
     artist: string;
     artwork: string;
     book: string | null;
-    chapter: number | [
+    chapter?: number | [
         number,
         number
     ] | null;
-    verse: number | [
+    /**
+     * Стих или стихи проповеди. Массив из двух целых чисел трактуется как диапазон от–до; массив, содержащий кортежи или смесь целых и кортежей, трактуется как список разрозненных отрезков (например [9,18] — диапазон, [[9,18],20] — отрезок 9–18 и стих 20).
+     */
+    verse?: number | [
         number,
         number
-    ] | null;
+    ] | Array<number | [
+        number,
+        number
+    ]> | null;
     playlistsIds: Array<string>;
 };
 

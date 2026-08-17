@@ -135,7 +135,7 @@ src/
     │   ├── forms/             # SermonForm, SectionForm, PlaylistForm, UserForm
     │   └── …UI-примитивы и компоненты (см. features/ui-components.md)
     └── utils/
-        ├── labels.ts          # русские лейблы, formatReference/parseVerse/formatVerse
+        ├── labels.ts          # русские лейблы, formatReference/parseVerseInput/formatVerse
         ├── strings.ts         # trimmed/fieldText
         ├── debounce.ts        # trailing debounce
         ├── arrayOrder.ts      # hasOrderChanged (skip no-op reorder)

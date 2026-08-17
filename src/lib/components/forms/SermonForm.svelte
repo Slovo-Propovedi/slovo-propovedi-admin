@@ -10,7 +10,7 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { parseChapter, parseVerse } from '$lib/utils/labels';
+  import { parseChapter, parseVerseInput, serializeVerseInput } from '$lib/utils/labels';
   import { trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
@@ -45,12 +45,7 @@
       chapterEnd: initial?.chapter != null && Array.isArray(initial.chapter)
         ? String(initial.chapter[1])
         : '',
-      verseStart: initial?.verse == null
-        ? ''
-        : String(Array.isArray(initial.verse) ? initial.verse[0] : initial.verse),
-      verseEnd: initial?.verse != null && Array.isArray(initial.verse)
-        ? String(initial.verse[1])
-        : '',
+      verseText: serializeVerseInput(initial?.verse),
       description: initial?.description ?? '',
       youtubeUrl: initial?.youtubeUrl ?? '',
       audioUrl: initial?.audioUrl ?? '',
@@ -72,8 +67,7 @@
   let book = $state(formSnapshot.book);
   let chapterStart = $state(formSnapshot.chapterStart);
   let chapterEnd = $state(formSnapshot.chapterEnd);
-  let verseStart = $state(formSnapshot.verseStart);
-  let verseEnd = $state(formSnapshot.verseEnd);
+  let verseText = $state(formSnapshot.verseText);
   let description = $state(formSnapshot.description);
   let youtubeUrl = $state(formSnapshot.youtubeUrl);
   let audioUrl = $state(formSnapshot.audioUrl);
@@ -158,7 +152,7 @@
     submitError = '';
 
     const chapter = parseChapter(chapterStart, chapterEnd);
-    const verse = parseVerse(verseStart, verseEnd);
+    const verse = parseVerseInput(verseText);
 
     const body = {
       title: trimmed(title),
@@ -208,10 +202,7 @@
         <Input label="Глава (с)" bind:value={chapterStart} type="number" min="1" hint="Оставьте пустым, если глава не нужна." />
         <Input label="Глава (по)" bind:value={chapterEnd} type="number" min="1" hint="Для диапазона глав, например 10–11." />
       </div>
-      <div class="form-grid">
-        <Input label="Стих (с)" bind:value={verseStart} type="number" min="1" hint="Оставьте пустым, если стих не нужен." />
-        <Input label="Стих (по)" bind:value={verseEnd} type="number" min="1" hint="Для диапазона, например 16–18." />
-      </div>
+      <Input label="Стихи" bind:value={verseText} hint="Например: 16, 16–18 или 9–18, 20. Оставьте пустым, если стихи не нужны." />
       <Textarea label="Описание" bind:value={description} required />
     </div>
   </div>
