@@ -2,6 +2,11 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.8.1] - 2026-08-17
+
+### Bug Fixes
+- allow empty sermon description in admin form
+
 ## [0.8.0] - 2026-08-17
 
 ### Features
