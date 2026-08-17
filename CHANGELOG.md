@@ -2,6 +2,8 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.7.2] - 2026-08-17
+
 ## [0.7.1] - 2026-08-17
 
 ### Maintenance
