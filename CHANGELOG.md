@@ -2,6 +2,18 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.8.0] - 2026-08-17
+
+### Features
+- add server pagination to admin list screens
+- add verse validation and chapter-range verse inputs
+- support disjoint verse segments and optional scripture fields in sermon form
+- support chapter ranges in sermon form and references
+
+### Bug Fixes
+- fail loud on list fetch errors and extract ink token
+- style input errors and dedupe verse predicates
+
 ## [0.7.2] - 2026-08-17
 
 ## [0.7.1] - 2026-08-17
