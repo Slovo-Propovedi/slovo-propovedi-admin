@@ -34,7 +34,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | `book` | `Combobox` | nullable → `null` при очистке; подсказки из `sermonControllerGetDistinctValuesOptions` |
 | `chapterStart` / `chapterEnd` | два `Input` number | `parseChapter` → `number \| [n,n] \| null`; nullable → `null` |
 | `verseText` / `verseStart` / `verseEnd` | `Input` text **или** два `Input` number | режим зависит от `chapterEnd`: пуст → текстовое поле (`parseVerseInput` → `number \| [n,n] \| VerseSegment[] \| null`); заполнен → пара «Стих (с)/(по)» (`[start, end]` или `null`) |
-| `description` | `Textarea` required | nullable |
+| `description` | `Textarea` | nullable → `null` при очистке |
 | `youtubeUrl` | `Input` | nullable |
 | `audioUrl` | `FileUpload kind="audio"` (MP3-guard) | nullable |
 | `textFileUrl` | `FileUpload kind="any"` | nullable |

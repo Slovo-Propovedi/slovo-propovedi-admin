@@ -336,7 +336,7 @@
       {:else}
         <Input label="Стихи" bind:value={verseText} error={verseError} hint="Например: 16, 16–18 или 9–18, 20. Оставьте пустым, если стихи не нужны." />
       {/if}
-      <Textarea label="Описание" bind:value={description} required />
+      <Textarea label="Описание" bind:value={description} hint="Необязательно." />
     </div>
   </div>
 
