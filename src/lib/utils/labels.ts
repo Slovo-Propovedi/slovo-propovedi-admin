@@ -117,6 +117,11 @@ function parseVerseSegment(part: string): VerseSegment | undefined {
   if (match === null) return undefined;
   const start = Number(match[1]);
   const end = match[2] === undefined ? undefined : Number(match[2]);
+  // Verses are 1-based and must round-trip through String(): reject 0,
+  // negatives and anything beyond Number.MAX_SAFE_INTEGER (2^53 − 1), which
+  // String() would render as "1e+22" and could never parse back.
+  if (!Number.isSafeInteger(start) || start < 1) return undefined;
+  if (end !== undefined && (!Number.isSafeInteger(end) || end < 1)) return undefined;
   if (end === undefined || end === start) return start;
   return [start, end];
 }

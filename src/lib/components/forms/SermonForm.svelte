@@ -10,8 +10,8 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { parseChapter, parseVerseInput, serializeVerseInput } from '$lib/utils/labels';
-  import { trimmed } from '$lib/utils/strings';
+  import { parseChapter, parseVerseInput, serializeVerseInput, type Verse } from '$lib/utils/labels';
+  import { fieldText, trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
   import CheckboxList from '$lib/components/CheckboxList.svelte';
@@ -34,24 +34,44 @@
   // props stay stable for the form's lifetime. Reading them through closures
   // snapshots the values seen at mount time.
   function createFormSnapshot() {
+    const chapter = initial?.chapter;
+    const chapterIsRange = chapter != null && Array.isArray(chapter);
+    const verse = initial?.verse;
+    const verseIsRangeTuple = isVerseRangeTuple(verse);
+
     return {
       title: initial?.title ?? '',
       artist: initial?.artist ?? '',
       artwork: initial?.artwork ?? '',
       book: initial?.book ?? '',
-      chapterStart: initial?.chapter == null
+      chapterStart: chapter == null
         ? ''
-        : String(Array.isArray(initial.chapter) ? initial.chapter[0] : initial.chapter),
-      chapterEnd: initial?.chapter != null && Array.isArray(initial.chapter)
-        ? String(initial.chapter[1])
-        : '',
-      verseText: serializeVerseInput(initial?.verse),
+        : String(Array.isArray(chapter) ? chapter[0] : chapter),
+      chapterEnd: chapterIsRange ? String(chapter[1]) : '',
+      // In range mode the verse pair is prefilled from a range tuple; single
+      // verses and segments are illegal with a chapter range server-side, so
+      // they leave the pair empty. In plain mode the text input holds the
+      // serialized verse ('' for null/undefined).
+      verseText: chapterIsRange ? '' : serializeVerseInput(verse),
+      verseStart: chapterIsRange && verseIsRangeTuple ? String(verse[0]) : '',
+      verseEnd: chapterIsRange && verseIsRangeTuple ? String(verse[1]) : '',
       description: initial?.description ?? '',
       youtubeUrl: initial?.youtubeUrl ?? '',
       audioUrl: initial?.audioUrl ?? '',
       textFileUrl: initial?.textFileUrl ?? '',
       selectedPlaylistIds: initial?.playlists?.map((playlist) => playlist.id) ?? [],
     };
+  }
+
+  // A two-integer array is a range tuple on the wire; anything else (single
+  // verse, segments list, null) is not.
+  function isVerseRangeTuple(verse: unknown): verse is [number, number] {
+    return (
+      Array.isArray(verse) &&
+      verse.length === 2 &&
+      typeof verse[0] === 'number' &&
+      typeof verse[1] === 'number'
+    );
   }
 
   function isEditMode(): boolean {
@@ -68,6 +88,11 @@
   let chapterStart = $state(formSnapshot.chapterStart);
   let chapterEnd = $state(formSnapshot.chapterEnd);
   let verseText = $state(formSnapshot.verseText);
+  let verseStart = $state(formSnapshot.verseStart);
+  let verseEnd = $state(formSnapshot.verseEnd);
+  // Tracks the previous chapter-end value so the input handler can tell a
+  // mode switch (empty ↔ non-empty) apart from a plain value change.
+  let lastChapterEnd = $state(formSnapshot.chapterEnd);
   let description = $state(formSnapshot.description);
   let youtubeUrl = $state(formSnapshot.youtubeUrl);
   let audioUrl = $state(formSnapshot.audioUrl);
@@ -148,11 +173,111 @@
   const isSubmitting = $derived(createMutation.isPending || updateMutation.isPending);
   const someUploadInProgress = $derived(artworkUploading || audioUploading || textFileUploading);
 
+  // A filled chapter-end switches the verse field into the range pair; an
+  // empty one keeps the free-text input.
+  const isRangeMode = $derived(fieldText(chapterEnd) !== '');
+
+  // Live validation of the verse input. The error is derived state, so it
+  // appears while typing, not only after a submit attempt.
+  const verseError = $derived.by(() => {
+    if (isRangeMode) {
+      const startFilled = fieldText(verseStart) !== '';
+      const endFilled = fieldText(verseEnd) !== '';
+      if (startFilled !== endFilled) {
+        return 'Заполните оба поля стихов или оставьте их пустыми.';
+      }
+      return '';
+    }
+    const text = verseText.trim();
+    if (text !== '' && parseVerseInput(text) === undefined) {
+      return 'Поле «Стихи» заполнено неверно. Примеры: 16, 16–18, 9–18, 20.';
+    }
+    return '';
+  });
+
+  function isOneVerseFieldFilled(): boolean {
+    const startFilled = fieldText(verseStart) !== '';
+    const endFilled = fieldText(verseEnd) !== '';
+    return startFilled !== endFilled;
+  }
+
+  // Entering range mode: the free-text verse becomes a pair of number inputs.
+  // A range tuple maps to both fields, a single verse to the start only, and
+  // segments/invalid/empty text leaves both empty. The raw text stays in
+  // `verseText` untouched so switching back restores exactly what was typed.
+  function enterRangeMode(): void {
+    const parsed = parseVerseInput(verseText);
+    if (isVerseRangeTuple(parsed)) {
+      verseStart = String(parsed[0]);
+      verseEnd = String(parsed[1]);
+    } else if (typeof parsed === 'number') {
+      verseStart = String(parsed);
+      verseEnd = '';
+    } else {
+      verseStart = '';
+      verseEnd = '';
+    }
+  }
+
+  // Leaving range mode: a completed pair becomes the plain-text range; an
+  // empty pair restores the raw text preserved on entry (verseText was never
+  // touched while in range mode). A half-filled pair is refused earlier in
+  // handleChapterEndInput, so it never reaches this function.
+  function leaveRangeMode(): void {
+    const start = fieldText(verseStart);
+    const end = fieldText(verseEnd);
+    if (start !== '' && end !== '') {
+      verseText = serializeVerseInput([Number(start), Number(end)]);
+    }
+  }
+
+  // The chapter-end input is the mode switch: non-empty means range mode.
+  // The Input's `bind:value` updates `chapterEnd` before this handler runs,
+  // so `lastChapterEnd` (updated at the end) holds the previous value.
+  function handleChapterEndInput(): void {
+    const end = fieldText(chapterEnd);
+    const wasRangeMode = lastChapterEnd !== '';
+    if (end === '' && wasRangeMode) {
+      // Leaving range mode with a half-filled verse pair is refused: plain
+      // mode cannot represent it honestly (the text input would have to guess
+      // which field the user meant), so the clear is blocked until the pair
+      // is either completed or emptied.
+      if (isOneVerseFieldFilled()) {
+        chapterEnd = lastChapterEnd;
+        return;
+      }
+      leaveRangeMode();
+    } else if (end !== '' && !wasRangeMode) {
+      enterRangeMode();
+    }
+    lastChapterEnd = end;
+  }
+
+  // Resolves the verse payload for submit. Returns null to clear the field,
+  // the parsed value to send it, or undefined when the input is invalid — the
+  // caller must not submit in that case (the inline error is already shown).
+  function resolveVerse(): Verse | null | undefined {
+    if (isRangeMode) {
+      const start = fieldText(verseStart);
+      const end = fieldText(verseEnd);
+      if (start === '' && end === '') return null;
+      if (start === '' || end === '') return undefined;
+      return [Number(start), Number(end)];
+    }
+    const text = verseText.trim();
+    if (text === '') return null;
+    return parseVerseInput(text);
+  }
+
   function handleSubmit(): void {
     submitError = '';
 
     const chapter = parseChapter(chapterStart, chapterEnd);
-    const verse = parseVerseInput(verseText);
+    const verse = resolveVerse();
+    // An invalid verse input blocks the submit; the inline error is already
+    // visible, so nothing is sent — in particular, unparseable text is never
+    // coerced to null (which would silently wipe the saved verse).
+    if (verse === undefined) return;
 
     const body = {
       title: trimmed(title),
@@ -200,9 +325,24 @@
       </div>
       <div class="form-grid">
         <Input label="Глава (с)" bind:value={chapterStart} type="number" min="1" hint="Оставьте пустым, если глава не нужна." />
-        <Input label="Глава (по)" bind:value={chapterEnd} type="number" min="1" hint="Для диапазона глав, например 10–11." />
+        <Input
+          label="Глава (по)"
+          bind:value={chapterEnd}
+          oninput={() => handleChapterEndInput()}
+          type="number"
+          min="1"
+          hint="Для диапазона глав, например 10–11."
+        />
       </div>
-      <Input label="Стихи" bind:value={verseText} hint="Например: 16, 16–18 или 9–18, 20. Оставьте пустым, если стихи не нужны." />
+      {#if isRangeMode}
+        <div class="form-grid">
+          <Input label="Стих (с)" bind:value={verseStart} type="number" min="1" step="1" error={verseError} />
+          <Input label="Стих (по)" bind:value={verseEnd} type="number" min="1" step="1" />
+        </div>
+        <p class="field-hint">С какого стиха начинается первая глава и каким заканчивается вторая. Например: 23–1.</p>
+      {:else}
+        <Input label="Стихи" bind:value={verseText} error={verseError} hint="Например: 16, 16–18 или 9–18, 20. Оставьте пустым, если стихи не нужны." />
+      {/if}
       <Textarea label="Описание" bind:value={description} required />
     </div>
   </div>
