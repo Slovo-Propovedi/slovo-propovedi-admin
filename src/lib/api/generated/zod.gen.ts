@@ -303,6 +303,11 @@ export const zUserResponse = z.strictObject({
     role: zUserRole
 });
 
+export const zAllUsersResponse = z.strictObject({
+    users: z.array(zUserResponse),
+    count: z.int()
+});
+
 export const zCreateUserRequest = z.strictObject({
     name: z.string(),
     email: z.string(),
@@ -438,11 +443,13 @@ export const zReorderPlaylistsInSectionPath = z.strictObject({
 export const zReorderPlaylistsInSectionResponse = zStatusSectionsResponse;
 
 export const zPlaylistControllerFindAllQuery = z.strictObject({
-    search: z.string().min(1).optional()
+    search: z.string().min(1).optional(),
+    page: z.int().gte(1).optional(),
+    limit: z.int().gte(1).lte(100).optional()
 });
 
 /**
- * Список плейлистов
+ * Список плейлистов; count — общее число; сортировка по убыванию id (новые первыми); при поиске — по релевантности, затем по убыванию id
  */
 export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
 
@@ -496,11 +503,13 @@ export const zReorderSermonsInPlaylistResponse = zStatusPlaylistResponse;
 export const zSermonControllerFindAllQuery = z.strictObject({
     take: z.int().gte(1).lte(100).optional(),
     cursor: z.uuid().optional(),
-    search: z.string().min(1).optional()
+    search: z.string().min(1).optional(),
+    page: z.int().gte(1).optional(),
+    limit: z.int().gte(1).lte(100).optional()
 });
 
 /**
- * Список проповедей с количеством
+ * Список проповедей с количеством; в оффсетном режиме count — общее число записей, nextCursor — null
  */
 export const zSermonControllerFindAllResponse = zAllSermonsResponse;
 
@@ -580,10 +589,15 @@ export const zAuthControllerLogoutResponse = z.void();
  */
 export const zAuthControllerGetProfileResponse = zUserResponse;
 
+export const zUsersControllerFindAllQuery = z.strictObject({
+    page: z.int().gte(1).optional(),
+    limit: z.int().gte(1).lte(100).optional()
+});
+
 /**
- * Список пользователей
+ * Список пользователей; count — общее число пользователей
  */
-export const zUsersControllerFindAllResponse = z.array(zUserResponse);
+export const zUsersControllerFindAllResponse = zAllUsersResponse;
 
 export const zUsersControllerCreateBody = zCreateUserRequest;
 

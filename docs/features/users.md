@@ -14,7 +14,7 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/users` | `Users.svelte` | `usersControllerFindAllOptions()` + клиентский поиск |
+| `/users` | `Users.svelte` | `usersControllerFindAllOptions({ query: { page, limit } })` + клиентский поиск |
 | `/users/create` | `UserCreate.svelte` | — (`UserForm`, mode create) |
 | `/users/:id` | `UserDetail.svelte` | `usersControllerFindOneOptions` + `usersControllerRemoveMutation` + `usersControllerChangePasswordMutation` |
 | `/users/:id/edit` | `UserEdit.svelte` | `usersControllerFindOneOptions` → `UserForm`, mode edit |
@@ -23,11 +23,11 @@
 
 ## Список (`Users.svelte`)
 
-- **Клиентский поиск + debounce:** `searchInput` → `debounce(300)` → `debouncedTerm`. Фильтрация идёт **на клиенте** по `name`/`email`/`username` (список маленький), а не на сервере — в отличие от sermons (там поиск серверный). Пустой термин показывает полный список.
-- Данные: `createQuery(() => usersControllerFindAllOptions())` → `usersQuery.data` (плоский массив `UserResponse[]`).
+- **Оффсетная пагинация:** `createQuery(() => usersControllerFindAllOptions({ query: { page, limit: 20 } }))` → `usersQuery.data` — обёртка `{ users, count }` (`AllUsersResponse`), не плоский массив. `placeholderData: keepPreviousData` — предыдущая страница видна, пока грузится следующая. `pageCount = ceil(count / 20)`; `Pagination` рендерится при `pageCount > 1`.
+- **Клиентский поиск + debounce:** `searchInput` → `debounce(300)` → `debouncedTerm`. Фильтрация идёт **на клиенте** по `name`/`email`/`username` (у эндпоинта **нет** серверного `search` — в отличие от sermons/playlists). Фильтр работает **только по загруженной странице** (hint под инпутом: «Фильтрует только загруженную страницу.»); пагинация переключает полные страницы. Пустой термин показывает всех пользователей текущей страницы.
 - Карточки `.list-item` в `list-grid`: обложка-плейсхолдер (первая буква имени), имя, email; бейджи: `badge-gold` — роль (`ROLE_LABELS[user.role]`), `badge-neutral` — `username`. Клик/Enter → `/users/:id`.
 - Кнопка «Создать» (в шапке и в `EmptyState`-snippet) → `/users/create`.
-- Состояния: загрузка — `LoadingSpinner large`; пусто — `EmptyState` «Пользователей пока нет» (с hint «Создайте первого администратора…»); ошибка — `.form-error-banner` с `getErrorMessage`.
+- Состояния: загрузка — `LoadingSpinner large`; пусто — `EmptyState` «Пользователей пока нет» (с hint «Создайте первого администратора…»); фильтр без совпадений на странице — `EmptyState` «Ничего не найдено» («…на этой странице ничего не найдено»); ошибка — `.form-error-banner` с `getErrorMessage`.
 
 ## Деталь (`UserDetail.svelte`)
 

@@ -10,14 +10,15 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/sermons` | `Sermons.svelte` | `sermonControllerFindAllOptions({ query: { search } })` |
+| `/sermons` | `Sermons.svelte` | `sermonControllerFindAllOptions({ query: { search, page, limit } })` — оффсетная пагинация |
 | `/sermons/upload` | `UploadSermon.svelte` | — (делегирует `SermonForm`, mode create) |
 | `/sermons/:id` | `SermonDetail.svelte` | `sermonControllerFindOneOptions({ path: { id } })` + `sermonControllerRemoveMutation` |
 | `/sermons/:id/edit` | `SermonEdit.svelte` | `sermonControllerFindOneOptions` → `SermonForm`, mode edit |
 
 ## Список (`Sermons.svelte`)
 
-- Debounce-поиск: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. Пустой термин не шлёт `search` → полная выборка.
+- Debounce-поиск: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20 } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- **Оффсетная пагинация:** `page` (1-based) + `limit` = 20; `take`/`cursor` не шлются (взаимоисключение на backend). `placeholderData: keepPreviousData` — предыдущая страница видна, пока грузится следующая. `pageCount = ceil(count / 20)`; `Pagination` рендерится при `pageCount > 1`.
 - Плоский список карточек (`list-grid`); клик → `/sermons/:id`.
 - Подзаголовок карточки — **«Проповедник · Книга глава:стихи»** через `formatReference(book, chapter, verse)` (`utils/labels.ts`); нотация поддерживает диапазоны глав и стихов (`3:16–18`, `3:16–4:2`, `3–4`) и разрозненные отрезки стихов (`1:9–18, 20`); бейджи `аудио`/`youtube`/`текст` по наличию `audioUrl`/`youtubeUrl`/`textFileUrl`.
 - Состояния: загрузка — `LoadingSpinner large`; пусто — `EmptyState` «Проповедей пока нет»; ошибки — штатно через `@tanstack/svelte-query`.

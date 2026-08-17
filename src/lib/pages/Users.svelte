@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createQuery } from '@tanstack/svelte-query';
+  import { createQuery, keepPreviousData } from '@tanstack/svelte-query';
   import { usersControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { getErrorMessage } from '$lib/utils/errors';
   import { ROLE_LABELS } from '$lib/utils/labels';
@@ -10,19 +10,31 @@
   import Icon from '$lib/components/Icon.svelte';
   import Input from '$lib/components/Input.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+
+  const PAGE_LIMIT = 20;
 
   let searchInput = $state('');
   let debouncedTerm = $state('');
+  let page = $state(1);
 
-  // The list is small, so filtering happens client-side after a short pause;
-  // an empty term shows the full unfiltered list on first load.
+  // The endpoint exposes no search param, so filtering stays client-side after
+  // a short pause. It operates on the currently loaded page only — the hint
+  // under the input says so, and pagination moves between full pages.
   const applySearch = debounce((value: string) => {
     debouncedTerm = value;
   }, 300);
 
-  const usersQuery = createQuery(() => usersControllerFindAllOptions());
+  const usersQuery = createQuery(() => ({
+    ...usersControllerFindAllOptions({ query: { page, limit: PAGE_LIMIT } }),
+    // Keep the previous page visible while the next one loads — no flicker.
+    placeholderData: keepPreviousData,
+  }));
 
-  let users = $derived(usersQuery.data ?? []);
+  let users = $derived(usersQuery.data?.users ?? []);
+  let totalCount = $derived(usersQuery.data?.count ?? 0);
+  let pageCount = $derived(Math.max(1, Math.ceil(totalCount / PAGE_LIMIT)));
+
   let filteredUsers = $derived(
     debouncedTerm
       ? users.filter((user) => {
@@ -38,6 +50,10 @@
 
   function openUser(id: string): void {
     navigate(`/users/${id}`);
+  }
+
+  function changePage(next: number): void {
+    page = next;
   }
 </script>
 
@@ -60,6 +76,7 @@
     placeholder="Имя, email или логин…"
     bind:value={searchInput}
     oninput={() => applySearch(searchInput)}
+    hint="Фильтрует только загруженную страницу."
   />
 
   {#if usersQuery.isPending}
@@ -69,17 +86,27 @@
   {:else if usersQuery.isError && !usersQuery.data}
     <div class="form-error-banner">{getErrorMessage(usersQuery.error)}</div>
   {:else if filteredUsers.length === 0}
-    <div class="card">
-      <EmptyState
-        icon="✦"
-        title="Пользователей пока нет"
-        hint="Создайте первого администратора — он получит доступ к админ-панели."
-      >
-        {#snippet action()}
-          <Button onclick={() => navigate('/users/create')}>Создать</Button>
-        {/snippet}
-      </EmptyState>
-    </div>
+    {#if debouncedTerm !== ''}
+      <div class="card">
+        <EmptyState
+          icon="✦"
+          title="Ничего не найдено"
+          hint={`По запросу «${debouncedTerm}» на этой странице ничего не найдено`}
+        />
+      </div>
+    {:else}
+      <div class="card">
+        <EmptyState
+          icon="✦"
+          title="Пользователей пока нет"
+          hint="Создайте первого администратора — он получит доступ к админ-панели."
+        >
+          {#snippet action()}
+            <Button onclick={() => navigate('/users/create')}>Создать</Button>
+          {/snippet}
+        </EmptyState>
+      </div>
+    {/if}
   {:else}
     <div class="list-grid stagger">
       {#each filteredUsers as user}
@@ -110,4 +137,6 @@
       {/each}
     </div>
   {/if}
+
+  <Pagination {page} {pageCount} onPageChange={changePage} />
 </div>

@@ -286,6 +286,11 @@ export const UserRole = {
  */
 export type UserRole = typeof UserRole[keyof typeof UserRole];
 
+export type AllUsersResponse = {
+    users: Array<UserResponse>;
+    count: number;
+};
+
 export type UserResponse = {
     id: string;
     name: string;
@@ -555,13 +560,21 @@ export type PlaylistControllerFindAllData = {
          * Поисковый запрос по названию и описанию
          */
         search?: string;
+        /**
+         * Номер страницы для оффсетной пагинации
+         */
+        page?: number;
+        /**
+         * Размер страницы; если указан без page, используется первая страница
+         */
+        limit?: number;
     };
     url: '/playlists';
 };
 
 export type PlaylistControllerFindAllResponses = {
     /**
-     * Список плейлистов
+     * Список плейлистов; count — общее число; сортировка по убыванию id (новые первыми); при поиске — по релевантности, затем по убыванию id
      */
     200: AllPlaylistsResponse;
 };
@@ -666,13 +679,21 @@ export type SermonControllerFindAllData = {
          * Поисковый запрос по названию, проповеднику, книге и описанию
          */
         search?: string;
+        /**
+         * Номер страницы для оффсетной пагинации; взаимоисключителен с take и cursor (одновременное использование → 400)
+         */
+        page?: number;
+        /**
+         * Размер страницы; если указан без page, используется первая страница; взаимоисключителен с take и cursor (одновременное использование → 400)
+         */
+        limit?: number;
     };
     url: '/sermons';
 };
 
 export type SermonControllerFindAllResponses = {
     /**
-     * Список проповедей с количеством
+     * Список проповедей с количеством; в оффсетном режиме count — общее число записей, nextCursor — null
      */
     200: AllSermonsResponse;
 };
@@ -850,15 +871,24 @@ export type AuthControllerGetProfileResponse = AuthControllerGetProfileResponses
 export type UsersControllerFindAllData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Номер страницы для оффсетной пагинации
+         */
+        page?: number;
+        /**
+         * Размер страницы; если указан без page, используется первая страница
+         */
+        limit?: number;
+    };
     url: '/users';
 };
 
 export type UsersControllerFindAllResponses = {
     /**
-     * Список пользователей
+     * Список пользователей; count — общее число пользователей
      */
-    200: Array<UserResponse>;
+    200: AllUsersResponse;
 };
 
 export type UsersControllerFindAllResponse = UsersControllerFindAllResponses[keyof UsersControllerFindAllResponses];

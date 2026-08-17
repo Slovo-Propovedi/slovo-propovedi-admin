@@ -10,14 +10,15 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions({ query: { search } })` |
+| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions({ query: { search, page, limit } })` — оффсетная пагинация |
 | `/playlists/create` | `PlaylistCreate.svelte` | — (`PlaylistForm`, mode create) |
 | `/playlists/:id` | `PlaylistDetail.svelte` | `playlistControllerFindOneOptions` + `playlistControllerRemoveMutation` + `reorderSermonsInPlaylistMutation` |
 | `/playlists/:id/edit` | `PlaylistEdit.svelte` | `playlistControllerFindOneOptions` → `PlaylistForm`, mode edit |
 
 ## Список (`Playlists.svelte`)
 
-- Debounce-поиск как на странице проповедей: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. Пустой термин не шлёт `search` → полная выборка.
+- Debounce-поиск как на странице проповедей: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20 } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- **Оффсетная пагинация:** `page` (1-based) + `limit` = 20; `placeholderData: keepPreviousData` — предыдущая страница видна, пока грузится следующая. `pageCount = ceil(count / 20)`; `Pagination` рендерится при `pageCount > 1`.
 - `createQuery` → карточки; клик → `/playlists/:id`. Состояния: загрузка — `LoadingSpinner`, пусто — `EmptyState` (с CTA), поиск без совпадений — `EmptyState` «Ничего не найдено» без CTA, ошибки — штатно.
 
 ## Деталь и reorder (`PlaylistDetail.svelte`)

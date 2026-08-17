@@ -275,6 +275,65 @@ export const playlistControllerFindAllOptions = (options?: Options<PlaylistContr
     queryKey: playlistControllerFindAllQueryKey(options)
 });
 
+const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'headers' | 'path' | 'query'>>(queryKey: QueryKey<Options>, page: K) => {
+    const params = { ...queryKey[0] };
+    if (page.body) {
+        params.body = {
+            ...queryKey[0].body as any,
+            ...page.body as any
+        };
+    }
+    if (page.headers) {
+        params.headers = {
+            ...queryKey[0].headers,
+            ...page.headers
+        };
+    }
+    if (page.path) {
+        params.path = {
+            ...queryKey[0].path as any,
+            ...page.path as any
+        };
+    }
+    if (page.query) {
+        params.query = {
+            ...queryKey[0].query as any,
+            ...page.query as any
+        };
+    }
+    return params as unknown as typeof page;
+};
+
+export const playlistControllerFindAllInfiniteQueryKey = (options?: Options<PlaylistControllerFindAllData>): QueryKey<Options<PlaylistControllerFindAllData>> => createQueryKey('playlistControllerFindAll', options, true);
+
+/**
+ * Получить все плейлисты
+ */
+export const playlistControllerFindAllInfiniteOptions = (options?: Options<PlaylistControllerFindAllData>) => {
+    const opts = infiniteQueryOptions<PlaylistControllerFindAllResponse, DefaultError, InfiniteData<PlaylistControllerFindAllResponse>, QueryKey<Options<PlaylistControllerFindAllData>>, number | Pick<QueryKey<Options<PlaylistControllerFindAllData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<PlaylistControllerFindAllData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    page: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await playlistControllerFindAll({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: playlistControllerFindAllInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
 /**
  * Создать плейлист
  */
@@ -380,35 +439,6 @@ export const sermonControllerFindAllOptions = (options?: Options<SermonControlle
     },
     queryKey: sermonControllerFindAllQueryKey(options)
 });
-
-const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'headers' | 'path' | 'query'>>(queryKey: QueryKey<Options>, page: K) => {
-    const params = { ...queryKey[0] };
-    if (page.body) {
-        params.body = {
-            ...queryKey[0].body as any,
-            ...page.body as any
-        };
-    }
-    if (page.headers) {
-        params.headers = {
-            ...queryKey[0].headers,
-            ...page.headers
-        };
-    }
-    if (page.path) {
-        params.path = {
-            ...queryKey[0].path as any,
-            ...page.path as any
-        };
-    }
-    if (page.query) {
-        params.query = {
-            ...queryKey[0].query as any,
-            ...page.query as any
-        };
-    }
-    return params as unknown as typeof page;
-};
 
 export const sermonControllerFindAllInfiniteQueryKey = (options?: Options<SermonControllerFindAllData>): QueryKey<Options<SermonControllerFindAllData>> => createQueryKey('sermonControllerFindAll', options, true);
 
@@ -634,6 +664,33 @@ export const usersControllerFindAllOptions = (options?: Options<UsersControllerF
     },
     queryKey: usersControllerFindAllQueryKey(options)
 });
+
+export const usersControllerFindAllInfiniteQueryKey = (options?: Options<UsersControllerFindAllData>): QueryKey<Options<UsersControllerFindAllData>> => createQueryKey('usersControllerFindAll', options, true);
+
+export const usersControllerFindAllInfiniteOptions = (options?: Options<UsersControllerFindAllData>) => {
+    const opts = infiniteQueryOptions<UsersControllerFindAllResponse, DefaultError, InfiniteData<UsersControllerFindAllResponse>, QueryKey<Options<UsersControllerFindAllData>>, number | Pick<QueryKey<Options<UsersControllerFindAllData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<UsersControllerFindAllData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    page: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await usersControllerFindAll({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: usersControllerFindAllInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 export const usersControllerCreateMutation = (options?: Partial<Options<UsersControllerCreateData>>): MutationOptions<UsersControllerCreateResponse, DefaultError, Options<UsersControllerCreateData>> => {
     const mutationOptions: MutationOptions<UsersControllerCreateResponse, DefaultError, Options<UsersControllerCreateData>> = {

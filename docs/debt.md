@@ -13,9 +13,13 @@
 
 - [ ] **Состав плейлиста меняется только bulk-replace.** Нет инкрементального эндпоинта add/remove проповеди; `PATCH /playlists/:id` с `sermonsIds` перезаписывает состав целиком (это серверное поведение). — `src/lib/components/forms/PlaylistForm.svelte`, [`features/playlists.md`](./features/playlists.md) — вернуться, если понадобится точечное редактирование (например, из детали плейлиста).
 
+## Пагинация
+
+- [ ] **Пикеры и Home грузят полные списки без пагинации.** `PlaylistForm` (все проповеди), `SermonForm`/`SectionForm` (все плейлисты) и статистика Home вызывают `findAll` без `page`/`limit` — при росте каталога это станет дорого. Сознательное решение (ADR-005): пикеры должны показывать весь каталог, чтобы выбор был корректным. — `src/lib/components/forms/{PlaylistForm,SermonForm,SectionForm}.svelte`, `src/lib/pages/Home.svelte` — вернуться при росте каталога (серверный поиск в пикерах уже есть; можно добавить лимит с поиском или виртуализацию).
+
 ## Codegen / Spec
 
-- [ ] **SDK сгенерирован из локальной копии спецификации (v0.9.0), а не из опубликованного URL.** `GET /sermons/distinct-values` уже был в локальном `slovo-propovedi-docs/openAPI.yaml`, но ещё не задеплоен на `https://docs.slovo-propovedi.ru/openAPI.yaml`; кодогенерация временно указывала на `../slovo-propovedi-docs/openAPI.yaml` и была откачена. После деплоя v0.9.0 на docs.slovo-propovedi.ru — перегенерировать SDK штатно (`npm run gen:api`) и убедиться, что diff пустой. — `src/lib/api/generated/`, [`contracts/rest-api.md`](./contracts/rest-api.md) — вернуться после публикации v0.9.0 (ADR-002).
+- [ ] **SDK сгенерирован из локальной копии спецификации (v0.15.0), а не из опубликованного URL.** `page`/`limit` и `AllUsersResponse` уже есть в локальном `slovo-propovedi-docs/openAPI.yaml`, но ещё не задеплоены на `https://docs.slovo-propovedi.ru/openAPI.yaml`; кодогенерация временно указывала на `../slovo-propovedi-docs/openAPI.yaml` и была откачена. После деплоя v0.15.0 на docs.slovo-propovedi.ru — перегенерировать SDK штатно (`npm run gen:api`) и убедиться, что diff пустой. — `src/lib/api/generated/`, [`contracts/rest-api.md`](./contracts/rest-api.md) — вернуться после публикации v0.15.0 (ADR-002).
 - [ ] **Источник истины спецификации — внешний репозиторий, локальной копии нет.** `/openAPI.yaml` gitignored и отсутствует; кодогенерация хардкодит удалённый URL `https://docs.slovo-propovedi.ru/openAPI.yaml`. Если URL недоступен — регенерация падает. — `openapi-ts.config.ts` (этот репозиторий) — рассмотреть локальный fallback-копию спецификации или зафиксировать версию.
 - [ ] **Пост-генерационные патчи фронта хрупкие.** `scripts/patch-zod-binary.mjs` и `scripts/patch-zod-strict.mjs` матчатся на конкретную форму вывода `@hey-api/openapi-ts`; при изменении генератора они дают `WARNING` о дрейфе и требуют ручной правки. — `scripts/patch-zod-binary.mjs`, `scripts/patch-zod-strict.mjs` — проверять вывод после каждого `npm run gen:api`; по возможности вынести в конфиг генератора. Детали — [`contracts/rest-api.md`](./contracts/rest-api.md).
 
@@ -37,7 +41,7 @@
 
 - [README.md](./README.md) — карта документации и правила для агентов
 - [architecture.md](./architecture.md) — архитектура фронтенда, разделение репозиториев
-- [decisions.md](./decisions.md) — стек и принятые решения (ADR-001..004)
+- [decisions.md](./decisions.md) — стек и принятые решения (ADR-001..005)
 - [conventions.md](./conventions.md) — OpenAPI-first workflow, DoD
 - [features/playlists.md](./features/playlists.md) — домен плейлистов
 - REST-контракт — [`contracts/rest-api.md`](./contracts/rest-api.md)

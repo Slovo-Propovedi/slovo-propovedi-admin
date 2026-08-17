@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createQuery } from '@tanstack/svelte-query';
+  import { createQuery, keepPreviousData } from '@tanstack/svelte-query';
   import { playlistControllerFindAllOptions } from '$lib/api/generated/@tanstack/svelte-query.gen';
   import { navigate } from '$lib/router/router.svelte';
   import { debounce } from '$lib/utils/debounce';
@@ -8,24 +8,40 @@
   import Icon from '$lib/components/Icon.svelte';
   import Input from '$lib/components/Input.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+
+  const PAGE_LIMIT = 20;
 
   let searchInput = $state('');
   let debouncedTerm = $state('');
+  let page = $state(1);
 
   // The query refetches only after the user pauses typing; an empty term sends
   // no `search` param, which keeps the full unfiltered list on first load.
+  // A new search always restarts from the first page.
   const applySearch = debounce((value: string) => {
     debouncedTerm = value;
+    page = 1;
   }, 300);
 
-  const playlistsQuery = createQuery(() =>
-    playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
-  );
+  const playlistsQuery = createQuery(() => ({
+    ...playlistControllerFindAllOptions({
+      query: { search: debouncedTerm || undefined, page, limit: PAGE_LIMIT },
+    }),
+    // Keep the previous page visible while the next one loads — no flicker.
+    placeholderData: keepPreviousData,
+  }));
 
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
+  let totalCount = $derived(playlistsQuery.data?.count ?? 0);
+  let pageCount = $derived(Math.max(1, Math.ceil(totalCount / PAGE_LIMIT)));
 
   function openPlaylist(id: string): void {
     navigate(`/playlists/${id}`);
+  }
+
+  function changePage(next: number): void {
+    page = next;
   }
 </script>
 
@@ -114,4 +130,6 @@
       {/each}
     </div>
   {/if}
+
+  <Pagination {page} {pageCount} onPageChange={changePage} />
 </div>

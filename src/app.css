@@ -1020,6 +1020,66 @@ img {
   flex-shrink: 0;
 }
 
+/* ---------- Pagination ---------- */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+/* Page-number buttons share the ghost-button look (surface-2 + border) but
+   stay square and compact; the current page uses the gold gradient reserved
+   for the active/primary state across the design system. */
+.pagination-page {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-page:hover:not(:disabled):not(.current) {
+  border-color: var(--gold-deep);
+  color: var(--gold-bright);
+}
+
+.pagination-page.current {
+  background: linear-gradient(135deg, var(--gold-deep), var(--gold-bright));
+  border-color: transparent;
+  color: #1c1c12;
+  box-shadow: var(--shadow-gold);
+  cursor: default;
+}
+
+.pagination-page:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pagination-page:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+.pagination-ellipsis {
+  padding: 0 4px;
+  color: var(--text-faint);
+  user-select: none;
+}
+
 /* ---------- Drag and drop ---------- */
 
 /* The dndzone wrapper is the grid cell; it must never collapse or trap the

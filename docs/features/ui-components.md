@@ -30,6 +30,7 @@
 |-----------|------|----------------|------------|------------------|
 | `Icon` | `Icon.svelte` | `name`, `size`, `class` | Инлайновый SVG-набор lucide-style по имени (`home`, `sections`, `playlists`, `sermons`, `upload`, `users`, `edit`, `trash`, `plus`, `back`, `close`, `external`, `check`, `images`, `alert`, `info`) | широко |
 | `Breadcrumbs` | `Breadcrumbs.svelte` | (ссылки зовут `navigate`) | Хлебные крошки | все create/edit/detail-страницы |
+| `Pagination` | `Pagination.svelte` | `page`, `pageCount`, `onPageChange(page)` | Оффсетная пагинация: «‹ Назад» / «Вперёд ›» + номера страниц с многоточием для больших списков (1 … 4 5 6 … 12); текущая страница выделена золотым, границы заблокированы, `aria-current="page"`. Чисто презентационный — данных не грузит | `Sermons`, `Playlists`, `Users` |
 | `DndList` | `DndList.svelte` | `items`, `onReorder(newOrder, isFinalize)`, children | Drag-and-drop список через `svelte-dnd-action`; вырезает shadow-плейсхолдер | `Sections`, `SectionDetail`, `PlaylistDetail` |
 
 ## File / media

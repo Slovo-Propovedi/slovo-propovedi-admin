@@ -68,7 +68,7 @@ generated/
 | `DELETE /sermons/:id` | AuthGuard | ✅ живой | `SermonDetail.svelte` (`sermonControllerRemoveMutation`) |
 | `GET /sermons/:id/stream-url` | публичный | ❌ не используется | пресigned-URL для аудио; админка играет `audioUrl` из `SermonEntity` напрямую |
 
-> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация) и `search` (опциональный, min 1 символ, `ILIKE` по `title`/`artist`/`book`/`description`). UI вызывает его с `search` при вводе; без `take`/`search` бэкенд отвечает полной выборкой. Детали поиска — на стороне backend API.
+> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация), `page`/`limit` (оффсетная пагинация, **взаимоисключима** с `take`/`cursor` — одновременное использование → 400) и `search` (опциональный, min 1 символ, `ILIKE` по `title`/`artist`/`book`/`description`). Список админки (`Sermons.svelte`) использует **оффсетный режим** (`page`/`limit` = 20, `count` — общее число, `nextCursor` — `null`); пикеры (`PlaylistForm`) и Home грузят полную выборку без `page`/`limit`/`take`/`cursor`. Детали поиска — на стороне backend API.
 
 ### Playlists
 
@@ -81,20 +81,20 @@ generated/
 | `PATCH /playlists/:id/sermons/reorder` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`reorderSermonsInPlaylistMutation`, требует полный in-scope набор `sermonIds`) |
 | `DELETE /playlists/:id` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`playlistControllerRemoveMutation`) |
 
-> ✅ `GET /playlists` принимает опциональный query `search` (min 1 символ, поиск по названию и описанию). UI вызывает его с `search` при debounce-вводе; без `search` бэкенд отвечает полной выборкой. Детали поиска — на стороне backend API.
+> ✅ `GET /playlists` принимает опциональный query `search` (min 1 символ, поиск по названию и описанию) и `page`/`limit` (оффсетная пагинация). Список админки (`Playlists.svelte`) использует `page`/`limit` = 20; пикеры (`SermonForm`/`SectionForm`) и Home грузят полную выборку без `page`/`limit`. Детали поиска — на стороне backend API.
 
 ### Users
 
 | Эндпоинт | Guard | Статус | Где используется |
 |----------|-------|--------|------------------|
-| `GET /users` | AuthGuard | ✅ живой | `Users.svelte` (`usersControllerFindAllOptions()`, клиентский поиск) |
+| `GET /users` | AuthGuard | ✅ живой | `Users.svelte` (`usersControllerFindAllOptions({ query: { page, limit } })`, оффсетная пагинация + клиентский фильтр по странице) |
 | `POST /users` | AuthGuard | ✅ живой | `UserForm.svelte` (`usersControllerCreateMutation`, mode create) |
 | `GET /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte`, `UserEdit.svelte` (`usersControllerFindOneOptions`) |
 | `PATCH /users/:id` | AuthGuard | ✅ живой | `UserForm.svelte` (`usersControllerUpdateMutation`, только changed-поля) |
 | `PATCH /users/:id/password` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerChangePasswordMutation`, body `{ password }`) |
 | `DELETE /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerRemoveMutation`, кнопка скрыта для своего аккаунта) |
 
-> ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — на стороне backend.
+> ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). `GET /users` принимает `page`/`limit` (оффсетная пагинация) и отвечает обёрткой `AllUsersResponse` `{ users, count }` (не плоским массивом); серверного `search` нет. Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — на стороне backend.
 
 ## База URL и аутентификация
 
