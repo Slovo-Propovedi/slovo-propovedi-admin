@@ -38,8 +38,9 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 // A verse array is a range tuple when it holds exactly two plain integers; a
 // segments list holds tuples or mixes integers with tuples. The wire contract
-// reads a two-integer array as a range, so this check mirrors it.
-function isVerseRangeTuple(verse: Verse): verse is [number, number] {
+// reads a two-integer array as a range, so this check mirrors it. Exported for
+// the sermon form, which must apply the same reading to untrusted input.
+export function isVerseRangeTuple(verse: unknown): verse is [number, number] {
   return (
     Array.isArray(verse) &&
     verse.length === 2 &&

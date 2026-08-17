@@ -10,7 +10,13 @@
   import { invalidateSermon } from '$lib/api/invalidate';
   import { debounce } from '$lib/utils/debounce';
   import { getErrorMessage } from '$lib/utils/errors';
-  import { parseChapter, parseVerseInput, serializeVerseInput, type Verse } from '$lib/utils/labels';
+  import {
+    isVerseRangeTuple,
+    parseChapter,
+    parseVerseInput,
+    serializeVerseInput,
+    type Verse,
+  } from '$lib/utils/labels';
   import { fieldText, trimmed } from '$lib/utils/strings';
   import { navigate } from '$lib/router/router.svelte';
   import Button from '$lib/components/Button.svelte';
@@ -63,17 +69,6 @@
     };
   }
 
-  // A two-integer array is a range tuple on the wire; anything else (single
-  // verse, segments list, null) is not.
-  function isVerseRangeTuple(verse: unknown): verse is [number, number] {
-    return (
-      Array.isArray(verse) &&
-      verse.length === 2 &&
-      typeof verse[0] === 'number' &&
-      typeof verse[1] === 'number'
-    );
-  }
-
   function isEditMode(): boolean {
     return mode === 'edit';
   }
@@ -92,7 +87,7 @@
   let verseEnd = $state(formSnapshot.verseEnd);
   // Tracks the previous chapter-end value so the input handler can tell a
   // mode switch (empty ↔ non-empty) apart from a plain value change.
-  let lastChapterEnd = $state(formSnapshot.chapterEnd);
+  let lastChapterEnd = formSnapshot.chapterEnd;
   let description = $state(formSnapshot.description);
   let youtubeUrl = $state(formSnapshot.youtubeUrl);
   let audioUrl = $state(formSnapshot.audioUrl);
@@ -181,9 +176,7 @@
   // appears while typing, not only after a submit attempt.
   const verseError = $derived.by(() => {
     if (isRangeMode) {
-      const startFilled = fieldText(verseStart) !== '';
-      const endFilled = fieldText(verseEnd) !== '';
-      if (startFilled !== endFilled) {
+      if (isOneVerseFieldFilled()) {
         return 'Заполните оба поля стихов или оставьте их пустыми.';
       }
       return '';
