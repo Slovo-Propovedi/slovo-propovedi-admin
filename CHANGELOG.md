@@ -2,6 +2,12 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.8.2] - 2026-09-07
+
+### Maintenance
+- update dependencies to latest compatible versions
+- change frontend hostname variable in release workflow
+
 ## [0.8.1] - 2026-08-17
 
 ### Bug Fixes
