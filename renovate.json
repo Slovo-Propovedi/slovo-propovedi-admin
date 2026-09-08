@@ -26,8 +26,8 @@
       "groupName": "svelte"
     },
     {
-      "description": "hey-api codegen and its runtime client are a matched pair.",
-      "matchPackageNames": ["@hey-api/openapi-ts", "@hey-api/client-fetch"],
+      "description": "Keep @hey-api/* out of the devDependencies bundle — an openapi-ts bump means regenerating the SDK and reviewing the generated diff, so give it its own PR.",
+      "matchPackageNames": ["@hey-api/**"],
       "groupName": "hey-api"
     }
   ]
