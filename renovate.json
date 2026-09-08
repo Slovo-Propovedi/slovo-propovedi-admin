@@ -19,6 +19,16 @@
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "devDependencies (non-major)"
+    },
+    {
+      "description": "Svelte compiler, its Vite plugin and svelte-check move together.",
+      "matchPackageNames": ["svelte", "svelte-check", "@sveltejs/**"],
+      "groupName": "svelte"
+    },
+    {
+      "description": "hey-api codegen and its runtime client are a matched pair.",
+      "matchPackageNames": ["@hey-api/openapi-ts", "@hey-api/client-fetch"],
+      "groupName": "hey-api"
     }
   ]
 }
