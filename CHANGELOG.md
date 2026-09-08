@@ -2,6 +2,14 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.9.0] - 2026-09-08
+
+### Features
+- prune dangling images and cap buildx cache after deploy
+
+### Refactors
+- make vps-deploy.sh verify infra instead of provisioning it
+
 ## [0.8.2] - 2026-09-07
 
 ### Maintenance
