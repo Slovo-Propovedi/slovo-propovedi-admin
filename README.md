@@ -79,6 +79,12 @@ Deployment is fully automated via **Forgejo Actions**, driven by git tags.
 3. The tag-triggered release workflow builds the Docker image and deploys to the VPS via
    `scripts/vps-deploy.sh` (SSH, Docker build, Traefik labels, systemd service).
 
+> **Boundary.** `vps-deploy.sh` owns only the `slovo-frontend` container and its own
+> `slovo-frontend` Docker network. Shared infrastructure — Docker, the `slovo` user/group, the
+> `slovo-constrained` buildx builder, Traefik (`slovo-traefik.service`) and the `traefik` network —
+> is owned by the external `slovo-propovedi-playbook` and must be provisioned first (`just setup-all`).
+> The script only verifies it and fails fast if anything is missing.
+
 ### Required Forgejo secrets
 
 Settings → Actions → Secrets.
@@ -88,7 +94,6 @@ Settings → Actions → Secrets.
 | `VPS_SSH_PRIVATE_KEY` | SSH private key (ed25519) for root access to the VPS |
 | `VPS_HOST` | VPS hostname or IP |
 | `VPS_SSH_USER` | SSH user on the VPS (`root`) |
-| `ACME_EMAIL` | Email for Let's Encrypt certificates (required for first deploy to a fresh VPS) |
 
 ### Required Forgejo variables
 

@@ -49,7 +49,7 @@ nginx:alpine (serve, unprivileged USER 101:101)
    EXPOSE 8080, COPY nginx.main.conf + nginx.conf
 ```
 
-nginx-конфиг: SPA-fallback `try_files $uri $uri/ /index.html`, кэширование `/assets/` (`immutable, 1y`), security-заголовки (CSP и др.), gzip. Фронтенд-контейнер в локальный `docker-compose.yml` **не входит** — деплоится отдельно (ansible-playbook).
+nginx-конфиг: SPA-fallback `try_files $uri $uri/ /index.html`, кэширование `/assets/` (`immutable, 1y`), security-заголовки (CSP и др.), gzip. Фронтенд-контейнер в локальный `docker-compose.yml` **не входит** — деплоится отдельно тег-ориентированным `scripts/vps-deploy.sh` (Forgejo Actions). Общая инфра (Docker, `slovo`-юзер, buildx, Traefik) принадлежит внешнему `slovo-propovedi-playbook`; скрипт её только проверяет.
 
 ## App shell (порядок старта)
 
