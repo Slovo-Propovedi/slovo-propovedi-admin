@@ -2,6 +2,25 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.10.0] - 2026-09-16
+
+### Features
+- source docs spec URL and backend API hostname from env vars
+
+### Bug Fixes
+- stop nginx -t from baking a root-owned /tmp/nginx.pid
+- work around openapi-ts's unreliable spec fetch in gen:api
+
+### Maintenance
+- add .env.example
+- update dependency zod to v4.6.5
+- update dependency vite to v8.3.0
+- lock file maintenance
+- tidy the hey-api rule
+- drop deprecated @hey-api/client-fetch
+- group version-locked package stacks
+- add Renovate for dependency updates
+
 ## [0.9.0] - 2026-09-08
 
 ### Features
