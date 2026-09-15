@@ -18,3 +18,4 @@ npm-debug.log*
 
 # Astro
 .astro/
+/.env
