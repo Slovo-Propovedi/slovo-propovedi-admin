@@ -449,7 +449,7 @@ export const zPlaylistControllerFindAllQuery = z.strictObject({
 });
 
 /**
- * Список плейлистов; count — общее число; сортировка по убыванию id (новые первыми); при поиске — по релевантности, затем по убыванию id
+ * Список плейлистов; count — общее число; сортировка по убыванию id (стабильный порядок; id — UUID, не хронология); при поиске — по релевантности, затем по убыванию id
  */
 export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
 

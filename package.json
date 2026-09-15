@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check",
-    "gen:api": "node --env-file-if-exists=.env node_modules/.bin/openapi-ts && node scripts/patch-zod-binary.mjs && node scripts/patch-zod-strict.mjs",
+    "gen:api": "curl -fsSL \"https://${DOCS_HOSTNAME:-docs.slovo-propovedi.ru}/openAPI.yaml\" -o /tmp/slovo-admin-openapi-spec.yaml && OPENAPI_SPEC_LOCAL_PATH=/tmp/slovo-admin-openapi-spec.yaml node --env-file-if-exists=.env node_modules/.bin/openapi-ts && node scripts/patch-zod-binary.mjs && node scripts/patch-zod-strict.mjs",
     "prepare": "husky",
     "bump-version": "node scripts/bump-version.mjs"
   },
