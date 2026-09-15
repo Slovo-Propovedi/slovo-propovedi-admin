@@ -22,6 +22,7 @@ set -euo pipefail
 
 # --- Configuration (override via env) ---
 FRONTEND_HOSTNAME="${FRONTEND_HOSTNAME:?ERROR: FRONTEND_HOSTNAME is required (e.g. admin-app.slovo-propovedi.ru)}"
+BACKEND_API_HOSTNAME="${BACKEND_API_HOSTNAME:-api.slovo-propovedi.ru}"
 DEPLOY_TAG="${DEPLOY_TAG:-manual}"
 
 SERVICE=slovo-frontend
@@ -143,6 +144,7 @@ if ! docker buildx build \
   --builder="$BUILDER" \
   --load \
   --tag="$IMAGE" \
+  --build-arg BACKEND_API_HOSTNAME="$BACKEND_API_HOSTNAME" \
   "$SRC_DIR"; then
   echo "ERROR: Docker image build failed for $IMAGE from $SRC_DIR"
   exit 1

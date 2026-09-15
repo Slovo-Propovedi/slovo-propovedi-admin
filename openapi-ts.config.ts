@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: 'https://docs.slovo-propovedi.ru/openAPI.yaml',
+  input: `https://${process.env.DOCS_HOSTNAME ?? 'docs.slovo-propovedi.ru'}/openAPI.yaml`,
   output: 'src/lib/api/generated',
   plugins: [
     {

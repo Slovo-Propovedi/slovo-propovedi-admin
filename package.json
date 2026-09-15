@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check",
-    "gen:api": "openapi-ts && node scripts/patch-zod-binary.mjs && node scripts/patch-zod-strict.mjs",
+    "gen:api": "node --env-file-if-exists=.env node_modules/.bin/openapi-ts && node scripts/patch-zod-binary.mjs && node scripts/patch-zod-strict.mjs",
     "prepare": "husky",
     "bump-version": "node scripts/bump-version.mjs"
   },
