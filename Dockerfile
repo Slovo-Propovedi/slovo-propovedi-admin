@@ -34,7 +34,14 @@ RUN set -e; \
       echo "ERROR: BACKEND_API_HOSTNAME must be a bare hostname (no protocol/scheme, no path, no trailing slash, no port): '$BACKEND_API_HOSTNAME'" >&2; \
       exit 1; \
     fi
-RUN sed -i "s|__BACKEND_API_HOSTNAME__|${BACKEND_API_HOSTNAME}|g" /etc/nginx/conf.d/default.conf && nginx -t
+# `nginx -t` here runs as root (before USER below) and, because
+# nginx.main.conf sets `pid /tmp/nginx.pid`, actually creates that pidfile
+# as a side effect — owned by root, and root-only-writable, baked into this
+# layer. At runtime the container runs as a different (non-root) uid, which
+# then can't overwrite that pre-existing root-owned file: "open() ...
+# Permission denied", crash-loop. Removing it here keeps /tmp clean for
+# whichever uid actually runs the container.
+RUN sed -i "s|__BACKEND_API_HOSTNAME__|${BACKEND_API_HOSTNAME}|g" /etc/nginx/conf.d/default.conf && nginx -t && rm -f /tmp/nginx.pid
 
 # Run as the unprivileged nginx user (uid/gid 101 in the official image).
 # The pid file lives in /tmp and the cache/log dirs above are writable by it.
