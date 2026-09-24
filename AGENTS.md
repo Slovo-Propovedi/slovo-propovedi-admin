@@ -11,6 +11,9 @@ Svelte 5 + Vite single-page application. This repo is the standalone frontend, s
   implementing or changing a feature (state, routing, auth, files, sermons/playlists/sections).
 - Update the affected `docs/**` docs in the same commit as the code change.
 - Record any TODO/hack in `docs/debt.md` in the same commit.
+- **Tech debt: fix new debt immediately instead of recording it.** When a debt item is resolved,
+  **delete** its entry from `docs/debt.md` — the file lists **open** debts only; resolved entries are
+  removed, not archived.
 
 ## Stack & conventions
 

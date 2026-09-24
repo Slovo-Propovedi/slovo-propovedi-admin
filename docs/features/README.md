@@ -16,7 +16,7 @@
 | [playlists.md](./playlists.md) | Плейлисты: список, `PlaylistDetail` (reorder), create/edit, `PlaylistForm` с пикером |
 | [sections.md](./sections.md) | Разделы: список (reorder), `SectionDetail` (reorder), create/edit, `SectionForm` с enums |
 | [users.md](./users.md) | Пользователи: список с клиентским поиском, `UserDetail` (смена пароля), create/edit, `UserForm` |
-| [files.md](./files.md) | Подсистема файлов: `upload.ts` (XHR), `FileUpload`, `CoverPicker`, `ImageLibraryModal`, allow-list |
+| [files.md](./files.md) | Подсистема файлов: `upload.ts` (XHR), `FileUpload`, `CoverPicker`, `ImageLibraryModal`, каталог обложек и очистка осиротевших, allow-list |
 | [ui-components.md](./ui-components.md) | Инвентарь UI-компонентов (таблица: component, файл, props, назначение, где используется) |
 
 > ✅ Здесь — только фронтовая часть; поведение backend — в его собственном репозитории.

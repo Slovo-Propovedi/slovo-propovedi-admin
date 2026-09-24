@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen';
-import { appControllerGetFile, appControllerGetStreamUrl, appControllerUploadFile, authControllerGetProfile, authControllerLogout, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetDistinctValues, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate, usersControllerChangePassword, usersControllerCreate, usersControllerFindAll, usersControllerFindOne, usersControllerRemove, usersControllerUpdate } from '../sdk.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerLogoutData, AuthControllerLogoutResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetDistinctValuesData, SermonControllerGetDistinctValuesResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse, UsersControllerChangePasswordData, UsersControllerChangePasswordResponse, UsersControllerCreateData, UsersControllerCreateResponse, UsersControllerFindAllData, UsersControllerFindAllResponse, UsersControllerFindOneData, UsersControllerFindOneResponse, UsersControllerRemoveData, UsersControllerRemoveResponse, UsersControllerUpdateData, UsersControllerUpdateResponse } from '../types.gen';
+import { appControllerCleanupOrphanedFiles, appControllerGetFile, appControllerGetOrphanedFiles, appControllerGetStreamUrl, appControllerRemoveFile, appControllerUploadFile, authControllerGetProfile, authControllerLogout, authControllerRefresh, authControllerSignIn, getFiles, healthControllerCheck, type Options, playlistControllerCreate, playlistControllerFindAll, playlistControllerFindOne, playlistControllerRemove, playlistControllerUpdate, reorderPlaylistsInSection, reorderSections, reorderSermonsInPlaylist, sectionControllerCreate, sectionControllerFindAll, sectionControllerFindOne, sectionControllerRemove, sectionControllerUpdate, sermonControllerCreate, sermonControllerFindAll, sermonControllerFindOne, sermonControllerGetDistinctValues, sermonControllerGetStreamUrl, sermonControllerRemove, sermonControllerUpdate, usersControllerChangePassword, usersControllerCreate, usersControllerFindAll, usersControllerFindOne, usersControllerRemove, usersControllerUpdate } from '../sdk.gen';
+import type { AppControllerCleanupOrphanedFilesData, AppControllerCleanupOrphanedFilesResponse, AppControllerGetFileData, AppControllerGetFileResponse, AppControllerGetOrphanedFilesData, AppControllerGetOrphanedFilesResponse, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponse, AppControllerRemoveFileData, AppControllerRemoveFileResponse, AppControllerUploadFileData, AppControllerUploadFileResponse, AuthControllerGetProfileData, AuthControllerGetProfileResponse, AuthControllerLogoutData, AuthControllerLogoutResponse, AuthControllerRefreshData, AuthControllerRefreshResponse, AuthControllerSignInData, AuthControllerSignInResponse, GetFilesData, GetFilesResponse, HealthControllerCheckData, HealthControllerCheckResponse, PlaylistControllerCreateData, PlaylistControllerCreateResponse, PlaylistControllerFindAllData, PlaylistControllerFindAllResponse, PlaylistControllerFindOneData, PlaylistControllerFindOneResponse, PlaylistControllerRemoveData, PlaylistControllerRemoveResponse, PlaylistControllerUpdateData, PlaylistControllerUpdateResponse, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponse, ReorderSectionsData, ReorderSectionsResponse, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponse, SectionControllerCreateData, SectionControllerCreateResponse, SectionControllerFindAllData, SectionControllerFindAllResponse, SectionControllerFindOneData, SectionControllerFindOneResponse, SectionControllerRemoveData, SectionControllerRemoveResponse, SectionControllerUpdateData, SectionControllerUpdateResponse, SermonControllerCreateData, SermonControllerCreateResponse, SermonControllerFindAllData, SermonControllerFindAllResponse, SermonControllerFindOneData, SermonControllerFindOneResponse, SermonControllerGetDistinctValuesData, SermonControllerGetDistinctValuesResponse, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponse, SermonControllerRemoveData, SermonControllerRemoveResponse, SermonControllerUpdateData, SermonControllerUpdateResponse, UsersControllerChangePasswordData, UsersControllerChangePasswordResponse, UsersControllerCreateData, UsersControllerCreateResponse, UsersControllerFindAllData, UsersControllerFindAllResponse, UsersControllerFindOneData, UsersControllerFindOneResponse, UsersControllerRemoveData, UsersControllerRemoveResponse, UsersControllerUpdateData, UsersControllerUpdateResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -96,6 +96,45 @@ export const appControllerUploadFileMutation = (options?: Partial<Options<AppCon
     return mutationOptions;
 };
 
+export const appControllerGetOrphanedFilesQueryKey = (options?: Options<AppControllerGetOrphanedFilesData>) => createQueryKey('appControllerGetOrphanedFiles', options);
+
+/**
+ * Получить список осиротевших файлов
+ *
+ * Возвращает объекты bucket (изображения и аудио/текст), не привязанные ни к одной проповеди (audioUrl/textFileUrl) и не используемые как обложки (artwork проповедей и плейлистов).
+ */
+export const appControllerGetOrphanedFilesOptions = (options?: Options<AppControllerGetOrphanedFilesData>) => queryOptions<AppControllerGetOrphanedFilesResponse, DefaultError, AppControllerGetOrphanedFilesResponse, ReturnType<typeof appControllerGetOrphanedFilesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await appControllerGetOrphanedFiles({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: appControllerGetOrphanedFilesQueryKey(options)
+});
+
+/**
+ * Удалить осиротевшие аудио и текстовые файлы
+ *
+ * Идемпотентно удаляет ТОЛЬКО осиротевшие аудио/текстовые объекты (.mp3, .pdf, .fb2). Изображения не удаляются никогда — обложками управляют вручную из каталога. Ошибка удаления отдельного объекта не роняет запрос (best-effort).
+ */
+export const appControllerCleanupOrphanedFilesMutation = (options?: Partial<Options<AppControllerCleanupOrphanedFilesData>>): MutationOptions<AppControllerCleanupOrphanedFilesResponse, DefaultError, Options<AppControllerCleanupOrphanedFilesData>> => {
+    const mutationOptions: MutationOptions<AppControllerCleanupOrphanedFilesResponse, DefaultError, Options<AppControllerCleanupOrphanedFilesData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await appControllerCleanupOrphanedFiles({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const appControllerGetStreamUrlQueryKey = (options: Options<AppControllerGetStreamUrlData>) => createQueryKey('appControllerGetStreamUrl', options);
 
 /**
@@ -113,6 +152,25 @@ export const appControllerGetStreamUrlOptions = (options: Options<AppControllerG
     },
     queryKey: appControllerGetStreamUrlQueryKey(options)
 });
+
+/**
+ * Удалить файл-изображение
+ *
+ * Удаляет объект-изображение (JPEG/PNG/WebP) из bucket. Если изображение используется как обложка (artwork) проповеди или плейлиста — 409 Conflict.
+ */
+export const appControllerRemoveFileMutation = (options?: Partial<Options<AppControllerRemoveFileData>>): MutationOptions<AppControllerRemoveFileResponse, DefaultError, Options<AppControllerRemoveFileData>> => {
+    const mutationOptions: MutationOptions<AppControllerRemoveFileResponse, DefaultError, Options<AppControllerRemoveFileData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await appControllerRemoveFile({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const appControllerGetFileQueryKey = (options: Options<AppControllerGetFileData>) => createQueryKey('appControllerGetFile', options);
 

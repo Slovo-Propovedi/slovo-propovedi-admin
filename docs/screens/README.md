@@ -26,6 +26,7 @@
 | Разделы (sections) | [sections.md](./sections.md) | готов |
 | Плейлисты (playlists) | [playlists.md](./playlists.md) | готов |
 | Проповеди (sermons) | [sermons.md](./sermons.md) | готов |
+| Обложки (covers) | [covers.md](./covers.md) | готов |
 | Пользователи (users) | [users.md](./users.md) | готов |
 
 ## Структура файла экрана (шаблон)

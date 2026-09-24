@@ -21,6 +21,7 @@
   import UserCreate from '$lib/pages/UserCreate.svelte';
   import UserDetail from '$lib/pages/UserDetail.svelte';
   import UserEdit from '$lib/pages/UserEdit.svelte';
+  import Covers from '$lib/pages/Covers.svelte';
   import type { Component } from 'svelte';
 
   interface RouteEntry {
@@ -44,6 +45,7 @@
     { pattern: '/sermons/:id/edit', component: SermonEdit },
     { pattern: '/sermons/:id', component: SermonDetail },
     { pattern: '/sermons', component: Sermons },
+    { pattern: '/covers', component: Covers },
     { pattern: '/users/create', component: UserCreate },
     { pattern: '/users/:id/edit', component: UserEdit },
     { pattern: '/users/:id', component: UserDetail },

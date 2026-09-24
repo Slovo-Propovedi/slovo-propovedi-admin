@@ -22,6 +22,30 @@ export type FileMetadataDto = {
     fileUrl: string;
     size: number | null;
     lastModified: string | null;
+    /**
+     * true, если объект используется как обложка (artwork) какой-либо проповеди или плейлиста
+     */
+    used: boolean;
+};
+
+export type OrphanedFilesResponse = {
+    orphaned: Array<FileMetadataDto>;
+    count: number;
+};
+
+export type CleanupOrphansResponse = {
+    /**
+     * Имена удалённых объектов
+     */
+    deleted: Array<string>;
+    failed: Array<{
+        fileName: string;
+        reason: string;
+    }>;
+};
+
+export type StatusFileResponse = {
+    status: string;
 };
 
 export type AllFilesResponse = {
@@ -396,6 +420,38 @@ export type AppControllerUploadFileResponses = {
 
 export type AppControllerUploadFileResponse = AppControllerUploadFileResponses[keyof AppControllerUploadFileResponses];
 
+export type AppControllerGetOrphanedFilesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/files/orphans';
+};
+
+export type AppControllerGetOrphanedFilesResponses = {
+    /**
+     * Список осиротевших файлов
+     */
+    200: OrphanedFilesResponse;
+};
+
+export type AppControllerGetOrphanedFilesResponse = AppControllerGetOrphanedFilesResponses[keyof AppControllerGetOrphanedFilesResponses];
+
+export type AppControllerCleanupOrphanedFilesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/files/orphans/cleanup';
+};
+
+export type AppControllerCleanupOrphanedFilesResponses = {
+    /**
+     * Результат очистки
+     */
+    200: CleanupOrphansResponse;
+};
+
+export type AppControllerCleanupOrphanedFilesResponse = AppControllerCleanupOrphanedFilesResponses[keyof AppControllerCleanupOrphanedFilesResponses];
+
 export type AppControllerGetStreamUrlData = {
     body?: never;
     path: {
@@ -413,6 +469,31 @@ export type AppControllerGetStreamUrlResponses = {
 };
 
 export type AppControllerGetStreamUrlResponse = AppControllerGetStreamUrlResponses[keyof AppControllerGetStreamUrlResponses];
+
+export type AppControllerRemoveFileData = {
+    body?: never;
+    path: {
+        fileName: string;
+    };
+    query?: never;
+    url: '/files/{fileName}';
+};
+
+export type AppControllerRemoveFileErrors = {
+    /**
+     * Изображение используется как обложка проповеди или плейлиста и не может быть удалено
+     */
+    409: unknown;
+};
+
+export type AppControllerRemoveFileResponses = {
+    /**
+     * Файл удалён
+     */
+    200: StatusFileResponse;
+};
+
+export type AppControllerRemoveFileResponse = AppControllerRemoveFileResponses[keyof AppControllerRemoveFileResponses];
 
 export type AppControllerGetFileData = {
     body?: never;
@@ -568,13 +649,21 @@ export type PlaylistControllerFindAllData = {
          * Размер страницы; если указан без page, используется первая страница
          */
         limit?: number;
+        /**
+         * Вариант сортировки. `date` — по убыванию id (порядок загрузки), `title` — по названию, `section` — по названию раздела (плейлисты без раздела — в конце). Игнорируется при поиске (сортировка по релевантности). Применяется только к страничной выдаче (page/limit) и полной выдаче; несовместимо с take/cursor.
+         */
+        sort?: 'date' | 'title' | 'section';
+        /**
+         * Направление сортировки. Для `sort=date` по умолчанию `desc`, для остальных — `asc`.
+         */
+        order?: 'asc' | 'desc';
     };
     url: '/playlists';
 };
 
 export type PlaylistControllerFindAllResponses = {
     /**
-     * Список плейлистов; count — общее число; сортировка по убыванию id (стабильный порядок; id — UUID, не хронология); при поиске — по релевантности, затем по убыванию id
+     * Список плейлистов; count — общее число; сортировка — по параметрам sort/order (sort=date — по убыванию id), при поиске (search) — по релевантности
      */
     200: AllPlaylistsResponse;
 };
@@ -687,13 +776,21 @@ export type SermonControllerFindAllData = {
          * Размер страницы; если указан без page, используется первая страница; взаимоисключителен с take и cursor (одновременное использование → 400)
          */
         limit?: number;
+        /**
+         * Вариант сортировки. `date` — по убыванию id (порядок загрузки), `title` — по названию, `artist` — по автору, `playlist` — по названию плейлиста (проповеди без плейлиста — в конце). Игнорируется при поиске (сортировка по релевантности). Применяется только к страничной выдаче (page/limit) и полной выдаче; несовместимо с take/cursor.
+         */
+        sort?: 'date' | 'title' | 'artist' | 'playlist';
+        /**
+         * Направление сортировки. Для `sort=date` по умолчанию `desc`, для остальных — `asc`.
+         */
+        order?: 'asc' | 'desc';
     };
     url: '/sermons';
 };
 
 export type SermonControllerFindAllResponses = {
     /**
-     * Список проповедей с количеством; в оффсетном режиме count — общее число записей, nextCursor — null
+     * Список проповедей с количеством; сортировка — по параметрам sort/order (sort=date — по убыванию id), при поиске (search) — по релевантности; в оффсетном режиме count — общее число записей, nextCursor — null
      */
     200: AllSermonsResponse;
 };

@@ -3,7 +3,7 @@
 Загрузка, выбор и хранение файлов (обложки, аудио, текст) в админке. Единственный «не-SDK» путь в приложении: загрузка идёт по XHR ради прогресса и abort. Сами файлы хранит backend (объектное хранилище).
 
 **Слой:** frontend (feature: files)
-**Файлы:** `src/lib/api/upload.ts`, `src/lib/components/{FileUpload,CoverPicker,ImageLibraryModal}.svelte`, `src/lib/api/invalidate.ts`
+**Файлы:** `src/lib/api/upload.ts`, `src/lib/components/{FileUpload,CoverPicker,ImageLibraryModal}.svelte`, `src/lib/pages/Covers.svelte`, `src/lib/api/invalidate.ts`
 **Статус:** актуально
 
 ## Общая схема
@@ -16,6 +16,9 @@ SermonForm / PlaylistForm
              └─ POST ${API_BASE_URL}/files  (Bearer, FormData 'file')
                 → { fileName, fileUrl }
 CoverPicker ── "Выбрать из библиотеки" ──► ImageLibraryModal (getFilesOptions)
+Covers.svelte ── загрузка ──► upload.ts (uploadFileWithProgress)   [XHR]
+Covers.svelte ── каталог ──► getFilesOptions / appControllerRemoveFileMutation
+Covers.svelte ── очистка ──► appControllerGetOrphanedFilesOptions / appControllerCleanupOrphanedFilesMutation
 ```
 
 > ✅ **Почему XHR, а не fetch:** сгенерированный SDK работает через `@hey-api/client-fetch`, чей fetch-транспорт не даёт прогресса загрузки. `upload.ts` — единственное место в приложении, где используется не SDK. Всё остальное — только сгенерированные хуки.
@@ -56,15 +59,25 @@ Props: `open` ($bindable), `onSelect(fileUrl)`.
 - Сетка ранее загруженных изображений через `createQuery(() => ({ ...getFilesOptions(), enabled: open }))` — грузится только когда модалка открыта (свежие данные при каждом открытии).
 - Состояния: skeleton (8 плейсхолдеров), ошибка (`Icon alert` + «Повторить»), пусто (`EmptyState` «Изображений пока нет»), сетка с `lazy`-загрузкой и галочкой выбора.
 
+## Каталог обложек и очистка осиротевших файлов (`Covers.svelte`)
+
+Страница `/covers` (пункт сайдбара «Обложки», роли admin/moderator) — естественная точка загрузки изображений и управления всем файловым хранилищем. Подробное описание экрана — в [`../screens/covers.md`](../screens/covers.md).
+
+- **Каталог:** `getFilesOptions()` (`GET /files` → `AllFilesResponse { files, count }`); каждая карточка показывает `fileName`, размер и бейдж «используется» при `used = true`.
+- **Загрузка:** кнопка «Загрузить обложку» → скрытый `<input type="file" accept="image/*">` → `uploadFileWithProgress` (прогресс в %), после успеха — `invalidateFiles` + `Toast`.
+- **Удаление:** `appControllerRemoveFileMutation` (`DELETE /files/{fileName}`) только для изображений; `409` (используется как `artwork`) → `Toast` «Обложка используется в проповедях/плейлистах» (статус достаётся через `getErrorStatus`), иначе `getErrorMessage`.
+- **Осиротевшие:** `appControllerGetOrphanedFilesOptions()` (`GET /files/orphans`, опциональный `limit`, запрос включается по кнопке) и `appControllerCleanupOrphanedFilesMutation` (`POST /files/orphans/cleanup`). Очистка удаляет **только аудио/тексты** (`.mp3/.pdf/.fb2`), идемпотентно и best-effort; изображения удаляются вручную из каталога. Результат `CleanupOrphansResponse { deleted, failed }` выводится сводкой. После очистки инвалидируются `getFilesQueryKey` и `appControllerGetOrphanedFilesQueryKey`.
+
 ## `invalidateFiles` и allow-list
 
-- `invalidateFiles(queryClient)` (`invalidate.ts`) — `invalidateQueries({ queryKey: getFilesQueryKey() })`, зовётся после загрузки обложки в `CoverPicker`.
+- `invalidateFiles(queryClient)` (`invalidate.ts`) — `invalidateQueries({ queryKey: getFilesQueryKey() })`, зовётся после загрузки обложки в `CoverPicker` и в `Covers.svelte` (загрузка/удаление/очистка).
 - **Allow-list типов файлов** задаётся на уровне UI: `accept="image/*"` (обложка), `.mp3,audio/mpeg` (аудио), PDF/текст (текст). Расширение не является полноценной валидацией — границу строго контролирует backend (MinIO + zod).
 
 ## Связанные документы
 
 - [sermons.md](./sermons.md) — аудио/текст/обложка проповеди
 - [playlists.md](./playlists.md) — обложка плейлиста
+- [../screens/covers.md](../screens/covers.md) — экран каталога обложек и очистки осиротевших файлов
 - [state.md](./state.md) — `invalidateFiles`, cross-entity инвалидация
 - [ui-components.md](./ui-components.md) — FileUpload/CoverPicker/ImageLibraryModal
 - REST-контракт и эндпоинт загрузки файлов — [`../contracts/rest-api.md`](../contracts/rest-api.md)

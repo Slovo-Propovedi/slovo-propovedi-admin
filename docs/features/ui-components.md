@@ -11,17 +11,17 @@
 |-----------|------|----------------|------------|------------------|
 | `Input` | `Input.svelte` | `label`, `hint`, `error`, `value` ($bindable), `id`, + HTMLInput attrs | Текстовый/number-инпут с автогенерацией id | `Login`, `Sermons`, все формы |
 | `Textarea` | `Textarea.svelte` | `label`, `hint`, `error`, `value`, `id` | Многострочный ввод | все формы |
-| `Select` | `Select.svelte` | `label`, `hint`, `error`, `options[{value,label}]`, `value` | Выпадающий список | `SectionForm` |
+| `Select` | `Select.svelte` | `label`, `hint`, `error`, `options[{value,label}]`, `value` | Выпадающий список | `SectionForm`, `Sermons`/`Playlists` (сортировка) |
 | `Combobox` | `Combobox.svelte` | `label`, `hint`, `error`, `options: string[]`, `value` ($bindable), `id`, + HTMLInput attrs | Инпут с фильтруемым списком подсказок (case-insensitive, можно вводить своё значение); keyboard: стрелки/Home/End/Enter/Escape, активная подсказка подскролливается в список, список закрывается по потере фокуса (Tab), ARIA combobox/listbox | `SermonForm` (Исполнитель/Книга) |
 | `Button` | `Button.svelte` | `variant` ('primary'/'ghost'/'danger'), `size` ('sm'/'md'/'lg'), `loading`, `block`, children | Кнопка со встроенным спиннером | почти все страницы |
 | `CheckboxList` | `CheckboxList.svelte` | `options[{value,label,meta?,data?}]`, `selected[]`, `onToggle`, `item?` (snippet) | Группа чекбоксов | `SermonForm`, `SectionForm`, `PlaylistForm` |
 
-> `CheckboxList` — generic (`T`), опции несут опциональный `data?: T` (сырой доменный объект). Опциональный `item?: Snippet<[CheckboxOption<T>]>` рендерит контент строки вместо дефолтных label/meta — обёртка `<label class="checkbox-option">` + чекбокс остаются, переключение работает и с rich-строкой. Без `item` рендер идентичен прежнему (совместимо со старыми вызовами). Пример: `PlaylistForm` рендерит полную карточку проповеди (обложка, «Проповедник · Книга глава:стихи», бейджи медиа) — см. [playlists.md](./playlists.md).
-| `Modal` | `Modal.svelte` | `title`, `open`, `onClose`, children, footer | Диалог: focus trap, Escape, клик по подложке | delete-confirm (3 детали), `ImageLibraryModal` |
-| `Toast` | `Toast.svelte` | `message`, `onDismiss` | Всплывающая ошибка (снизу справа, авто-dismiss 3 с) | `Sections`, `SectionDetail`, `PlaylistDetail` |
+> `CheckboxList` — generic (`T`), опции несут опциональный `data?: T` (сырой доменный объект). Опциональный `item?: Snippet<[CheckboxOption<T>]>` рендерит контент строки вместо дефолтных label/meta — обёртка `<label class="checkbox-option">` + чекбокс остаются, переключение работает и с rich-строкой. Без `item` рендер идентичен прежнему (совместимо со старыми вызовами). Пример: `PlaylistForm` рендерит полную карточку проповеди (обложка, «Проповедник · Книга глава:стихи», бейджи медиа) — см. [playlists.md](./playlists.md). Длинные пикеры (`SermonForm`, `SectionForm`, `PlaylistForm`) оборачивают список в контейнер `.checkbox-list-scroll` (`max-height: 1000px; overflow-y: auto`), чтобы каталог не растягивал форму; сама группа остаётся `.checkbox-list`.
+| `Modal` | `Modal.svelte` | `title`, `open`, `onClose`, children, footer | Диалог: focus trap, Escape, клик по подложке | delete-confirm (детали + `Covers`), `ImageLibraryModal` |
+| `Toast` | `Toast.svelte` | `message`, `onDismiss` | Всплывающая ошибка (снизу справа, авто-dismiss 3 с) | `Sections`, `SectionDetail`, `PlaylistDetail`, `Covers` |
 | `LoadingSpinner` | `LoadingSpinner.svelte` | `large`, + attrs | Инлайн-спиннер | широко |
 | `LoadingScreen` | `LoadingScreen.svelte` | — | Полноэкранный бренд-лоадер | `ProtectedRoute` |
-| `EmptyState` | `EmptyState.svelte` | `icon`, `title`, `hint`, `action` | Плейсхолдер пустого списка | все list/detail-страницы, `ImageLibraryModal` |
+| `EmptyState` | `EmptyState.svelte` | `icon`, `title`, `hint`, `action` | Плейсхолдер пустого списка | все list/detail-страницы, `ImageLibraryModal`, `Covers` |
 | `Card` | `Card.svelte` | `title`, `hover`, `actions`, children | Карточка (header/body) | формы; статистика Home (через `.card` CSS) |
 
 ## Layout / navigation
@@ -58,7 +58,7 @@
 - [playlists.md](./playlists.md) — PlaylistForm, DndList, CheckboxList, CoverPicker
 - [sections.md](./sections.md) — SectionForm, DndList, Select, CheckboxList
 - [users.md](./users.md) — UserForm, Input, Button, Modal
-- [files.md](./files.md) — FileUpload/CoverPicker/ImageLibraryModal, upload.ts
+- [files.md](./files.md) — FileUpload/CoverPicker/ImageLibraryModal, upload.ts, каталог `Covers`
 - [../conventions.md](../conventions.md) — runes, null-vs-undefined, optimistic reorder
 - [../architecture.md](../architecture.md) — раскладка `src/`, app shell
 - [../README.md](../README.md) — индекс раздела фронтенда

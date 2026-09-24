@@ -36,6 +36,7 @@ const routes = [
   { pattern: '/sermons/:id/edit', component: SermonEdit },
   { pattern: '/sermons/:id',      component: SermonDetail },
   { pattern: '/sermons',          component: Sermons },
+  { pattern: '/covers',           component: Covers },
   { pattern: '/users/create',     component: UserCreate },
   { pattern: '/users/:id/edit',   component: UserEdit },
   { pattern: '/users/:id',        component: UserDetail },
@@ -66,6 +67,7 @@ const routes = [
 | `/sermons/:id/edit` | `SermonEdit.svelte` | `ProtectedRoute` |
 | `/sermons/:id` | `SermonDetail.svelte` | `ProtectedRoute` |
 | `/sermons` | `Sermons.svelte` | `ProtectedRoute` |
+| `/covers` | `Covers.svelte` | `ProtectedRoute` |
 | `/users/create` | `UserCreate.svelte` | `ProtectedRoute` + **admin-only** |
 | `/users/:id/edit` | `UserEdit.svelte` | `ProtectedRoute` + **admin-only** |
 | `/users/:id` | `UserDetail.svelte` | `ProtectedRoute` + **admin-only** |

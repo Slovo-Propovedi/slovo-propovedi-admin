@@ -46,7 +46,7 @@
 | [`features/playlists.md`](./features/playlists.md) | Модуль «Плейлисты»: страницы, форма, bulk-replace, reorder |
 | [`features/sections.md`](./features/sections.md) | Модуль «Разделы»: страницы, форма, drag-reorder |
 | [`features/users.md`](./features/users.md) | Модуль «Пользователи»: CRUD + смена пароля |
-| [`features/files.md`](./features/files.md) | Загрузка файлов: upload, CoverPicker, ImageLibraryModal |
+| [`features/files.md`](./features/files.md) | Загрузка файлов: upload, CoverPicker, ImageLibraryModal, каталог обложек и очистка осиротевших |
 | [`features/ui-components.md`](./features/ui-components.md) | Инвентарь UI-примитивов и тема |
 | [`screens/README.md`](./screens/README.md) | Индекс экранов фронтенда |
 | [`screens/login.md`](./screens/login.md) | Экран входа |
@@ -54,6 +54,7 @@
 | [`screens/sections.md`](./screens/sections.md) | Экраны разделов |
 | [`screens/playlists.md`](./screens/playlists.md) | Экраны плейлистов |
 | [`screens/sermons.md`](./screens/sermons.md) | Экраны проповедей |
+| [`screens/covers.md`](./screens/covers.md) | Экран каталога обложек и очистки осиротевших файлов |
 | [`screens/users.md`](./screens/users.md) | Экраны пользователей |
 
 > Файлы, помеченные «в разработке» или ещё не созданные, добавляются по мере работы. Таблица служит картой, а не обязательным списком существующих файлов.
@@ -71,7 +72,7 @@
 | `lib/router/` | Кастомный history-роутер: `router.svelte.ts` + `Router.svelte` |
 | `lib/auth/` | `auth.svelte.ts` — rune-store сессии |
 | `lib/layout/` | `Layout.svelte`, `Sidebar.svelte`, `ProtectedRoute.svelte` |
-| `lib/pages/` | Страницы (`Login`, `Home`, `Sermons*`, `Playlist*`, `Section*`, `User*`, `UploadSermon`) |
+| `lib/pages/` | Страницы (`Login`, `Home`, `Sermons*`, `Playlist*`, `Section*`, `User*`, `UploadSermon`, `Covers`) |
 | `lib/components/` | UI-примитивы + переиспользуемые компоненты; `forms/` — формы |
 | `lib/utils/` | `labels.ts`, `strings.ts`, `debounce.ts`, `arrayOrder.ts`, `errors.ts` |
 

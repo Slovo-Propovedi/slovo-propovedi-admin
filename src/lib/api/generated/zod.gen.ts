@@ -19,7 +19,25 @@ export const zFileMetadataDto = z.strictObject({
     fileName: z.string(),
     fileUrl: z.string(),
     size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
-    lastModified: z.iso.datetime().nullable()
+    lastModified: z.iso.datetime().nullable(),
+    used: z.boolean()
+});
+
+export const zOrphanedFilesResponse = z.strictObject({
+    orphaned: z.array(zFileMetadataDto),
+    count: z.int()
+});
+
+export const zCleanupOrphansResponse = z.strictObject({
+    deleted: z.array(z.string()),
+    failed: z.array(z.strictObject({
+        fileName: z.string(),
+        reason: z.string()
+    }))
+});
+
+export const zStatusFileResponse = z.strictObject({
+    status: z.string()
 });
 
 export const zAllFilesResponse = z.strictObject({
@@ -365,6 +383,16 @@ export const zAppControllerUploadFileBody = z.strictObject({
  */
 export const zAppControllerUploadFileResponse = zIFileResponseDto;
 
+/**
+ * Список осиротевших файлов
+ */
+export const zAppControllerGetOrphanedFilesResponse = zOrphanedFilesResponse;
+
+/**
+ * Результат очистки
+ */
+export const zAppControllerCleanupOrphanedFilesResponse = zCleanupOrphansResponse;
+
 export const zAppControllerGetStreamUrlPath = z.strictObject({
     fileName: z.string()
 });
@@ -373,6 +401,15 @@ export const zAppControllerGetStreamUrlPath = z.strictObject({
  * Предварительно подписанный URL потока
  */
 export const zAppControllerGetStreamUrlResponse = zStreamUrlResponse;
+
+export const zAppControllerRemoveFilePath = z.strictObject({
+    fileName: z.string()
+});
+
+/**
+ * Файл удалён
+ */
+export const zAppControllerRemoveFileResponse = zStatusFileResponse;
 
 export const zAppControllerGetFilePath = z.strictObject({
     fileName: z.string()
@@ -445,11 +482,17 @@ export const zReorderPlaylistsInSectionResponse = zStatusSectionsResponse;
 export const zPlaylistControllerFindAllQuery = z.strictObject({
     search: z.string().min(1).optional(),
     page: z.int().gte(1).optional(),
-    limit: z.int().gte(1).lte(100).optional()
+    limit: z.int().gte(1).lte(100).optional(),
+    sort: z.enum([
+        'date',
+        'title',
+        'section'
+    ]).optional().default('date'),
+    order: z.enum(['asc', 'desc']).optional().default('desc')
 });
 
 /**
- * Список плейлистов; count — общее число; сортировка по убыванию id (стабильный порядок; id — UUID, не хронология); при поиске — по релевантности, затем по убыванию id
+ * Список плейлистов; count — общее число; сортировка — по параметрам sort/order (sort=date — по убыванию id), при поиске (search) — по релевантности
  */
 export const zPlaylistControllerFindAllResponse = zAllPlaylistsResponse;
 
@@ -505,11 +548,18 @@ export const zSermonControllerFindAllQuery = z.strictObject({
     cursor: z.uuid().optional(),
     search: z.string().min(1).optional(),
     page: z.int().gte(1).optional(),
-    limit: z.int().gte(1).lte(100).optional()
+    limit: z.int().gte(1).lte(100).optional(),
+    sort: z.enum([
+        'date',
+        'title',
+        'artist',
+        'playlist'
+    ]).optional().default('date'),
+    order: z.enum(['asc', 'desc']).optional().default('desc')
 });
 
 /**
- * Список проповедей с количеством; в оффсетном режиме count — общее число записей, nextCursor — null
+ * Список проповедей с количеством; сортировка — по параметрам sort/order (sort=date — по убыванию id), при поиске (search) — по релевантности; в оффсетном режиме count — общее число записей, nextCursor — null
  */
 export const zSermonControllerFindAllResponse = zAllSermonsResponse;
 

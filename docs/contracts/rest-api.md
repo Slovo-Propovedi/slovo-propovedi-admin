@@ -2,7 +2,7 @@
 
 > **Источник истины контракта — сгенерированный SDK и его zod-валидаторы** (`src/lib/api/generated/`, `zod.gen.ts`). Эта страница описывает контракт и конвейер @hey-api-кодогенерации; при расхождении между текстом и схемой решает **сгенерированная схема**. Версия спецификации в документации не фиксируется — см. `info.version` внешнего `openAPI.yaml` (репозиторий `slovo-propovedi-docs`).
 
-Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** и **карту реального использования** эндпоинтов sermons/playlists/users.
+Внешний контракт REST API платформы «Слово.Проповеди». **Подробный список эндпоинтов и типов — в сгенерированных файлах** (`src/lib/api/generated/`); этот документ не дублирует их, а фиксирует **общую спецификацию**, **конвейер кодогенерации** и **карту реального использования** эндпоинтов sermons/playlists/users/files.
 
 **Статус:** актуально
 **Слой:** contracts (внешний протокол)
@@ -52,15 +52,15 @@ generated/
 
 Потребители импортируют из `@tanstack/svelte-query.gen` (`sermonControllerFindAllOptions`, `playlistControllerUpdateMutation`, ...) и `types.gen.ts`. Реэкспорт наружу — через `src/lib/api/index.ts`.
 
-## Карта использования эндпоинтов (sermons + playlists + users)
+## Карта использования эндпоинтов (sermons + playlists + users + files)
 
-Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove/delete используют `AuthGuard`; `findAll`/`findOne` у sermons/playlists публичны. **У users — все 6 эндпоинтов guarded (нет публичных чтений).**
+Ниже — фактические эндпоинты, которые реально вызываются из админки. Guards: create/reorder/update/remove/delete используют `AuthGuard`; `findAll`/`findOne` у sermons/playlists публичны. **У users — все 6 эндпоинтов guarded (нет публичных чтений).** **У files все эндпоинты guarded на роли admin/moderator.**
 
 ### Sermons
 
 | Эндпоинт | Guard | Статус | Где используется |
 |----------|-------|--------|------------------|
-| `GET /sermons` | публичный | ✅ живой | `Sermons.svelte` (`sermonControllerFindAllOptions()` с `search`), `PlaylistForm.svelte` (поисковый пикер) |
+| `GET /sermons` | публичный | ✅ живой | `Sermons.svelte` (`sermonControllerFindAllOptions()` с `search`, `sort`, `order`), `PlaylistForm.svelte` (поисковый пикер с `sort: 'title'`) |
 | `GET /sermons/distinct-values` | публичный | ✅ живой | `SermonForm.svelte` (`sermonControllerGetDistinctValuesOptions()`, подсказки для Исполнителя/Книги) |
 | `GET /sermons/:id` | публичный | ✅ живой | `SermonDetail.svelte`, `SermonEdit.svelte` |
 | `POST /sermons` | AuthGuard | ✅ живой | `SermonForm.svelte` (`sermonControllerCreateMutation`) |
@@ -68,20 +68,20 @@ generated/
 | `DELETE /sermons/:id` | AuthGuard | ✅ живой | `SermonDetail.svelte` (`sermonControllerRemoveMutation`) |
 | `GET /sermons/:id/stream-url` | публичный | ❌ не используется | пресigned-URL для аудио; админка играет `audioUrl` из `SermonEntity` напрямую |
 
-> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация), `page`/`limit` (оффсетная пагинация, **взаимоисключима** с `take`/`cursor` — одновременное использование → 400) и `search` (опциональный, min 1 символ, `ILIKE` по `title`/`artist`/`book`/`description`). Список админки (`Sermons.svelte`) использует **оффсетный режим** (`page`/`limit` = 20, `count` — общее число, `nextCursor` — `null`); пикеры (`PlaylistForm`) и Home грузят полную выборку без `page`/`limit`/`take`/`cursor`. Детали поиска — на стороне backend API.
+> ✅ `GET /sermons` принимает query `take`, `cursor` (keyset-пагинация), `page`/`limit` (оффсетная пагинация, **взаимоисключима** с `take`/`cursor` — одновременное использование → 400), `search` (опциональный, min 1 символ, полнотекстовый FTS-поиск по `title`/`artist`/`book`/`description` с ранжированием) и `sort`/`order` (сортировка; `sort` ∈ {`date`,`title`,`artist`,`playlist`}, направление по умолчанию — `desc` для `date`, `asc` для остальных; **взаимоисключима** с `take`/`cursor`; при активном `search` игнорируется — побеждает релевантность). Список админки (`Sermons.svelte`) использует **оффсетный режим** (`page`/`limit` = 20, `count` — общее число, `nextCursor` — `null`) + серверные `sort`/`order`; пикеры (`PlaylistForm`) и Home грузят полную выборку без `page`/`limit`/`take`/`cursor` (пикеры передают `sort: 'title'`, `order: 'asc'`). Детали поиска и сортировки — на стороне backend API.
 
 ### Playlists
 
 | Эндпоинт | Guard | Статус | Где используется |
 |----------|-------|--------|------------------|
 | `POST /playlists` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode create, body `{ title, description, artwork, sermonsIds, sectionsIds }` — массивы шлются всегда) |
-| `GET /playlists` | публичный | ✅ живой | `Playlists.svelte` (`playlistControllerFindAllOptions()` с `search`), `SermonForm.svelte` и `SectionForm.svelte` (поисковый пикер) |
+| `GET /playlists` | публичный | ✅ живой | `Playlists.svelte` (`playlistControllerFindAllOptions()` с `search`, `sort`, `order`), `SermonForm.svelte` и `SectionForm.svelte` (поисковый пикер с `sort: 'title'`) |
 | `GET /playlists/:id` | публичный | ✅ живой | `PlaylistDetail.svelte`, `PlaylistEdit.svelte` |
 | `PATCH /playlists/:id` | AuthGuard | ✅ живой | `PlaylistForm.svelte` (mode edit, body `{ title, description, artwork, sermonsIds, sectionsIds }` → bulk replace обоих отношений) |
 | `PATCH /playlists/:id/sermons/reorder` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`reorderSermonsInPlaylistMutation`, требует полный in-scope набор `sermonIds`) |
 | `DELETE /playlists/:id` | AuthGuard | ✅ живой | `PlaylistDetail.svelte` (`playlistControllerRemoveMutation`) |
 
-> ✅ `GET /playlists` принимает опциональный query `search` (min 1 символ, поиск по названию и описанию) и `page`/`limit` (оффсетная пагинация). Список админки (`Playlists.svelte`) использует `page`/`limit` = 20; пикеры (`SermonForm`/`SectionForm`) и Home грузят полную выборку без `page`/`limit`. Детали поиска — на стороне backend API.
+> ✅ `GET /playlists` принимает опциональный query `search` (min 1 символ, полнотекстовый FTS-поиск по названию и описанию с ранжированием), `page`/`limit` (оффсетная пагинация) и `sort`/`order` (`sort` ∈ {`date`,`title`,`section`}, направление по умолчанию — `desc` для `date`, `asc` для остальных; при активном `search` игнорируется). Список админки (`Playlists.svelte`) использует `page`/`limit` = 20 + серверные `sort`/`order`; пикеры (`SermonForm`/`SectionForm`) и Home грузят полную выборку без `page`/`limit` (пикеры передают `sort: 'title'`, `order: 'asc'`). Детали поиска и сортировки — на стороне backend API.
 
 ### Users
 
@@ -95,6 +95,20 @@ generated/
 | `DELETE /users/:id` | AuthGuard | ✅ живой | `UserDetail.svelte` (`usersControllerRemoveMutation`, кнопка скрыта для своего аккаунта) |
 
 > ✅ В отличие от sermons/playlists, **все** users-эндпоинты защищены `AuthGuard` — включая `GET /users` и `GET /users/:id` (нет публичных чтений). `GET /users` принимает `page`/`limit` (оффсетная пагинация) и отвечает обёрткой `AllUsersResponse` `{ users, count }` (не плоским массивом); серверного `search` нет. Схемы: `UserResponse` `{ id, name, username, email }` (**без `password`**), `CreateUserRequest` `{ name, email, username, password }`, `UpdateUserRequest` `{ name?, email?, username? }`, `ChangePasswordRequest` `{ password }`. `PATCH /users/:id/password` и `DELETE /users/:id` возвращают **`204 No Content`** (не `StatusResponseDto`). Защита self-delete/last-admin (403) — на стороне backend.
+
+### Files
+
+| Эндпоинт | Guard | Статус | Где используется |
+|----------|-------|--------|------------------|
+| `GET /files` | AuthGuard + Roles (admin/moderator) | ✅ живой | `Covers.svelte` (`getFilesOptions`, каталог обложек), `ImageLibraryModal.svelte` (выбор из библиотеки) |
+| `POST /files` | AuthGuard + Roles (admin/moderator) | ✅ живой | `upload.ts` (XHR) — формы проповеди/плейлиста через `FileUpload`/`CoverPicker`, а также `Covers.svelte` |
+| `DELETE /files/{fileName}` | AuthGuard + Roles (admin/moderator) | ✅ живой | `Covers.svelte` (`appControllerRemoveFileMutation`); `400` для не-изображений, `409` если изображение — `artwork` |
+| `GET /files/orphans` | AuthGuard + Roles (admin/moderator) | ✅ живой | `Covers.svelte` (`appControllerGetOrphanedFilesOptions`), опциональный query `limit` |
+| `POST /files/orphans/cleanup` | AuthGuard + Roles (admin/moderator) | ✅ живой | `Covers.svelte` (`appControllerCleanupOrphanedFilesMutation`) — удаляет только осиротевшие аудио/тексты (`.mp3/.pdf/.fb2`) |
+| `GET /files/{fileName}` | публичный | ❌ не используется | устаревший (`@deprecated`) статический URL; предпочтителен `stream-url` |
+| `GET /files/{fileName}/stream-url` | публичный | ❌ не используется | presigned-URL; админка играет `audioUrl` из `SermonEntity` напрямую |
+
+> ✅ `GET /files` отвечает `AllFilesResponse { files, count }`, где элемент — `FileMetadataDto { fileName, fileUrl, size, lastModified, used }`; `used` = изображение используется как `artwork` проповеди или плейлиста. `GET /files/orphans` отвечает `OrphanedFilesResponse { orphaned, count }` (элементы — те же `FileMetadataDto`, `used` всегда `false`). `POST /files/orphans/cleanup` отвечает `CleanupOrphansResponse { deleted, failed }` и идемпотентен/best-effort (ошибка отдельного объекта попадает в `failed`, запрос не падает). Карта фронтовых экранов — [`../screens/covers.md`](../screens/covers.md).
 
 ## База URL и аутентификация
 

@@ -4,8 +4,8 @@ import * as z from 'zod';
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { AppControllerGetFileData, AppControllerGetFileResponses, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponses, AppControllerUploadFileData, AppControllerUploadFileResponses, AuthControllerGetProfileData, AuthControllerGetProfileResponses, AuthControllerLogoutData, AuthControllerLogoutResponses, AuthControllerRefreshData, AuthControllerRefreshResponses, AuthControllerSignInData, AuthControllerSignInResponses, GetFilesData, GetFilesResponses, HealthControllerCheckData, HealthControllerCheckResponses, PlaylistControllerCreateData, PlaylistControllerCreateResponses, PlaylistControllerFindAllData, PlaylistControllerFindAllResponses, PlaylistControllerFindOneData, PlaylistControllerFindOneResponses, PlaylistControllerRemoveData, PlaylistControllerRemoveResponses, PlaylistControllerUpdateData, PlaylistControllerUpdateResponses, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponses, ReorderSectionsData, ReorderSectionsResponses, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponses, SectionControllerCreateData, SectionControllerCreateResponses, SectionControllerFindAllData, SectionControllerFindAllResponses, SectionControllerFindOneData, SectionControllerFindOneResponses, SectionControllerRemoveData, SectionControllerRemoveResponses, SectionControllerUpdateData, SectionControllerUpdateResponses, SermonControllerCreateData, SermonControllerCreateResponses, SermonControllerFindAllData, SermonControllerFindAllResponses, SermonControllerFindOneData, SermonControllerFindOneResponses, SermonControllerGetDistinctValuesData, SermonControllerGetDistinctValuesResponses, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponses, SermonControllerRemoveData, SermonControllerRemoveResponses, SermonControllerUpdateData, SermonControllerUpdateResponses, UsersControllerChangePasswordData, UsersControllerChangePasswordResponses, UsersControllerCreateData, UsersControllerCreateResponses, UsersControllerFindAllData, UsersControllerFindAllResponses, UsersControllerFindOneData, UsersControllerFindOneResponses, UsersControllerRemoveData, UsersControllerRemoveResponses, UsersControllerUpdateData, UsersControllerUpdateResponses } from './types.gen';
-import { zAppControllerGetFilePath, zAppControllerGetFileResponse, zAppControllerGetStreamUrlPath, zAppControllerGetStreamUrlResponse, zAppControllerUploadFileBody, zAppControllerUploadFileResponse, zAuthControllerGetProfileResponse, zAuthControllerLogoutBody, zAuthControllerLogoutResponse, zAuthControllerRefreshBody, zAuthControllerRefreshResponse, zAuthControllerSignInBody, zAuthControllerSignInResponse, zGetFilesResponse, zHealthControllerCheckResponse, zPlaylistControllerCreateBody, zPlaylistControllerCreateResponse, zPlaylistControllerFindAllQuery, zPlaylistControllerFindAllResponse, zPlaylistControllerFindOnePath, zPlaylistControllerFindOneResponse, zPlaylistControllerRemovePath, zPlaylistControllerRemoveResponse, zPlaylistControllerUpdateBody, zPlaylistControllerUpdatePath, zPlaylistControllerUpdateResponse, zReorderPlaylistsInSectionBody, zReorderPlaylistsInSectionPath, zReorderPlaylistsInSectionResponse, zReorderSectionsBody, zReorderSectionsResponse, zReorderSermonsInPlaylistBody, zReorderSermonsInPlaylistPath, zReorderSermonsInPlaylistResponse, zSectionControllerCreateBody, zSectionControllerCreateResponse, zSectionControllerFindAllResponse, zSectionControllerFindOnePath, zSectionControllerFindOneResponse, zSectionControllerRemovePath, zSectionControllerRemoveResponse, zSectionControllerUpdateBody, zSectionControllerUpdatePath, zSectionControllerUpdateResponse, zSermonControllerCreateBody, zSermonControllerCreateResponse, zSermonControllerFindAllQuery, zSermonControllerFindAllResponse, zSermonControllerFindOnePath, zSermonControllerFindOneResponse, zSermonControllerGetDistinctValuesResponse, zSermonControllerGetStreamUrlPath, zSermonControllerGetStreamUrlResponse, zSermonControllerRemovePath, zSermonControllerRemoveResponse, zSermonControllerUpdateBody, zSermonControllerUpdatePath, zSermonControllerUpdateResponse, zUsersControllerChangePasswordBody, zUsersControllerChangePasswordPath, zUsersControllerChangePasswordResponse, zUsersControllerCreateBody, zUsersControllerCreateResponse, zUsersControllerFindAllQuery, zUsersControllerFindAllResponse, zUsersControllerFindOnePath, zUsersControllerFindOneResponse, zUsersControllerRemovePath, zUsersControllerRemoveResponse, zUsersControllerUpdateBody, zUsersControllerUpdatePath, zUsersControllerUpdateResponse } from './zod.gen';
+import type { AppControllerCleanupOrphanedFilesData, AppControllerCleanupOrphanedFilesResponses, AppControllerGetFileData, AppControllerGetFileResponses, AppControllerGetOrphanedFilesData, AppControllerGetOrphanedFilesResponses, AppControllerGetStreamUrlData, AppControllerGetStreamUrlResponses, AppControllerRemoveFileData, AppControllerRemoveFileErrors, AppControllerRemoveFileResponses, AppControllerUploadFileData, AppControllerUploadFileResponses, AuthControllerGetProfileData, AuthControllerGetProfileResponses, AuthControllerLogoutData, AuthControllerLogoutResponses, AuthControllerRefreshData, AuthControllerRefreshResponses, AuthControllerSignInData, AuthControllerSignInResponses, GetFilesData, GetFilesResponses, HealthControllerCheckData, HealthControllerCheckResponses, PlaylistControllerCreateData, PlaylistControllerCreateResponses, PlaylistControllerFindAllData, PlaylistControllerFindAllResponses, PlaylistControllerFindOneData, PlaylistControllerFindOneResponses, PlaylistControllerRemoveData, PlaylistControllerRemoveResponses, PlaylistControllerUpdateData, PlaylistControllerUpdateResponses, ReorderPlaylistsInSectionData, ReorderPlaylistsInSectionResponses, ReorderSectionsData, ReorderSectionsResponses, ReorderSermonsInPlaylistData, ReorderSermonsInPlaylistResponses, SectionControllerCreateData, SectionControllerCreateResponses, SectionControllerFindAllData, SectionControllerFindAllResponses, SectionControllerFindOneData, SectionControllerFindOneResponses, SectionControllerRemoveData, SectionControllerRemoveResponses, SectionControllerUpdateData, SectionControllerUpdateResponses, SermonControllerCreateData, SermonControllerCreateResponses, SermonControllerFindAllData, SermonControllerFindAllResponses, SermonControllerFindOneData, SermonControllerFindOneResponses, SermonControllerGetDistinctValuesData, SermonControllerGetDistinctValuesResponses, SermonControllerGetStreamUrlData, SermonControllerGetStreamUrlResponses, SermonControllerRemoveData, SermonControllerRemoveResponses, SermonControllerUpdateData, SermonControllerUpdateResponses, UsersControllerChangePasswordData, UsersControllerChangePasswordResponses, UsersControllerCreateData, UsersControllerCreateResponses, UsersControllerFindAllData, UsersControllerFindAllResponses, UsersControllerFindOneData, UsersControllerFindOneResponses, UsersControllerRemoveData, UsersControllerRemoveResponses, UsersControllerUpdateData, UsersControllerUpdateResponses } from './types.gen';
+import { zAppControllerCleanupOrphanedFilesResponse, zAppControllerGetFilePath, zAppControllerGetFileResponse, zAppControllerGetOrphanedFilesResponse, zAppControllerGetStreamUrlPath, zAppControllerGetStreamUrlResponse, zAppControllerRemoveFilePath, zAppControllerRemoveFileResponse, zAppControllerUploadFileBody, zAppControllerUploadFileResponse, zAuthControllerGetProfileResponse, zAuthControllerLogoutBody, zAuthControllerLogoutResponse, zAuthControllerRefreshBody, zAuthControllerRefreshResponse, zAuthControllerSignInBody, zAuthControllerSignInResponse, zGetFilesResponse, zHealthControllerCheckResponse, zPlaylistControllerCreateBody, zPlaylistControllerCreateResponse, zPlaylistControllerFindAllQuery, zPlaylistControllerFindAllResponse, zPlaylistControllerFindOnePath, zPlaylistControllerFindOneResponse, zPlaylistControllerRemovePath, zPlaylistControllerRemoveResponse, zPlaylistControllerUpdateBody, zPlaylistControllerUpdatePath, zPlaylistControllerUpdateResponse, zReorderPlaylistsInSectionBody, zReorderPlaylistsInSectionPath, zReorderPlaylistsInSectionResponse, zReorderSectionsBody, zReorderSectionsResponse, zReorderSermonsInPlaylistBody, zReorderSermonsInPlaylistPath, zReorderSermonsInPlaylistResponse, zSectionControllerCreateBody, zSectionControllerCreateResponse, zSectionControllerFindAllResponse, zSectionControllerFindOnePath, zSectionControllerFindOneResponse, zSectionControllerRemovePath, zSectionControllerRemoveResponse, zSectionControllerUpdateBody, zSectionControllerUpdatePath, zSectionControllerUpdateResponse, zSermonControllerCreateBody, zSermonControllerCreateResponse, zSermonControllerFindAllQuery, zSermonControllerFindAllResponse, zSermonControllerFindOnePath, zSermonControllerFindOneResponse, zSermonControllerGetDistinctValuesResponse, zSermonControllerGetStreamUrlPath, zSermonControllerGetStreamUrlResponse, zSermonControllerRemovePath, zSermonControllerRemoveResponse, zSermonControllerUpdateBody, zSermonControllerUpdatePath, zSermonControllerUpdateResponse, zUsersControllerChangePasswordBody, zUsersControllerChangePasswordPath, zUsersControllerChangePasswordResponse, zUsersControllerCreateBody, zUsersControllerCreateResponse, zUsersControllerFindAllQuery, zUsersControllerFindAllResponse, zUsersControllerFindOnePath, zUsersControllerFindOneResponse, zUsersControllerRemovePath, zUsersControllerRemoveResponse, zUsersControllerUpdateBody, zUsersControllerUpdatePath, zUsersControllerUpdateResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -74,6 +74,40 @@ export const appControllerUploadFile = <ThrowOnError extends boolean = false>(op
 });
 
 /**
+ * Получить список осиротевших файлов
+ *
+ * Возвращает объекты bucket (изображения и аудио/текст), не привязанные ни к одной проповеди (audioUrl/textFileUrl) и не используемые как обложки (artwork проповедей и плейлистов).
+ */
+export const appControllerGetOrphanedFiles = <ThrowOnError extends boolean = false>(options?: Options<AppControllerGetOrphanedFilesData, ThrowOnError>): RequestResult<AppControllerGetOrphanedFilesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<AppControllerGetOrphanedFilesResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zAppControllerGetOrphanedFilesResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/files/orphans',
+    ...options
+});
+
+/**
+ * Удалить осиротевшие аудио и текстовые файлы
+ *
+ * Идемпотентно удаляет ТОЛЬКО осиротевшие аудио/текстовые объекты (.mp3, .pdf, .fb2). Изображения не удаляются никогда — обложками управляют вручную из каталога. Ошибка удаления отдельного объекта не роняет запрос (best-effort).
+ */
+export const appControllerCleanupOrphanedFiles = <ThrowOnError extends boolean = false>(options?: Options<AppControllerCleanupOrphanedFilesData, ThrowOnError>): RequestResult<AppControllerCleanupOrphanedFilesResponses, unknown, ThrowOnError> => (options?.client ?? client).post<AppControllerCleanupOrphanedFilesResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zAppControllerCleanupOrphanedFilesResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/files/orphans/cleanup',
+    ...options
+});
+
+/**
  * Получить URL потока для файла
  */
 export const appControllerGetStreamUrl = <ThrowOnError extends boolean = false>(options: Options<AppControllerGetStreamUrlData, ThrowOnError>): RequestResult<AppControllerGetStreamUrlResponses, unknown, ThrowOnError> => (options.client ?? client).get<AppControllerGetStreamUrlResponses, unknown, ThrowOnError>({
@@ -84,6 +118,23 @@ export const appControllerGetStreamUrl = <ThrowOnError extends boolean = false>(
     }).parseAsync(data),
     responseValidator: async (data) => await zAppControllerGetStreamUrlResponse.parseAsync(data),
     url: '/files/{fileName}/stream-url',
+    ...options
+});
+
+/**
+ * Удалить файл-изображение
+ *
+ * Удаляет объект-изображение (JPEG/PNG/WebP) из bucket. Если изображение используется как обложка (artwork) проповеди или плейлиста — 409 Conflict.
+ */
+export const appControllerRemoveFile = <ThrowOnError extends boolean = false>(options: Options<AppControllerRemoveFileData, ThrowOnError>): RequestResult<AppControllerRemoveFileResponses, AppControllerRemoveFileErrors, ThrowOnError> => (options.client ?? client).delete<AppControllerRemoveFileResponses, AppControllerRemoveFileErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zAppControllerRemoveFilePath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zAppControllerRemoveFileResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/files/{fileName}',
     ...options
 });
 
