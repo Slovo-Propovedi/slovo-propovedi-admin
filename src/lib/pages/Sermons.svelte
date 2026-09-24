@@ -11,12 +11,34 @@
   import Input from '$lib/components/Input.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
+  import Select from '$lib/components/Select.svelte';
 
   const PAGE_LIMIT = 20;
+
+  type SermonSort = 'date' | 'title' | 'artist' | 'playlist';
+  type SortOrder = 'asc' | 'desc';
+
+  // Server-side ordering: `date` maps to id DESC (upload order), the
+  // alphabetical keys to LOWER(...) — the backend resolves the direction
+  // default per sort (desc for date, asc otherwise), so picking a new sort
+  // also snaps the direction to its documented default.
+  const sortOptions = [
+    { value: 'date', label: 'По дате' },
+    { value: 'title', label: 'По названию' },
+    { value: 'artist', label: 'По автору' },
+    { value: 'playlist', label: 'По плейлисту' },
+  ];
+
+  const orderOptions = [
+    { value: 'asc', label: 'По возрастанию' },
+    { value: 'desc', label: 'По убыванию' },
+  ];
 
   let searchInput = $state('');
   let debouncedTerm = $state('');
   let page = $state(1);
+  let sort = $state<SermonSort>('date');
+  let order = $state<SortOrder>('desc');
 
   // The query refetches only after the user pauses typing; an empty term sends
   // no `search` param, which keeps the full unfiltered list on first load.
@@ -26,11 +48,33 @@
     page = 1;
   }, 300);
 
+  // Any ordering change restarts from the first page; a new sort snaps the
+  // direction to the backend's documented default (desc for date, asc else).
+  function changeSort(event: Event): void {
+    const next = (event.currentTarget as HTMLSelectElement).value as SermonSort;
+    sort = next;
+    order = next === 'date' ? 'desc' : 'asc';
+    page = 1;
+  }
+
+  function changeOrder(event: Event): void {
+    order = (event.currentTarget as HTMLSelectElement).value as SortOrder;
+    page = 1;
+  }
+
   // Offset pagination only: the backend rejects page/limit combined with
-  // take/cursor, so this screen never sends the keyset params.
+  // take/cursor, so this screen never sends the keyset params. `sort`/`order`
+  // are ignored by the backend while a `search` term is active (relevance
+  // wins), but stay in the request so clearing the term restores them.
   const sermonsQuery = createQuery(() => ({
     ...sermonControllerFindAllOptions({
-      query: { search: debouncedTerm || undefined, page, limit: PAGE_LIMIT },
+      query: {
+        search: debouncedTerm || undefined,
+        page,
+        limit: PAGE_LIMIT,
+        sort,
+        order,
+      },
     }),
     // Keep the previous page visible while the next one loads — no flicker.
     placeholderData: keepPreviousData,
@@ -63,12 +107,16 @@
     </div>
   </div>
 
-  <Input
-    label="Поиск"
-    placeholder="Название, проповедник, книга…"
-    bind:value={searchInput}
-    oninput={() => applySearch(searchInput)}
-  />
+  <div class="list-filters">
+    <Input
+      label="Поиск"
+      placeholder="Название, проповедник, книга…"
+      bind:value={searchInput}
+      oninput={() => applySearch(searchInput)}
+    />
+    <Select label="Сортировка" options={sortOptions} value={sort} onchange={changeSort} />
+    <Select label="Направление" options={orderOptions} value={order} onchange={changeOrder} />
+  </div>
 
   {#if sermonsQuery.isPending}
     <div class="loading-inline">

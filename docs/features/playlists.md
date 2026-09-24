@@ -10,14 +10,15 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions({ query: { search, page, limit } })` — оффсетная пагинация |
+| `/playlists` | `Playlists.svelte` | `playlistControllerFindAllOptions({ query: { search, page, limit, sort, order } })` — оффсетная пагинация |
 | `/playlists/create` | `PlaylistCreate.svelte` | — (`PlaylistForm`, mode create) |
 | `/playlists/:id` | `PlaylistDetail.svelte` | `playlistControllerFindOneOptions` + `playlistControllerRemoveMutation` + `reorderSermonsInPlaylistMutation` |
 | `/playlists/:id/edit` | `PlaylistEdit.svelte` | `playlistControllerFindOneOptions` → `PlaylistForm`, mode edit |
 
 ## Список (`Playlists.svelte`)
 
-- Debounce-поиск как на странице проповедей: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20 } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- Debounce-поиск как на странице проповедей: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20, sort, order } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- **Сортировка:** тулубар `.list-filters` — `<Select>` «Сортировка» (`date`/`title`/`section`) и `<Select>` «Направление» (`asc`/`desc`). Дефолт `date`/`desc`. Смена `sort` сбрасывает страницу на 1 и подтягивает направление к дефолту (`desc` для `date`, иначе `asc`); смена `order` тоже сбрасывает страницу. При активном `search` backend игнорирует `sort`/`order` (релевантность побеждает), но они остаются в запросе.
 - **Оффсетная пагинация:** `page` (1-based) + `limit` = 20; `placeholderData: keepPreviousData` — предыдущая страница видна, пока грузится следующая. `pageCount = ceil(count / 20)`; `Pagination` рендерится при `pageCount > 1`.
 - `createQuery` → карточки; клик → `/playlists/:id`. Состояния: загрузка — `LoadingSpinner`, пусто — `EmptyState` (с CTA), поиск без совпадений — `EmptyState` «Ничего не найдено» без CTA, ошибки — штатно.
 
@@ -39,7 +40,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 | `selectedSermonIds` | поисковый `CheckboxList` | см. ниже |
 | `selectedSectionIds` | `CheckboxList` | через `sectionControllerFindAllOptions`, см. ниже |
 
-**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }))`. **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Рядом с поиском показывается счётчик «Выбрано: N» (только когда выборка непуста), чтобы скрытые поиском выборы оставались заметными. Пустой термин → полная выборка без `search`.
+**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } }))` (алфавитный порядок по названию). **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Рядом с поиском показывается счётчик «Выбрано: N» (только когда выборка непуста), чтобы скрытые поиском выборы оставались заметными. Пустой термин → полная выборка без `search`. Список обёрнут в `.checkbox-list-scroll` (`max-height: 1000px; overflow-y: auto`).
 
 Строки пикера рендерят **полную информацию о проповеди** через `item`-snippet `CheckboxList`: обложка (`sermon.artwork`, иначе плейсхолдер с первой буквой), название, подзаголовок «Проповедник · Книга глава:стихи» (`artist` + `formatReference(book, chapter, verse)`; без книги — только проповедник), бейджи медиа (аудио/youtube/текст по наличию URL). В `options` каждая строка несёт `{ value, label, data: sermon }` — `data` отдаёт сырую `SermonEntity` в snippet. `toggleSermon` — добавление/удаление id.
 

@@ -70,8 +70,14 @@
     debouncedTerm = value;
   }, 300);
 
+  // Pickers order alphabetically by title (asc) so a long catalog reads
+  // predictably; the backend defaults `order` to asc for the title sort, but
+  // it is sent explicitly to keep the intent visible. `sort`/`order` apply to
+  // the full fetch (no page/limit) this picker uses.
   const sermonsQuery = createQuery(() =>
-    sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+    sermonControllerFindAllOptions({
+      query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' },
+    }),
   );
   let sermons = $derived(sermonsQuery.data?.sermons ?? []);
 
@@ -190,35 +196,37 @@
         oninput={() => applySearch(searchInput)}
         hint={selectedSermonIds.length > 0 ? `Выбрано: ${selectedSermonIds.length}` : undefined}
       />
-      <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon}>
-        {#snippet item(option)}
-          {#if option.data}
-            {@const sermon = option.data}
-            {#if sermon.artwork}
-              <img class="list-item-cover" src={sermon.artwork} alt="" />
-            {:else}
-              <div class="list-item-cover list-item-cover-placeholder">
-                {sermon.title.slice(0, 1).toUpperCase()}
+      <div class="checkbox-list-scroll">
+        <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon}>
+          {#snippet item(option)}
+            {#if option.data}
+              {@const sermon = option.data}
+              {#if sermon.artwork}
+                <img class="list-item-cover" src={sermon.artwork} alt="" />
+              {:else}
+                <div class="list-item-cover list-item-cover-placeholder">
+                  {sermon.title.slice(0, 1).toUpperCase()}
+                </div>
+              {/if}
+              <div class="list-item-body">
+                <div class="list-item-title">{sermon.title}</div>
+                <div class="list-item-subtitle">{sermonSubtitle(sermon)}</div>
+              </div>
+              <div class="list-item-actions">
+                {#if sermon.audioUrl}
+                  <span class="badge badge-gold">аудио</span>
+                {/if}
+                {#if sermon.youtubeUrl}
+                  <span class="badge badge-neutral">youtube</span>
+                {/if}
+                {#if sermon.textFileUrl}
+                  <span class="badge badge-neutral">текст</span>
+                {/if}
               </div>
             {/if}
-            <div class="list-item-body">
-              <div class="list-item-title">{sermon.title}</div>
-              <div class="list-item-subtitle">{sermonSubtitle(sermon)}</div>
-            </div>
-            <div class="list-item-actions">
-              {#if sermon.audioUrl}
-                <span class="badge badge-gold">аудио</span>
-              {/if}
-              {#if sermon.youtubeUrl}
-                <span class="badge badge-neutral">youtube</span>
-              {/if}
-              {#if sermon.textFileUrl}
-                <span class="badge badge-neutral">текст</span>
-              {/if}
-            </div>
-          {/if}
-        {/snippet}
-      </CheckboxList>
+          {/snippet}
+        </CheckboxList>
+      </div>
     </div>
   </div>
 

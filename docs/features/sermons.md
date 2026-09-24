@@ -10,14 +10,15 @@
 
 | Паттерн | Страница | Данные |
 |---------|----------|--------|
-| `/sermons` | `Sermons.svelte` | `sermonControllerFindAllOptions({ query: { search, page, limit } })` — оффсетная пагинация |
+| `/sermons` | `Sermons.svelte` | `sermonControllerFindAllOptions({ query: { search, page, limit, sort, order } })` — оффсетная пагинация |
 | `/sermons/upload` | `UploadSermon.svelte` | — (делегирует `SermonForm`, mode create) |
 | `/sermons/:id` | `SermonDetail.svelte` | `sermonControllerFindOneOptions({ path: { id } })` + `sermonControllerRemoveMutation` |
 | `/sermons/:id/edit` | `SermonEdit.svelte` | `sermonControllerFindOneOptions` → `SermonForm`, mode edit |
 
 ## Список (`Sermons.svelte`)
 
-- Debounce-поиск: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20 } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- Debounce-поиск: `searchInput` → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, page, limit: 20, sort, order } }))`. Пустой термин не шлёт `search` → полная выборка; новый поиск **сбрасывает страницу на 1**.
+- **Сортировка:** тулубар `.list-filters` — `<Select>` «Сортировка» (`date`/`title`/`artist`/`playlist`) и `<Select>` «Направление» (`asc`/`desc`). Дефолт `date`/`desc`. Смена `sort` сбрасывает страницу на 1 и подтягивает направление к дефолту (`desc` для `date`, иначе `asc`); смена `order` тоже сбрасывает страницу. При активном `search` backend игнорирует `sort`/`order` (релевантность побеждает), но они остаются в запросе.
 - **Оффсетная пагинация:** `page` (1-based) + `limit` = 20; `take`/`cursor` не шлются (взаимоисключение на backend). `placeholderData: keepPreviousData` — предыдущая страница видна, пока грузится следующая. `pageCount = ceil(count / 20)`; `Pagination` рендерится при `pageCount > 1`.
 - Плоский список карточек (`list-grid`); клик → `/sermons/:id`.
 - Подзаголовок карточки — **«Проповедник · Книга глава:стихи»** через `formatReference(book, chapter, verse)` (`utils/labels.ts`); нотация поддерживает диапазоны глав и стихов (`3:16–18`, `3:16–4:2`, `3–4`) и разрозненные отрезки стихов (`1:9–18, 20`); бейджи `аудио`/`youtube`/`текст` по наличию `audioUrl`/`youtubeUrl`/`textFileUrl`.
@@ -39,9 +40,9 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 | `audioUrl` | `FileUpload kind="audio"` (MP3-guard) | nullable |
 | `textFileUrl` | `FileUpload kind="any"` | nullable |
 | `artwork` | `CoverPicker` | обязательная (string) |
-| `selectedPlaylistIds` | `CheckboxList` (create и edit) | **поисковый** пикер через `playlistControllerFindAllOptions({ query: { search } })` |
+| `selectedPlaylistIds` | `CheckboxList` (create и edit) | **поисковый** пикер через `playlistControllerFindAllOptions({ query: { search, sort: 'title', order: 'asc' } })` |
 
-Блок «Плейлисты»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } })` (фильтрация на сервере); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
+Блок «Плейлисты»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } })` (фильтрация на сервере, алфавитный порядок по названию); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Список обёрнут в `.checkbox-list-scroll` (`max-height: 1000px; overflow-y: auto`). Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
 
 Поля «Исполнитель» и «Книга» — `Combobox` (см. [ui-components.md](./ui-components.md)): обычный `input` с фильтруемым списком ранее использованных значений из `sermonControllerGetDistinctValuesOptions` (`staleTime: 5 мин`). Подсказки — best-effort: при ошибке или пустом списке комбобокс ведёт себя как обычный инпут, сабмит не блокируется и ошибка не показывается.
 

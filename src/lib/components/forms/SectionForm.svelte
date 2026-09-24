@@ -98,8 +98,14 @@
     debouncedTerm = value;
   }, 300);
 
+  // The picker orders alphabetically by title (asc) so a long catalog reads
+  // predictably; the backend defaults `order` to asc for the title sort, but
+  // it is sent explicitly to keep the intent visible. `sort`/`order` apply to
+  // the full fetch (no page/limit) this picker uses.
   const playlistsQuery = createQuery(() =>
-    playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined } }),
+    playlistControllerFindAllOptions({
+      query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' },
+    }),
   );
   let playlists = $derived(playlistsQuery.data?.playlists ?? []);
 
@@ -237,7 +243,9 @@
         {:else if debouncedTerm !== '' && !playlistsQuery.isError && playlistOptions.length === 0}
           <p class="field-hint">Ничего не найдено</p>
         {:else}
-          <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
+          <div class="checkbox-list-scroll">
+            <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
+          </div>
         {/if}
       </div>
     </div>
