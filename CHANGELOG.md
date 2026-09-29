@@ -2,6 +2,11 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.11.3] - 2026-09-29
+
+### Bug Fixes
+- add internal scrolling to all non-paginated lists
+
 ## [0.11.2] - 2026-09-29
 
 ### Features
