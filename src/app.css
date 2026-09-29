@@ -688,14 +688,6 @@ img {
   gap: 8px;
 }
 
-/* Scroll container for long pickers (the sermon/playlist CheckboxList): bounds
-   the picker height so a large catalog does not push the form actions far
-   below the fold, while the list itself keeps its own styling. */
-.checkbox-list-scroll {
-  max-height: 1000px;
-  overflow-y: auto;
-}
-
 .checkbox-option {
   display: flex;
   align-items: center;
@@ -880,6 +872,13 @@ img {
 }
 .library-grid-stagger > *:nth-child(n + 9) {
   animation-delay: 0.34s;
+}
+
+/* Non-paginated lists scroll internally instead of stretching the page. */
+.scroll-list {
+  min-height: 200px;
+  max-height: 90dvh;
+  overflow-y: auto;
 }
 
 .library-item {

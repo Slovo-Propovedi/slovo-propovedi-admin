@@ -171,7 +171,7 @@
     <div class="detail-section">
       <h3>Плейлисты раздела ({localPlaylists.length})</h3>
       {#if localPlaylists.length > 0}
-        <DndList class="list-grid" items={localPlaylists} onReorder={handleReorder}>
+        <DndList class="list-grid scroll-list" items={localPlaylists} onReorder={handleReorder}>
           {#snippet children(playlist)}
             <div
               class="card card-hover list-item"

@@ -379,7 +379,7 @@
       {:else if debouncedTerm !== '' && !playlistsQuery.isError && playlistOptions.length === 0}
         <p class="field-hint">Ничего не найдено</p>
       {:else}
-        <div class="checkbox-list-scroll">
+        <div class="scroll-list">
           <CheckboxList options={playlistOptions} selected={selectedPlaylistIds} onToggle={togglePlaylist} />
         </div>
       {/if}

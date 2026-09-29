@@ -204,7 +204,7 @@
       </EmptyState>
     </div>
   {:else}
-    <div class="library-grid">
+    <div class="library-grid scroll-list">
       {#each files as file (file.fileName)}
         <div class="cover-card">
           <div class="cover-card-thumb">
@@ -266,7 +266,7 @@
           />
         </div>
       {:else}
-        <div class="orphan-list">
+        <div class="orphan-list scroll-list">
           {#each orphans as file (file.fileName)}
             {@const kind = fileKind(file.fileName)}
             <div class="orphan-row">
@@ -292,7 +292,7 @@
         {/if}
       </div>
       {#if cleanupResult.failed.length > 0}
-        <ul class="orphan-failed">
+        <ul class="orphan-failed scroll-list">
           {#each cleanupResult.failed as failure (failure.fileName)}
             <li><span class="orphan-name">{failure.fileName}</span> — {failure.reason}</li>
           {/each}

@@ -11,7 +11,7 @@
 ## Каталог
 
 - **Маршрут:** `/media`, без параметров.
-- **Что показывается:** заголовок «Медиафайлы», подзаголовок и кнопка «Загрузить обложку». Сетка `.library-grid` из карточек `.cover-card`: ленивая (`loading="lazy"`) `<img>` с `fileUrl`, имя файла (`fileName`), размер (`formatSize`) и бейдж «используется» (`badge-gold`), когда `used = true`. На каждой карточке — оверлейная кнопка удаления (иконка `trash`).
+- **Что показывается:** заголовок «Медиафайлы», подзаголовок и кнопка «Загрузить обложку». Сетка `.library-grid.scroll-list` из карточек `.cover-card`: ленивая (`loading="lazy"`) `<img>` с `fileUrl`, имя файла (`fileName`), размер (`formatSize`) и бейдж «используется» (`badge-gold`), когда `used = true`. На каждой карточке — оверлейная кнопка удаления (иконка `trash`). Общий контейнер `.scroll-list` (`min-height: 200px`, `max-height: 90dvh`, `overflow-y: auto`) даёт внутренний скролл — сетка не растягивает страницу. Тот же `.scroll-list` носят сетка `ImageLibraryModal` (`.library-grid.library-grid-stagger.scroll-list`) и списки осиротевших файлов ниже (`.orphan-list`, `.orphan-failed`).
 - **Откуда данные:** `getFilesOptions()` (`getFiles` → `GET /files`) — обёртка `AllFilesResponse { files, count }`, элемент — `FileMetadataDto { fileName, fileUrl, size, lastModified, used }`, где `used` = изображение уже является `artwork` какой-либо проповеди или плейлиста.
 - **Компоненты:** `Button`, `EmptyState`, `Icon`, `LoadingSpinner`, `Modal`, `Toast`.
 - **Навигация:** отдельного экрана-детали у обложки нет — карточка не кликабельна.
@@ -38,11 +38,11 @@
 
 - Блок ниже каталога. Кнопка «Найти осиротевшие файлы» запускает скан; повторный клик пересканирует, не сбрасывая прошлый список.
 - **Откуда данные:** `appControllerGetOrphanedFilesOptions()` (`GET /files/orphans`), запрос **опциональный** (`enabled: showOrphans`) — скан обходит весь bucket, поэтому не выполняется до запроса пользователя. Ответ — `OrphanedFilesResponse { orphaned, count }`, элементы — `FileMetadataDto` (`used` всегда `false`).
-- **Что показывается:** список `.orphan-list` из строк `.orphan-row`: бейдж типа (`audio` — `badge-gold`, `text`/`image` — `badge-neutral`, определяется по расширению через `fileKind`), имя файла, размер. У изображений — пометка «удаляется вручную из каталога».
+- **Что показывается:** список `.orphan-list.scroll-list` из строк `.orphan-row`: бейдж типа (`audio` — `badge-gold`, `text`/`image` — `badge-neutral`, определяется по расширению через `fileKind`), имя файла, размер. Список скроллится внутри (`.scroll-list`), не растягивая страницу. У изображений — пометка «удаляется вручную из каталога».
 - **Кнопка «Удалить (N)»:** `N` — число **удаляемых** осиротевших файлов (только аудио/текст; изображения не считаются). Появляется, когда `N > 0`.
 - **Подтверждение:** `Modal` «Удалить осиротевшие файлы?» с пояснением, что удаляются только аудио/тексты, а изображения убираются вручную из каталога.
 - **Мутация:** `appControllerCleanupOrphanedFilesMutation` (`POST /files/orphans/cleanup`) — идемпотентная best-effort очистка `.mp3/.pdf/.fb2`; ошибка отдельного объекта не роняет запрос.
-- **onSuccess:** `invalidateFiles` + инвалидация `appControllerGetOrphanedFilesQueryKey`; результат `CleanupOrphansResponse { deleted, failed }` выводится баннером `.form-success-banner` («Удалено файлов: N») со списком `.orphan-failed` для неудачных (`fileName — reason`); `Toast` «Удалено файлов: N».
+- **onSuccess:** `invalidateFiles` + инвалидация `appControllerGetOrphanedFilesQueryKey`; результат `CleanupOrphansResponse { deleted, failed }` выводится баннером `.form-success-banner` («Удалено файлов: N») со списком `.orphan-failed.scroll-list` для неудачных (`fileName — reason`); `Toast` «Удалено файлов: N».
 - **onError:** `getErrorMessage(error)` → `Toast`.
 - **Состояния:** загрузка скана — `LoadingSpinner`; пусто — `EmptyState` «Осиротевших файлов нет»; ошибка — `.form-error-banner`.
 

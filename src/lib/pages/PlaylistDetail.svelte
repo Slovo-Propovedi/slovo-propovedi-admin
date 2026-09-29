@@ -149,7 +149,7 @@
     <div class="detail-section">
       <h3>Проповеди плейлиста</h3>
       {#if localSermons.length > 0}
-        <DndList class="list-grid stagger" items={localSermons} onReorder={handleReorder}>
+        <DndList class="list-grid stagger scroll-list" items={localSermons} onReorder={handleReorder}>
           {#snippet children(sermon)}
             <div
               class="card card-hover list-item"

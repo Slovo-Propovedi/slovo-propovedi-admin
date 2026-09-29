@@ -113,7 +113,7 @@
       </EmptyState>
     </div>
   {:else}
-    <DndList class="list-grid stagger" items={localSections} onReorder={handleReorder}>
+    <DndList class="list-grid stagger scroll-list" items={localSections} onReorder={handleReorder}>
       {#snippet children(section)}
         <div
           class="card card-hover list-item"

@@ -196,7 +196,7 @@
         oninput={() => applySearch(searchInput)}
         hint={selectedSermonIds.length > 0 ? `Выбрано: ${selectedSermonIds.length}` : undefined}
       />
-      <div class="checkbox-list-scroll">
+      <div class="scroll-list">
         <CheckboxList options={sermonOptions} selected={selectedSermonIds} onToggle={toggleSermon}>
           {#snippet item(option)}
             {#if option.data}

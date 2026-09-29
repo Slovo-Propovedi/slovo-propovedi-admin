@@ -18,7 +18,7 @@
 ## Список
 
 - **Маршрут:** `/sections`, без параметров.
-- **Что показывается:** заголовок «Разделы», подзаголовок «Слайдеры главной страницы сайта», кнопка «Создать раздел». Список карточек `.list-item` в `DndList`: обложка-плейсхолдер (первая буква названия), название, подзаголовок (описание либо «N плейлистов»), бейджи `ITEMS_SIZE_LABELS[itemsSize]` (золотой) и `TRANSFORM_LABELS[transform]` (нейтральный).
+- **Что показывается:** заголовок «Разделы», подзаголовок «Слайдеры главной страницы сайта», кнопка «Создать раздел». Список карточек `.list-item` в `DndList` (`.list-grid.stagger.scroll-list` — список скроллится внутри, не растягивая страницу): обложка-плейсхолдер (первая буква названия), название, подзаголовок (описание либо «N плейлистов»), бейджи `ITEMS_SIZE_LABELS[itemsSize]` (золотой) и `TRANSFORM_LABELS[transform]` (нейтральный).
 - **Откуда данные:** `sectionControllerFindAllOptions()` (`createQuery`); мутация `reorderSectionsMutation` (`body: { ids }`).
 - **Компоненты:** `Button`, `DndList`, `EmptyState`, `Icon`, `LoadingSpinner`, `Toast`.
 - **Навигация:** клик/Enter по карточке → `/sections/:id`; «Создать раздел» → `/sections/create`.
@@ -36,7 +36,7 @@
 ## Деталь
 
 - **Маршрут:** `/sections/:id`, параметр `:id` (uuid, из `matchRoute` → `params.id`).
-- **Что показывается:** `Breadcrumbs` («Разделы / <название>»), заголовок и описание раздела, кнопки «Редактировать» и «Удалить`. Блок `.detail-grid` со статистикой: размер карточек, высота (`TRANSFORM_LABELS`), расположение заголовка (`SLIDE_TITLE_LOCATION_LABELS`), строк, крупный заголовок, скруглённые углы. Блок «Плейлисты раздела (N)» — `DndList` из `localPlaylists`.
+- **Что показывается:** `Breadcrumbs` («Разделы / <название>»), заголовок и описание раздела, кнопки «Редактировать» и «Удалить`. Блок `.detail-grid` со статистикой: размер карточек, высота (`TRANSFORM_LABELS`), расположение заголовка (`SLIDE_TITLE_LOCATION_LABELS`), строк, крупный заголовок, скруглённые углы. Блок «Плейлисты раздела (N)» — `DndList` (`.list-grid.scroll-list`) из `localPlaylists`; список скроллится внутри (`.scroll-list`).
 - **Откуда данные:** `sectionControllerFindOneOptions({ path: { id } })` (`createQuery`); мутации `sectionControllerRemoveMutation` и `reorderPlaylistsInSectionMutation` (`body: { playlistIds }, path: { id }`).
 - **Компоненты:** `Breadcrumbs`, `Button`, `DndList`, `EmptyState`, `Icon`, `LoadingSpinner`, `Modal`, `Toast`.
 - **Навигация:** «Редактировать» → `/sections/:id/edit`; клик по плейлисту → `/playlists/:id`; подтверждение удаления в `Modal` → `/sections`.
@@ -62,7 +62,7 @@
 ## SectionForm (общая форма)
 
 - **Пропсы:** `{ mode: 'create'|'edit'; id?; initial?: SectionEntity }`.
-- **Поля:** название, описание; оформление — `Select` размер карточек (`small/middle/large/xLarge`), `Select` высота (`high/middle/short`), `Select` расположение заголовка (`on/under/bothOnAndUnder`), «Строк» (`number`, опционально), чекбоксы «Крупный заголовок описания на слайде» и «Скруглённые углы карточек». В режиме **edit** дополнительно блок «Плейлисты раздела» — **поисковый** `CheckboxList` (`playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } })` с `debounce(300)`; `selectedPlaylistIds` — источник истины и переживает поиск; рядом с поиском счётчик «Выбрано: N», когда выборка непуста; список обёрнут в `.checkbox-list-scroll`). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты», активный поиск без совпадений — «Ничего не найдено».
+- **Поля:** название, описание; оформление — `Select` размер карточек (`small/middle/large/xLarge`), `Select` высота (`high/middle/short`), `Select` расположение заголовка (`on/under/bothOnAndUnder`), «Строк» (`number`, опционально), чекбоксы «Крупный заголовок описания на слайде» и «Скруглённые углы карточек». В режиме **edit** дополнительно блок «Плейлисты раздела» — **поисковый** `CheckboxList` (`playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } })` с `debounce(300)`; `selectedPlaylistIds` — источник истины и переживает поиск; рядом с поиском счётчик «Выбрано: N», когда выборка непуста; список обёрнут в `.scroll-list` (`min-height: 200px`, `max-height: 90dvh`, `overflow-y: auto`)). Состояния блока: загрузка — `LoadingSpinner`, ошибка — «Не удалось загрузить плейлисты», активный поиск без совпадений — «Ничего не найдено».
 - **Мутации:** `sectionControllerCreateMutation` / `sectionControllerUpdateMutation`. В edit тело включает `playlistsIds: selectedPlaylistIds` (пустой массив очищает состав раздела). Связь с плейлистами двунаправленная: плейлист со своей стороны управляет ею через `sectionsIds` в `PlaylistForm` (см. [`../features/playlists.md`](../features/playlists.md)).
 - **Валидация:** без клиентского zod — HTML `required`/`min` + backend `strictObject`. Nullable-поля шлют `null` при очистке (чтобы очистить колонку) против `undefined` («не трогать»).
 - **После успеха:** `invalidateSection(queryClient, id)` + `navigate('/sections')` (create) или `navigate('/sections/:id')` (edit).

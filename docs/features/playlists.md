@@ -24,7 +24,7 @@
 
 ## Деталь и reorder (`PlaylistDetail.svelte`)
 
-- **Optimistic reorder** проповедей внутри плейлиста через `DndList` + `reorderSermonsInPlaylistMutation` (требует полный in-scope набор `sermonIds`). Паттерн — «теневая» копия `localSermons`, `sermonsSnapshot`, `isDragging`, откат на `onError` (см. [`../conventions.md`](../conventions.md) → Optimistic reorder).
+- **Optimistic reorder** проповедей внутри плейлиста через `DndList` (`.list-grid.stagger.scroll-list`) + `reorderSermonsInPlaylistMutation` (требует полный in-scope набор `sermonIds`). Паттерн — «теневая» копия `localSermons`, `sermonsSnapshot`, `isDragging`, откат на `onError` (см. [`../conventions.md`](../conventions.md) → Optimistic reorder).
 - Ячейка строки: **«Проповедник · Книга глава:стихи»** — `artist` + `formatReference(book, chapter, verse)`.
 - Удаление плейлиста: `Modal` confirm → `playlistControllerRemoveMutation` → `invalidatePlaylist(queryClient, id)` → `navigate('/playlists')`.
 
@@ -40,7 +40,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: PlaylistEntity }`.
 | `selectedSermonIds` | поисковый `CheckboxList` | см. ниже |
 | `selectedSectionIds` | `CheckboxList` | через `sectionControllerFindAllOptions`, см. ниже |
 
-**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } }))` (алфавитный порядок по названию). **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Рядом с поиском показывается счётчик «Выбрано: N» (только когда выборка непуста), чтобы скрытые поиском выборы оставались заметными. Пустой термин → полная выборка без `search`. Список обёрнут в `.checkbox-list-scroll` (`max-height: 1000px; overflow-y: auto`).
+**Поисковый пикер проповедей:** инпут «Поиск» → `debounce(300)` → `debouncedTerm` → `createQuery(() => sermonControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } }))` (алфавитный порядок по названию). **Выборка `selectedSermonIds` — единственный источник истины и персистит между поисками**: выбранная проповедь остаётся выбранной, даже если текущий поиск скрыл её из вида. Рядом с поиском показывается счётчик «Выбрано: N» (только когда выборка непуста), чтобы скрытые поиском выборы оставались заметными. Пустой термин → полная выборка без `search`. Список обёрнут в `.scroll-list` (`min-height: 200px`, `max-height: 90dvh`, `overflow-y: auto`).
 
 Строки пикера рендерят **полную информацию о проповеди** через `item`-snippet `CheckboxList`: обложка (`sermon.artwork`, иначе плейсхолдер с первой буквой), название, подзаголовок «Проповедник · Книга глава:стихи» (`artist` + `formatReference(book, chapter, verse)`; без книги — только проповедник), бейджи медиа (аудио/youtube/текст по наличию URL). В `options` каждая строка несёт `{ value, label, data: sermon }` — `data` отдаёт сырую `SermonEntity` в snippet. `toggleSermon` — добавление/удаление id.
 

@@ -24,7 +24,7 @@
 
 ## Деталь и reorder (`SectionDetail.svelte`)
 
-- **Optimistic reorder плейлистов** внутри раздела через `DndList` + `reorderPlaylistsInSectionMutation` — паттерн идентичен (`localPlaylists`, `playlistsSnapshot`, `isDragging`).
+- **Optimistic reorder плейлистов** внутри раздела через `DndList` (`.list-grid.scroll-list`) + `reorderPlaylistsInSectionMutation` — паттерн идентичен (`localPlaylists`, `playlistsSnapshot`, `isDragging`).
 - Удаление раздела: `Modal` confirm → `sectionControllerRemoveMutation` → `invalidateSection(queryClient, id)` → `navigate('/sections')`.
 
 ## Форма (`SectionForm.svelte`)
@@ -43,7 +43,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SectionEntity }`.
 | `borderRadius` | checkbox | |
 | `selectedPlaylistIds` | `CheckboxList` (только edit) | **поисковый** пикер через `playlistControllerFindAllOptions({ query: { search, sort: 'title', order: 'asc' } })` |
 
-Блок «Плейлисты раздела»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } })` (фильтрация на сервере, алфавитный порядок по названию); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Список обёрнут в `.checkbox-list-scroll` (`max-height: 1000px; overflow-y: auto`). Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
+Блок «Плейлисты раздела»: поисковый `CheckboxList` — `<Input>` «Поиск» + `debounce(300)` шлёт `search` через `playlistControllerFindAllOptions({ query: { search: debouncedTerm || undefined, sort: 'title', order: 'asc' } })` (фильтрация на сервере, алфавитный порядок по названию); `selectedPlaylistIds` — источник истины и **переживает поиск** (выбранные плейлисты остаются отмеченными, даже когда текущий поиск скрывает их); рядом с поиском — счётчик «Выбрано: N» (только когда выборка непуста). Пустой термин не шлёт `search` — первичная загрузка показывает полный каталог. Список обёрнут в `.scroll-list` (`min-height: 200px`, `max-height: 90dvh`, `overflow-y: auto`). Пока идёт загрузка — `LoadingSpinner` (`.loading-inline`); при ошибке — сообщение «Не удалось загрузить плейлисты» (`.form-error-banner`); при активном поиске без совпадений — строка «Ничего не найдено» вместо пустого списка.
 
 **Enums — через label-мапы** в `utils/labels.ts`:
 

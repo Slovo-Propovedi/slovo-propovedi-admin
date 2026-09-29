@@ -37,7 +37,7 @@
   {#snippet children()}
     <div class="library-body">
       {#if filesQuery.isPending}
-        <div class="library-grid library-grid-stagger">
+        <div class="library-grid library-grid-stagger scroll-list">
           {#each SKELETON_ITEMS as index}
             <div class="library-skeleton" aria-hidden="true"></div>
           {/each}
@@ -58,7 +58,7 @@
           hint="Загрузите обложку через форму — она появится в этой библиотеке."
         />
       {:else}
-        <div class="library-grid library-grid-stagger">
+        <div class="library-grid library-grid-stagger scroll-list">
           {#each files as file (file.fileUrl)}
             <button
               type="button"
