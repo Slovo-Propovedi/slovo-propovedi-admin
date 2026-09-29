@@ -47,17 +47,18 @@ Props: `value` ($bindable), `label`, `hint`, `accept`, `kind: 'image'|'audio'|'a
 
 ## `CoverPicker.svelte`
 
-Props: `value`, `label`, `hint`, `isUploading`, `onChange`. = `FileUpload kind="image" accept="image/*"` + кнопка «Выбрать из библиотеки» → `ImageLibraryModal`.
+Props: `value`, `label`, `hint`, `isUploading`, `onChange`. = `FileUpload kind="image" accept="image/*"` + кнопка «Выбрать из библиотеки» → `ImageLibraryModal` (передаёт `selectedUrl={value}`).
 
 - При успешной загрузке обложки вызывает `invalidateFiles(queryClient)`, чтобы свежезагруженная обложка сразу была доступна в библиотеке.
 - Выбор из библиотеки → `value = fileUrl`.
 
 ## `ImageLibraryModal.svelte`
 
-Props: `open` ($bindable), `onSelect(fileUrl)`.
+Props: `open` ($bindable), `onSelect(fileUrl)`, `selectedUrl` (опционально, по умолчанию `''` — URL текущей обложки).
 
 - Сетка ранее загруженных изображений через `createQuery(() => ({ ...getFilesOptions(), enabled: open }))` — грузится только когда модалка открыта (свежие данные при каждом открытии). Сетка обёрнута в `.scroll-list` (`min-height: 200px`, `max-height: 90vh`/`90dvh`, `overflow-y: auto`); внутри модалки ограничена `60vh`/`60dvh` (`.library-modal .scroll-list`) — скроллится, не растягивая её и не выходя за вьюпорт.
 - Состояния: skeleton (8 плейсхолдеров), ошибка (`Icon alert` + «Повторить»), пусто (`EmptyState` «Изображений пока нет»), сетка с `lazy`-загрузкой и галочкой выбора.
+- **Уже выбранная обложка** (`file.fileUrl === selectedUrl`) помечается классом `.library-item.is-selected`: золотая рамка (токен `--gold`, как у бейджа «используется»), постоянно видимая галочка `.library-check`, подпись «<имя> — уже выбран»; кнопка получает `disabled` и `aria-pressed`, повторный выбор исключён.
 
 ## Каталог обложек и очистка осиротевших файлов (`Covers.svelte`)
 

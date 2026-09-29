@@ -43,7 +43,7 @@
 |-----------|------|----------------|------------|------------------|
 | `FileUpload` | `FileUpload.svelte` | `value` ($bindable), `kind` ('image'/'audio'/'any'), `isUploading` ($bindable), `accept`, `hint`, `onChange` | Зона загрузки с XHR-прогрессом; MP3-guard для audio | `CoverPicker`, `SermonForm` (audio/text) |
 | `CoverPicker` | `CoverPicker.svelte` | `value`, `isUploading`, `onChange` | Image-upload + «Выбрать из библиотеки» → `ImageLibraryModal` | `SermonForm`, `PlaylistForm` |
-| `ImageLibraryModal` | `ImageLibraryModal.svelte` | `open` ($bindable), `onSelect(fileUrl)` | Модальная сетка ранее загруженных изображений (`getFilesOptions`); skeleton/error/empty | `CoverPicker` |
+| `ImageLibraryModal` | `ImageLibraryModal.svelte` | `open` ($bindable), `onSelect(fileUrl)`, `selectedUrl` | Модальная сетка ранее загруженных изображений (`getFilesOptions`); skeleton/error/empty; уже выбранная обложка помечена и недоступна для повторного выбора | `CoverPicker` |
 
 ## Forms (`components/forms/`)
 

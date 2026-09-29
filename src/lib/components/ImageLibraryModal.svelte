@@ -8,9 +8,10 @@
   interface Props {
     open: boolean;
     onSelect: (fileUrl: string) => void;
+    selectedUrl?: string;
   }
 
-  let { open = $bindable(false), onSelect }: Props = $props();
+  let { open = $bindable(false), onSelect, selectedUrl = '' }: Props = $props();
 
   // Fetch only while the modal is visible, so the library loads fresh
   // (and re-fetches, being stale by default) each time it opens.
@@ -60,11 +61,15 @@
       {:else}
         <div class="library-grid library-grid-stagger scroll-list">
           {#each files as file (file.fileUrl)}
+            {@const isSelected = file.fileUrl === selectedUrl}
             <button
               type="button"
               class="library-item"
-              title={file.fileName}
-              aria-label={`Выбрать ${file.fileName}`}
+              class:is-selected={isSelected}
+              disabled={isSelected}
+              title={isSelected ? `${file.fileName} — уже выбран` : file.fileName}
+              aria-label={isSelected ? `${file.fileName} — уже выбран` : `Выбрать ${file.fileName}`}
+              aria-pressed={isSelected}
               onclick={() => choose(file.fileUrl)}
             >
               <img src={file.fileUrl} alt={file.fileName} loading="lazy" />

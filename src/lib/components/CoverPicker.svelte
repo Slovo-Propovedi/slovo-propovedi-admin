@@ -61,4 +61,4 @@
   </button>
 </div>
 
-<ImageLibraryModal bind:open={libraryOpen} onSelect={handleLibrarySelect} />
+<ImageLibraryModal bind:open={libraryOpen} onSelect={handleLibrarySelect} selectedUrl={value} />
