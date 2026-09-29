@@ -31,7 +31,7 @@
 ## Деталь
 
 - **Маршрут:** `/sermons/:id`, параметр `:id` (uuid).
-- **Что показывается:** `Breadcrumbs` («Проповеди / <название>»), hero-блок `.detail-hero` (обложка/плейсхолдер, название, «Проповедник · Книга глава:стихи»), кнопки «Редактировать» и «Удалить». Карточка «Описание». Блок «Медиа» — `<audio class="audio-player" controls>` (если `audioUrl`), ссылки «Смотреть на YouTube» и «Открыть текст проповеди» (если `youtubeUrl`/`textFileUrl`). Блок «Плейлисты (N)» — сетка `.list-grid.scroll-list` карточек плейлистов (обложка + название); список скроллится внутри (`.scroll-list`).
+- **Что показывается:** `Breadcrumbs` («Проповеди / <название>»), hero-блок `.detail-hero` (обложка/плейсхолдер, название, «Проповедник · Книга глава:стихи»), кнопки «Редактировать» и «Удалить». Карточка «Описание». Блок «Медиа» — `<audio class="audio-player" controls>` (если `audioUrl`), ссылки «Смотреть на YouTube» и «Открыть текст проповеди» (если `youtubeUrl`/`textFileUrl`). Блок «Плейлисты (N)» — сетка `.list-grid.scroll-list.scroll-list--tight` карточек плейлистов (обложка + название); список скроллится внутри, без резервирования пустой высоты (`.scroll-list--tight`).
 - **Откуда данные:** `sermonControllerFindOneOptions({ path: { id } })` (`createQuery`); мутация `sermonControllerRemoveMutation`.
 - **Компоненты:** `Breadcrumbs`, `Button`, `EmptyState`, `Icon`, `LoadingSpinner`, `Modal`.
 - **Навигация:** «Редактировать» → `/sermons/:id/edit`; клик по плейлисту → `/playlists/:id`; подтверждение удаления в `Modal` → `/sermons`.

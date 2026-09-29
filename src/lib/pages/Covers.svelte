@@ -266,7 +266,7 @@
           />
         </div>
       {:else}
-        <div class="orphan-list scroll-list">
+        <div class="orphan-list scroll-list scroll-list--tight">
           {#each orphans as file (file.fileName)}
             {@const kind = fileKind(file.fileName)}
             <div class="orphan-row">
@@ -292,7 +292,7 @@
         {/if}
       </div>
       {#if cleanupResult.failed.length > 0}
-        <ul class="orphan-failed scroll-list">
+        <ul class="orphan-failed scroll-list scroll-list--tight">
           {#each cleanupResult.failed as failure (failure.fileName)}
             <li><span class="orphan-name">{failure.fileName}</span> — {failure.reason}</li>
           {/each}

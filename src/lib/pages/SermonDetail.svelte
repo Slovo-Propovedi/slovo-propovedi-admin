@@ -124,7 +124,7 @@
     <div class="detail-section">
       <h3>Плейлисты ({sermon.playlists?.length ?? 0})</h3>
       {#if sermon.playlists && sermon.playlists.length > 0}
-        <div class="list-grid scroll-list">
+        <div class="list-grid scroll-list scroll-list--tight">
           {#each sermon.playlists as playlist}
             <div
               class="card card-hover list-item"

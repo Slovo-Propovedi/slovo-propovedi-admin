@@ -67,7 +67,7 @@ Props: `{ mode: 'create'|'edit', id?, initial?: SermonEntity }`. Снапшот 
 
 ## Деталь (`SermonDetail.svelte`)
 
-Медиа-проигрыватель (`audioUrl` из сущности), список плейлистов (`.list-grid.scroll-list` — скроллится внутри), кнопки редактирования и удаления (удаление — через `Modal` confirm + `sermonControllerRemoveMutation` → `invalidateSermon` → `navigate('/sermons')`).
+Медиа-проигрыватель (`audioUrl` из сущности), список плейлистов (`.list-grid.scroll-list.scroll-list--tight` — скроллится внутри, обычно 0–2 элементов, без пустой высоты), кнопки редактирования и удаления (удаление — через `Modal` confirm + `sermonControllerRemoveMutation` → `invalidateSermon` → `navigate('/sermons')`).
 
 ## Связанные документы
 

@@ -56,7 +56,7 @@ Props: `value`, `label`, `hint`, `isUploading`, `onChange`. = `FileUpload kind="
 
 Props: `open` ($bindable), `onSelect(fileUrl)`.
 
-- Сетка ранее загруженных изображений через `createQuery(() => ({ ...getFilesOptions(), enabled: open }))` — грузится только когда модалка открыта (свежие данные при каждом открытии). Сетка обёрнута в `.scroll-list` (`min-height: 200px`, `max-height: 90dvh`, `overflow-y: auto`) — скроллится внутри модалки, не растягивая её.
+- Сетка ранее загруженных изображений через `createQuery(() => ({ ...getFilesOptions(), enabled: open }))` — грузится только когда модалка открыта (свежие данные при каждом открытии). Сетка обёрнута в `.scroll-list` (`min-height: 200px`, `max-height: 90vh`/`90dvh`, `overflow-y: auto`); внутри модалки ограничена `60vh`/`60dvh` (`.library-modal .scroll-list`) — скроллится, не растягивая её и не выходя за вьюпорт.
 - Состояния: skeleton (8 плейсхолдеров), ошибка (`Icon alert` + «Повторить»), пусто (`EmptyState` «Изображений пока нет»), сетка с `lazy`-загрузкой и галочкой выбора.
 
 ## Каталог обложек и очистка осиротевших файлов (`Covers.svelte`)

@@ -877,8 +877,20 @@ img {
 /* Non-paginated lists scroll internally instead of stretching the page. */
 .scroll-list {
   min-height: 200px;
+  max-height: 90vh;
   max-height: 90dvh;
   overflow-y: auto;
+}
+
+/* Transient/short lists: allow own scroll without forcing empty space. */
+.scroll-list--tight {
+  min-height: 0;
+}
+
+/* Keep a modal-hosted list clear of the modal shell's viewport edges. */
+.library-modal .scroll-list {
+  max-height: 60vh;
+  max-height: 60dvh;
 }
 
 .library-item {
