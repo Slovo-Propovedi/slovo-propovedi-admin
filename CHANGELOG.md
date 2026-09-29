@@ -2,6 +2,14 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.11.4] - 2026-09-29
+
+### Features
+- mark already selected cover in image library picker
+
+### Bug Fixes
+- cap modal library scroll and drop min-height on short lists
+
 ## [0.11.3] - 2026-09-29
 
 ### Bug Fixes
