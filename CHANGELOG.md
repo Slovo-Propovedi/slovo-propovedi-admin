@@ -2,6 +2,11 @@
 
 All notable changes are auto-generated from [conventional commits](https://www.conventionalcommits.org/) at release time via `npm run bump-version`.
 
+## [0.11.2] - 2026-09-29
+
+### Features
+- переименовать маршрут /covers в /media
+
 ## [0.11.1] - 2026-09-29
 
 ### Features
