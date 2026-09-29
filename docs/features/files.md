@@ -61,7 +61,7 @@ Props: `open` ($bindable), `onSelect(fileUrl)`.
 
 ## Каталог обложек и очистка осиротевших файлов (`Covers.svelte`)
 
-Страница `/covers` (пункт сайдбара «Медиафайлы», роли admin/moderator) — естественная точка загрузки изображений и управления всем файловым хранилищем. Подробное описание экрана — в [`../screens/covers.md`](../screens/covers.md).
+Страница `/media` (пункт сайдбара «Медиафайлы», роли admin/moderator) — естественная точка загрузки изображений и управления всем файловым хранилищем. Подробное описание экрана — в [`../screens/covers.md`](../screens/covers.md).
 
 - **Каталог:** `getFilesOptions()` (`GET /files` → `AllFilesResponse { files, count }`); каждая карточка показывает `fileName`, размер и бейдж «используется» при `used = true`.
 - **Загрузка:** кнопка «Загрузить обложку» → скрытый `<input type="file" accept="image/*">` → `uploadFileWithProgress` (прогресс в %), после успеха — `invalidateFiles` + `Toast`.

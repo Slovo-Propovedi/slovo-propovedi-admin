@@ -12,7 +12,7 @@
     { label: 'Плейлисты', path: '/playlists', icon: 'playlists' },
     { label: 'Проповеди', path: '/sermons', icon: 'sermons' },
     { label: 'Загрузить проповедь', path: '/sermons/upload', icon: 'upload' },
-    { label: 'Медиафайлы', path: '/covers', icon: 'images' },
+    { label: 'Медиафайлы', path: '/media', icon: 'images' },
   ] as const;
 
   // The users domain is admin-only — the backend answers 403 to other roles,

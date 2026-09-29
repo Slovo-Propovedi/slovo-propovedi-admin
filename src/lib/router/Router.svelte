@@ -45,7 +45,7 @@
     { pattern: '/sermons/:id/edit', component: SermonEdit },
     { pattern: '/sermons/:id', component: SermonDetail },
     { pattern: '/sermons', component: Sermons },
-    { pattern: '/covers', component: Covers },
+    { pattern: '/media', component: Covers },
     { pattern: '/users/create', component: UserCreate },
     { pattern: '/users/:id/edit', component: UserEdit },
     { pattern: '/users/:id', component: UserDetail },
